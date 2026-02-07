@@ -12,7 +12,11 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard', ['title' => 'Dashboard']);
     })->name('dashboard');
 
-    Route::resource('users', UserController::class);
+    // Route::resource('users', UserController::class);
+    // Hanya Admin
+    Route::middleware(['admin'])->group(function () {
+        Route::resource('users', UserController::class);
+    });
 });
 
 require __DIR__.'/auth.php';
