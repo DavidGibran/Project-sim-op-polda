@@ -12,7 +12,30 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tb_penugasans', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_tugas');
+            $table->foreignId('id_kend')
+                ->constrained('master_kends','id_kend');
+
+            $table->foreignId('id_user')
+                ->constrained('users','id');
+                
+            $table->string('nama_sopir');
+            $table->date('tgl_tugas');
+            $table->string('tujuan');
+            $table->text('kegiatan');
+            $table->integer('odo_awal')->nullable();
+            $table->integer('odo_akhir')->nullable();
+            $table->timestamp('prj_mulai')->nullable();
+            $table->timestamp('prj_selesai')->nullable();
+            $table->string('foto_odo')->nullable();
+            $table->text('note')->nullable();
+            $table->enum('status', [
+                'diterbitkan',
+                'diterima',
+                'berjalan',
+                'selesai'
+            ])->default('diterbitkan');
+
             $table->timestamps();
         });
     }
