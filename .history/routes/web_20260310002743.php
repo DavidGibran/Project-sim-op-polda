@@ -11,10 +11,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/login-preview', function () {
-    return view('pages.auth.login');
-});
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard', ['title' => 'Dashboard']);
