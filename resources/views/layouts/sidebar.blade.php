@@ -46,9 +46,7 @@
             return this.openSubmenus[key] || false;
         },
         isActive(path) {
-            if (path === '#') return false;
-            const fullPath = window.location.pathname + window.location.search;
-            return fullPath === path || window.location.pathname === path || '{{ $currentPath }}' === path.replace(/^\//, '');
+            return window.location.pathname === path || '{{ $currentPath }}' === path.replace(/^\//, '');
         }
     }"
     :class="{
@@ -60,19 +58,19 @@
     @mouseenter="if (!$store.sidebar.isExpanded) $store.sidebar.setHovered(true)"
     @mouseleave="$store.sidebar.setHovered(false)">
     <!-- Logo Section -->
-    <div class="flex items-center justify-center px-6 py-4 transition-all duration-300 ease-in-out">
-        <a href="/" class="flex items-center justify-center w-full">
-            <!-- Expanded Logo -->
+    <div class="pt-8 pb-7 flex"
+        :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen) ?
+        'xl:justify-center' :
+        'justify-start'">
+        <a href="/">
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                src="/images/logo/logo-tik-polri.png" 
-                alt="Logo Polri" 
-                class="h-12 w-auto object-contain transition-transform duration-300" />
-            
-            <!-- Collapsed Logo Icon -->
-            <img x-show="!($store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen)"
-                src="/images/logo/logo-tik-polri.png" 
-                alt="Logo Polri" 
-                class="h-10 w-auto object-contain transition-transform duration-300" />
+                class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width="150" height="40" />
+            <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
+                class="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" width="150"
+                height="40" />
+            <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
+                src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
+
         </a>
     </div>
 
@@ -221,7 +219,7 @@
         <!-- Sidebar Widget -->
         <div x-data x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen" x-transition class="mt-auto">
             @include('layouts.sidebar-widget')
-        </div> 
+        </div>
 
     </div>
 </aside>
