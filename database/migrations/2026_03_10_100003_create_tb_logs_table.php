@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_logs_tables', function (Blueprint $table) {
-            $table->id();
+        Schema::create('tb_logs', function (Blueprint $table) {
+            $table->id('id_log');
+            $table->foreignId('id_user')->constrained('users', 'id');
+            $table->string('aksi');
+            $table->string('modul');
+            $table->text('deskripsi');
+            $table->string('ip_address');
             $table->timestamps();
         });
     }
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tb_logs_tables');
+        Schema::dropIfExists('tb_logs');
     }
 };

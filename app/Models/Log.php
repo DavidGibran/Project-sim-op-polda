@@ -10,8 +10,16 @@ class Log extends Model
 
     protected $primaryKey = 'id_log';
 
-    public function penugasan()
+    protected $fillable = [
+        'id_user',
+        'aksi',
+        'modul',
+        'deskripsi',
+        'ip_address',
+    ];
+
+    public function user()
     {
-        return $this->belongsTo(Penugasan::class,'id_tugas');
+        return $this->belongsTo(User::class, 'id_user');
     }
 }
