@@ -21,7 +21,7 @@
   </div>
 
   <div class="grid grid-cols-12 gap-4 md:gap-6">
-    <!-- Row 1: Fleet Metrics (Full Width.) -->
+    <!-- Row 1: Fleet Metrics (Full Width) -->
     <div class="col-span-12">
       <x-dashboard.fleet-metrics 
         :totalKendaraan="$totalKendaraan"
