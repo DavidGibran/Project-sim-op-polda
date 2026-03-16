@@ -18,6 +18,7 @@ class MasterKend extends Model
         'kategori_kendaraan',
         'jenis_kendaraan',
         'keterangan_penggunaan',
+        'km_terakhir',
         'status',
         'username',
         'password',

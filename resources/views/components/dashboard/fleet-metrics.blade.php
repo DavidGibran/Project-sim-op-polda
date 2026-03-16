@@ -53,7 +53,7 @@
                             <p class="text-xl font-bold text-gray-800 dark:text-white">{{ $totalR4 }} Unit</p>
                         </div>
                         <div class="p-5 rounded-2xl bg-primary/10 dark:bg-primary/20 col-span-2 flex justify-between items-center border border-primary/20">
-                            <span class="font-bold text-primary italic underline-offset-4 underline uppercase tracking-widest text-sm">Total Kendaraan</span>
+                            <span class="font-bold text-gray-900 dark:text-white uppercase tracking-widest text-sm">Total Kendaraan</span>
                             <span class="text-2xl font-black text-primary">{{ $totalKendaraan }} Unit</span>
                         </div>
                     </div>
@@ -133,14 +133,18 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
                     </div>
-                    <div class="space-y-6">
-                        <div class="p-8 text-center rounded-3xl bg-warning-50 dark:bg-warning-500/10 border border-warning-100 dark:border-warning-500/20 shadow-inner">
-                            <p class="text-sm font-bold text-warning-600 dark:text-warning-400 uppercase tracking-widest mb-1">Penugasan Aktif</p>
-                            <p class="text-5xl font-black text-warning-600 dark:text-warning-500">{{ $penugasanAktif }} Unit</p>
+                    <div class="space-y-4">
+                        <div class="p-6 text-center rounded-2xl bg-warning-50 dark:bg-warning-500/10 border border-warning-100 dark:border-warning-500/20 mb-4">
+                            <p class="text-sm font-semibold text-warning-600 dark:text-warning-400 uppercase tracking-widest">Penugasan Aktif</p>
+                            <p class="text-4xl font-black text-warning-600 dark:text-warning-500">{{ $penugasanAktif }} Unit</p>
                         </div>
-                        <div class="flex justify-between items-center p-5 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800">
-                            <span class="text-gray-600 dark:text-gray-400 font-semibold uppercase text-xs tracking-wider">Kendaraan Aktif</span>
-                            <span class="text-2xl font-bold text-gray-800 dark:text-white">{{ $kendaraanAktif }} Unit</span>
+                        <div class="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 transition-all hover:border-warning-200 dark:hover:border-warning-500/30">
+                            <span class="text-gray-700 dark:text-gray-300 font-medium">Penugasan Hari Ini</span>
+                            <span class="text-xl font-bold text-gray-800 dark:text-white">- Unit</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 transition-all hover:border-success-200 dark:hover:border-success-500/30">
+                            <span class="text-gray-700 dark:text-gray-300 font-medium">Penugasan Selesai Hari Ini</span>
+                            <span class="text-xl font-bold text-gray-800 dark:text-white">- Unit</span>
                         </div>
                     </div>
                 </div>
@@ -148,7 +152,7 @@
 
             <div class="mt-8 flex justify-end">
                 <button @click="showInfo = false" 
-                        class="rounded-lg bg-primary px-6 py-2.5 font-medium text-white transition-all hover:bg-opacity-90">
+                        class="rounded-lg bg-gray-100 px-6 py-2.5 font-medium text-gray-700 transition-all hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
                     Tutup
                 </button>
             </div>
