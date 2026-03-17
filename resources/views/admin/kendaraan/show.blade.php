@@ -77,6 +77,7 @@
                             'Tersedia' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
                             'Dipakai' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
                             'Perbaikan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
+                            'Diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400',
                         ];
                         $configClass = $statusConfig[$kendaraan->status] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
                     @endphp
@@ -118,20 +119,21 @@
                         @forelse($kendaraan->penugasans as $tugas)
                         <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                             <td class="px-5 py-3">
-                                <span class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($tugas->tgl_tugas)->format('d M Y') }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($tugas->tgl_tugas)->translatedFormat('d F Y') }}</span>
                             </td>
                             <td class="px-5 py-3">
                                 <span class="text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($tugas->tujuan, 30) }}</span>
                             </td>
                             <td class="px-5 py-3">
-                                <span class="text-sm text-gray-600 dark:text-gray-300">{{ $tugas->nama_sopir ?: '-' }}</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-300">{{ $tugas->pengemudi ?: 'Tidak mengisi nama' }}</span>
                             </td>
                             <td class="px-5 py-3">
                                 @php
                                     $s_color = match($tugas->status) {
-                                        'aktif' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+                                        'berjalan' => 'bg-blue-50 text-blue-700 dark:bg-blue-800/20 dark:text-blue-400',
                                         'selesai' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
                                         'dibatalkan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
+                                        'diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400',
                                         default => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
                                     };
                                 @endphp
@@ -173,7 +175,7 @@
                         @forelse($kendaraan->perbaikans as $perbaikan)
                         <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                             <td class="px-5 py-3">
-                                <span class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($perbaikan->tanggal_laporan)->format('d M Y') }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($perbaikan->tanggal_laporan)->translatedFormat('d F Y') }}</span>
                             </td>
                             <td class="px-5 py-3">
                                 <span class="text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($perbaikan->keluhan, 30) }}</span>
