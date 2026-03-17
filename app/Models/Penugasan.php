@@ -8,20 +8,17 @@ class Penugasan extends Model
 {
     protected $table = 'tb_penugasans';
 
-    protected $primaryKey = 'id_tugas';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'id_kend',
-        'nama_sopir',
+        'pengemudi',
         'tgl_tugas',
+        'tgl_selesai',
         'tujuan',
-        'kegiatan',
-        'odo_awal',
-        'odo_akhir',
-        'prj_mulai',
-        'prj_selesai',
-        'foto_odo',
-        'note',
+        'km_awal',
+        'km_akhir',
+        'catatan',
         'status',
     ];
 

@@ -118,9 +118,10 @@
                     <td class="px-5 py-4">
                         @php
                         $statusConfig = [
-                        'Tersedia' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
-                        'Dipakai' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
-                        'Perbaikan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
+                            'Tersedia' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
+                            'Dipakai' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+                            'Perbaikan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
+                            'Diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400',
                         ];
                         $configClass = $statusConfig[$kendaraan->status] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
                         @endphp
@@ -136,13 +137,13 @@
                                     <circle cx="12" cy="12" r="3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                             </a>
-                            <a href="{{ route('kendaraan.edit', $kendaraan->id_kend) }}" class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-primary hover:text-white transition-all dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-primary dark:hover:text-white" title="Edit">
+                            <a href="{{ route('kendaraan.edit', $kendaraan->id_kend) }}" class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-warning-500 hover:text-white transition-all dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-primary dark:hover:bg-warning-500 dark:hover:text-white" title="Edit">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                             </a>
-                            <button @click="$dispatch('open-delete-modal', { url: '{{ route('kendaraan.destroy', $kendaraan->id_kend) }}', title: '{{ $kendaraan->no_polisi }}' })" type="button" class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-error hover:text-white transition-all dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-error dark:hover:text-white" title="Hapus">
+                            <button @click="$dispatch('open-delete-modal', { url: '{{ route('kendaraan.destroy', $kendaraan->id_kend) }}', title: '{{ $kendaraan->no_polisi }}' })" type="button" class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-error-500 hover:text-white transition-all dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-error-500 dark:hover:text-white" title="Hapus">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M3 6h18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />

@@ -55,7 +55,7 @@
                 <!-- Kategori Kendaraan -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Kategori Kendaraan <span class="text-error">*</span></label>
-                    <select name="kategori_kendaraan" required class="w-full rounded-lg border border-gray-200 bg-white py-2 px-4 text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-200 dark:bg-gray-900 dark:text-gray-200 @error('kategori_kendaraan') border-error @enderror">
+                    <select name="kategori_kendaraan" required class="w-full rounded-lg border border-gray-200 bg-white py-2 px-4 text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 @error('kategori_kendaraan') border-error @enderror">
                         <option value="" class="text-gray-700 dark:text-white">Pilih Kategori</option>
                         <option value="R2" class="text-gray-700 dark:text-white" {{ old('kategori_kendaraan') == 'R2' ? 'selected' : '' }}>Roda 2 (R2)</option>
                         <option value="R4" class="text-gray-700 dark:text-white" {{ old('kategori_kendaraan') == 'R4' ? 'selected' : '' }}>Roda 4 (R4)</option>
@@ -68,7 +68,7 @@
                 <!-- Jenis Kendaraan -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Jenis Kendaraan <span class="text-error">*</span></label>
-                    <select name="jenis_kendaraan" required class="w-full rounded-lg border border-gray-200 bg-white py-2 px-4 text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-gray-900 dark:text-gray-200 @error('jenis_kendaraan') border-error @enderror">
+                    <select name="jenis_kendaraan" required class="w-full rounded-lg border border-gray-200 bg-white py-2 px-4 text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 @error('jenis_kendaraan') border-error @enderror">
                         <option value="" class="text-gray-700 dark:text-white">Pilih Jenis</option>
                         <option value="RANUM" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan') == 'RANUM' ? 'selected' : '' }}>RANUM</option>
                         <option value="RANSUS" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan') == 'RANSUS' ? 'selected' : '' }}>RANSUS</option>
@@ -88,7 +88,7 @@
                 <!-- Status -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Status Kendaraan <span class="text-error">*</span></label>
-                    <select name="status" required class="w-full rounded-lg border border-gray-200 bg-white py-2 px-4 text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-gray-900 dark:text-gray-200 @error('status') border-error @enderror">
+                    <select name="status" required class="w-full rounded-lg border border-gray-200 bg-white py-2 px-4 text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 @error('status') border-error @enderror">
                         <option value="Tersedia" class="text-gray-700 dark:text-white" {{ old('status', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
                         <option value="Dipakai" class="text-gray-700 dark:text-white" {{ old('status') == 'Dipakai' ? 'selected' : '' }}>Dipakai</option>
                         <option value="Perbaikan" class="text-gray-700 dark:text-white" {{ old('status') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
@@ -109,7 +109,7 @@
             <a href="{{ route('kendaraan.index') }}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-5 py-2.5 text-center text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
                 Batal
             </a>
-            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-primary/90 dark:bg-primary dark:text-white transition-all">
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-medium border border-success-400 text-success-500 hover:bg-success-400 hover:text-white dark:bg-primary dark:text-success-600 dark:border-success-600 dark:hover:bg-success-600 dark:hover:text-white transition-all">
                 Simpan Kendaraan
             </button>
         </div>
