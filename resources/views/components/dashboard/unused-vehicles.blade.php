@@ -3,7 +3,7 @@
 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] h-full">
     <div class="px-5 pt-5 sm:px-6 sm:pt-6">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Kendaraan Tidak Digunakan Terlama
+            Kendaraan Tidak Digunakan
         </h3>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Daftar kendaraan yang paling jarang digunakan operasional.
@@ -40,7 +40,7 @@
                                 </span>
                                 
                             @else
-                                <span class="inline-flex rounded-lg bg-gray-100 dark:bg-white/10 px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <span class="inline-flex rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:text-gray-400">
                                     Belum pernah digunakan
                                 </span>
                             @endif

@@ -12,8 +12,8 @@
         </div>
     </div>
 
-    <div class="flex justify-center">
-        <div id="fleetTrendChart" class="w-full h-[350px]"></div>
+    <div>
+        <div id="fleetTrendChart" class="w-full h-[350px] overflow-hidden"></div>
     </div>
 </div>
 
