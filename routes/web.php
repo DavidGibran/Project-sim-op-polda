@@ -24,7 +24,7 @@ Route::get('/', function () {
     }
 
     return redirect()->route('login');
-});
+})->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +34,9 @@ Route::get('/', function () {
 
 Route::post('/auth/login', [VehicleAuthController::class, 'login'])->name('login.universal');
 Route::post('/auth/logout', [VehicleAuthController::class, 'logout'])->name('logout.universal');
+
+
+require __DIR__.'/auth.php';
 
 Route::get('/login', function () {
     return view('pages.auth.login');
@@ -107,5 +110,3 @@ Route::middleware(['kendaraan'])
         })->name('kendaraan.dashboard');
 
     });
-
-require __DIR__.'/auth.php';
