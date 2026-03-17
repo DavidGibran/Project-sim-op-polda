@@ -54,7 +54,7 @@
                         </div>
                         <div class="p-5 rounded-2xl bg-primary/10 dark:bg-primary/20 col-span-2 flex justify-between items-center border border-primary/20">
                             <span class="font-bold text-gray-900 dark:text-white uppercase tracking-widest text-sm">Total Kendaraan</span>
-                            <span class="text-2xl font-black text-primary">{{ $totalKendaraan }} Unit</span>
+                            <span class="text-2xl font-black text-primary dark:text-white">{{ $totalKendaraan }} Unit</span>
                         </div>
                     </div>
                 </div>
