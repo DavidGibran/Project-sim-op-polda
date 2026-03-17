@@ -52,7 +52,7 @@
 
             <!-- Filter Status -->
             <select name="status" onchange="this.form.submit()" 
-                    class="w-full sm:w-auto rounded-lg border border-gray-300 bg-white py-2.5 px-4 text-sm text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-transparent dark:text-gray-300">
+                    class="w-full sm:w-auto rounded-lg border border-gray-300 bg-white py-2.5 px-4 text-sm text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-transparent dark:text-gray-300">
                 <option value="Semua" class="text-gray-700" {{ request('status') === 'Semua' ? 'selected' : '' }}>Semua Status</option>
                 <option value="Tersedia" class="text-gray-700" {{ request('status') === 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
                 <option value="Dipakai" class="text-gray-700" {{ request('status') === 'Dipakai' ? 'selected' : '' }}>Dipakai</option>
