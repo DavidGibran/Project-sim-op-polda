@@ -8,10 +8,15 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\VehicleAuthController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    if (Auth::check()) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('login');
+});
 
 Route::post('/auth/login', [VehicleAuthController::class, 'login'])->name('login.universal');
 Route::post('/auth/logout', [VehicleAuthController::class, 'logout'])->name('logout.universal');
