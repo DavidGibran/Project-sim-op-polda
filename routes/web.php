@@ -86,6 +86,8 @@ Route::middleware(['auth', 'admin'])
         /*
         | Perbaikan Kendaraan
         */
+        Route::get('perbaikan-aktif', [PerbaikanController::class, 'aktif'])->name('perbaikan.aktif');
+        Route::get('perbaikan-riwayat', [PerbaikanController::class, 'riwayat'])->name('perbaikan.riwayat');
         Route::resource('perbaikan', PerbaikanController::class);
 
         /*

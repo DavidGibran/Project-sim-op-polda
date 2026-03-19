@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\Perbaikan;
+use App\Models\MasterKend;
+use Carbon\Carbon;
+
 class PerbaikanController extends Controller
 {
     /**
@@ -11,7 +15,55 @@ class PerbaikanController extends Controller
      */
     public function index()
     {
-        //
+        return redirect()->route('perbaikan.aktif');
+    }
+
+    /**
+     * Display ACTIVE repairs (dilaporkan, diproses).
+     */
+    public function aktif(Request $request)
+    {
+        $status = $request->query('status');
+        $perPage = $request->query('per_page', 10);
+
+        $query = Perbaikan::with('kendaraan')
+            ->whereIn('status', ['dilaporkan', 'diproses']);
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $perbaikans = $query->latest('tanggal_lapor')->paginate($perPage)->withQueryString();
+
+        return view('admin.perbaikan.aktif', compact('perbaikans', 'status', 'perPage'));
+    }
+
+    /**
+     * Display COMPLETED repairs (selesai).
+     */
+    public function riwayat(Request $request)
+    {
+        $search = $request->query('search');
+        $perPage = $request->query('per_page', 10);
+
+        $query = Perbaikan::with('kendaraan')
+            ->where('status', 'selesai');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('keluhan', 'like', "%{$search}%")
+                  ->orWhere('teknisi', 'like', "%{$search}%")
+                  ->orWhereHas('kendaraan', function ($qk) use ($search) {
+                      $qk->where('no_polisi', 'like', "%{$search}%")
+                         ->orWhere('merk', 'like', "%{$search}%")
+                         ->orWhere('tipe', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $perbaikans = $query->latest('tgl_selesai')->paginate($perPage)->withQueryString();
+
+        return view('admin.perbaikan.riwayat', compact('perbaikans', 'search', 'perPage'));
     }
 
     /**
@@ -19,7 +71,12 @@ class PerbaikanController extends Controller
      */
     public function create()
     {
-        //
+        // Get vehicles that are NOT currently in repair
+        $kendaraans = MasterKend::where('status', '!=', 'Perbaikan')
+            ->orderBy('no_polisi')
+            ->get();
+
+        return view('admin.perbaikan.create', compact('kendaraans'));
     }
 
     /**
@@ -27,38 +84,139 @@ class PerbaikanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'id_kend' => 'required|exists:master_kends,id_kend',
+            'tanggal_lapor' => 'required|date',
+            'keluhan' => 'required',
+            'catatan' => 'nullable',
+        ]);
+
+        // Check for active repair for this vehicle
+        $activeRepair = Perbaikan::where('id_kend', $request->id_kend)
+            ->whereIn('status', ['dilaporkan', 'diproses'])
+            ->first();
+
+        if ($activeRepair) {
+            return back()->with('error', 'Kendaraan sedang dalam proses perbaikan')->withInput();
+        }
+
+        try {
+            \DB::beginTransaction();
+
+            // Create repair record
+            Perbaikan::create([
+                'id_kend' => $request->id_kend,
+                'tanggal_lapor' => $request->tanggal_lapor,
+                'keluhan' => $request->keluhan,
+                'status' => 'dilaporkan',
+                'catatan' => $request->catatan,
+            ]);
+
+            // Update vehicle status
+            $kendaraan = MasterKend::findOrFail($request->id_kend);
+            $kendaraan->update(['status' => 'Perbaikan']);
+
+            \DB::commit();
+            return redirect()->route('perbaikan.aktif')->with('success', 'Laporan perbaikan berhasil dibuat. Status kendaraan: Perbaikan');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return back()->with('error', 'Gagal membuat laporan: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Perbaikan $perbaikan)
     {
-        //
+        $perbaikan->load('kendaraan');
+        return view('admin.perbaikan.show', compact('perbaikan'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the specified resource (Status changes).
      */
-    public function edit(string $id)
+    public function update(Request $request, Perbaikan $perbaikan)
     {
-        //
+        $action = $request->input('action');
+
+        if ($action === 'mulai') {
+            if ($perbaikan->status !== 'dilaporkan') {
+                return back()->with('error', 'Status tidak valid untuk aksi ini.');
+            }
+
+            $perbaikan->update([
+                'status' => 'diproses',
+                'tgl_mulai' => now(),
+                'teknisi' => $request->input('teknisi', 'Internal'),
+            ]);
+
+            return back()->with('success', 'Proses perbaikan dimulai.');
+        }
+
+        if ($action === 'selesai') {
+            if ($perbaikan->status !== 'diproses') {
+                return back()->with('error', 'Status tidak valid untuk aksi ini.');
+            }
+
+            $request->validate([
+                'tgl_selesai' => 'required|date',
+                'biaya' => 'required|numeric',
+                'catatan_tambahan' => 'nullable',
+            ]);
+
+            try {
+                \DB::beginTransaction();
+
+                // Join catatan tambahan if provided
+                $finalNote = $perbaikan->catatan;
+                if ($request->catatan_tambahan) {
+                    $finalNote .= "\n--- Penyelesaian ---\n" . $request->catatan_tambahan;
+                }
+
+                $perbaikan->update([
+                    'status' => 'selesai',
+                    'tgl_selesai' => $request->tgl_selesai,
+                    'biaya' => $request->biaya,
+                    'catatan' => $finalNote,
+                ]);
+
+                // Update vehicle status back to Tersedia
+                $perbaikan->kendaraan->update(['status' => 'Tersedia']);
+
+                \DB::commit();
+                return redirect()->route('perbaikan.riwayat')->with('success', 'Perbaikan selesai. Kendaraan kini Tersedia.');
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                return back()->with('error', 'Gagal menyelesaikan perbaikan: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('error', 'Aksi tidak dikenal.');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remove the specified resource from storage (Delete/Cancel).
      */
-    public function update(Request $request, string $id)
+    public function destroy(Perbaikan $perbaikan)
     {
-        //
-    }
+        if ($perbaikan->status === 'selesai') {
+            return back()->with('error', 'Riwayat perbaikan yang sudah selesai tidak bisa dihapus.');
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        try {
+            \DB::beginTransaction();
+
+            // Reset vehicle status if it was in repair
+            $perbaikan->kendaraan->update(['status' => 'Tersedia']);
+            
+            $perbaikan->delete();
+
+            \DB::commit();
+            return redirect()->route('perbaikan.aktif')->with('success', 'Laporan perbaikan dihapus.');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
+        }
     }
 }

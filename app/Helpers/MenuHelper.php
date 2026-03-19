@@ -33,11 +33,11 @@ class MenuHelper
                 'subItems' => [
                     [
                         'name' => 'Perbaikan Aktif',
-                        'path' => route('perbaikan.index', absolute: false) . '?status=aktif',
+                        'path' => route('perbaikan.aktif', absolute: false),
                     ],
                     [
                         'name' => 'Riwayat Perbaikan',
-                        'path' => route('perbaikan.index', absolute: false),
+                        'path' => route('perbaikan.riwayat', absolute: false),
                     ],
                 ],
             ],

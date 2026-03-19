@@ -8,7 +8,7 @@ class Perbaikan extends Model
 {
     protected $table = 'tb_perbaikans';
 
-    protected $primaryKey = 'id_perbaikan';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'id_kend',
