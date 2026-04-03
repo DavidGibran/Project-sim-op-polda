@@ -1,22 +1,43 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Kendaraan;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
+use App\Models\MasterKend;
 use Illuminate\Http\Request;
 
-class LogController extends Controller
+class RiwayatPemakaianController extends Controller
 {
     /**
-     * Halaman log pemakaian admin
+     * Menampilkan riwayat pemakaian kendaraan yang sedang login
      *
-     * Menampilkan data perjalanan yang sudah selesai
-     * dan sudah tercatat ke tb_logs.
+     * Sumber data:
+     * - tb_logs
+     *
+     * Filter:
+     * - hanya modul log_pemakaian
+     * - hanya milik kendaraan yang sedang login
      */
     public function index(Request $request)
     {
         /**
-         * Ambil query string filter
+         * Ambil id kendaraan dari session login
+         */
+        $kendaraanId = session('kendaraan_id');
+
+        /**
+         * Pastikan kendaraan yang login valid
+         */
+        $kendaraan = MasterKend::find($kendaraanId);
+
+        if (! $kendaraan) {
+            return redirect()->route('login')
+                ->with('error', 'Session kendaraan tidak valid. Silakan login ulang.');
+        }
+
+        /**
+         * Ambil query filter dari request
          */
         $search = $request->query('search');
         $tanggalDari = $request->query('tanggal_dari');
@@ -24,16 +45,18 @@ class LogController extends Controller
         $perPage = (int) $request->query('per_page', 10);
 
         /**
-         * Query utama log pemakaian
+         * Query utama riwayat pemakaian
          *
-         * Kita filter berdasarkan modul = log_pemakaian
-         * agar log admin/system lain tidak ikut tampil.
+         * Hanya ambil:
+         * - modul log_pemakaian
+         * - id_kend sesuai kendaraan login
          */
-        $logs = Log::query()
+        $riwayatPemakaian = Log::query()
             ->where('modul', 'log_pemakaian')
+            ->where('id_kend', $kendaraan->id_kend)
 
             /**
-             * Filter pencarian
+             * Filter search
              *
              * Bisa cari berdasarkan:
              * - kode_tugas
@@ -42,6 +65,7 @@ class LogController extends Controller
              * - tujuan
              * - jenis_kendaraan
              * - tipe_kendaraan
+             * - catatan
              */
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
@@ -50,7 +74,8 @@ class LogController extends Controller
                         ->orWhere('nopol', 'like', '%' . $search . '%')
                         ->orWhere('tujuan', 'like', '%' . $search . '%')
                         ->orWhere('jenis_kendaraan', 'like', '%' . $search . '%')
-                        ->orWhere('tipe_kendaraan', 'like', '%' . $search . '%');
+                        ->orWhere('tipe_kendaraan', 'like', '%' . $search . '%')
+                        ->orWhere('catatan', 'like', '%' . $search . '%');
                 });
             })
 
@@ -66,7 +91,7 @@ class LogController extends Controller
             })
 
             /**
-             * Urutkan dari data terbaru
+             * Urutkan dari yang terbaru
              */
             ->orderByDesc('tanggal_tugas')
             ->orderByDesc('id_log')
@@ -74,10 +99,11 @@ class LogController extends Controller
             ->withQueryString();
 
         /**
-         * Render view log admin
+         * Render view riwayat pemakaian user
          */
-        return view('admin.log.index', compact(
-            'logs',
+        return view('user.riwayatPemakaian', compact(
+            'kendaraan',
+            'riwayatPemakaian',
             'search',
             'tanggalDari',
             'tanggalSampai',

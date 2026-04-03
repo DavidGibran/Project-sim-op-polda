@@ -3,21 +3,25 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\MasterKend;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
-use App\Models\MasterKend;
 
 class VehicleAuthController extends Controller
 {
     /**
-     * Handle an incoming universal authentication request.
+     * Handle login universal:
+     * - admin login via tabel users
+     * - kendaraan login via tabel master_kends
      */
     public function login(Request $request)
     {
-        // 1. Validasi Input
+        /**
+         * Validasi input login
+         */
         $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
@@ -26,74 +30,101 @@ class VehicleAuthController extends Controller
         $inputUsername = $request->input('username');
         $inputPassword = $request->input('password');
 
-        // 2. Cek sebagai Admin (tabel users) berdasarkan email
+        /**
+         * ==========================================================
+         * 1. Cek login sebagai ADMIN
+         * ==========================================================
+         *
+         * Admin login menggunakan email pada tabel users.
+         */
         $user = User::where('email', $inputUsername)->first();
 
         if ($user) {
-            // Jika user admin ditemukan, verifikasi password
-            if (Hash::check($inputPassword, $user->password)) {
-                // Login Auth Laravel
-                Auth::login($user);
-                $request->session()->regenerate();
-                
-                // Redirect ke dashboard admin
-                return redirect()->intended(route('admin.dashboard', absolute: false));
-            } else {
-                // Jika password admin salah, langsung kembalikan error,
-                // tanpa melanjutkan pengecekan ke tabel kendaraan.
+            if (! Hash::check($inputPassword, $user->password)) {
                 throw ValidationException::withMessages([
                     'username' => trans('auth.failed'),
                 ]);
             }
+
+            /**
+             * Login admin ke auth Laravel
+             */
+            Auth::login($user);
+
+            /**
+             * Regenerate session setelah login
+             * untuk mencegah session fixation
+             */
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('admin.dashboard', absolute: false));
         }
 
-        // 3. Cek sebagai Kendaraan (tabel master_kends) 
-        // Jika tidak ada di tabel users, lanjut cari di tabel kendaraan berdasarkan username atau no_polisi
+        /**
+         * ==========================================================
+         * 2. Cek login sebagai KENDARAAN
+         * ==========================================================
+         *
+         * Kendaraan login berdasarkan username atau no_polisi
+         * pada tabel master_kends.
+         */
         $kendaraan = MasterKend::where('username', $inputUsername)
             ->orWhere('no_polisi', $inputUsername)
             ->first();
 
-        if ($kendaraan) {
-            // Verifikasi password kendaraan
-            if (Hash::check($inputPassword, $kendaraan->password)) {
-                // Buat custom session untuk kendaraan
-                session([
-                    'kendaraan_id' => $kendaraan->id_kend,
-                    'kendaraan_polisi' => $kendaraan->no_polisi,
-                ]);
-                $request->session()->regenerate();
+        if ($kendaraan && Hash::check($inputPassword, $kendaraan->password)) {
+            /**
+             * Regenerate session dulu
+             */
+            $request->session()->regenerate();
 
-                // Redirect ke dashboard khusus kendaraan
-                // Asumsi routenya sementara akan dinamai 'dashboard'
-                return redirect()->intended(route('kendaraan.dashboard', absolute: false)); 
-            }
+            /**
+             * Simpan session khusus kendaraan
+             */
+            $request->session()->put([
+                'kendaraan_id' => $kendaraan->id_kend,
+                'kendaraan_polisi' => $kendaraan->no_polisi,
+            ]);
+
+            return redirect()->intended(route('kendaraan.dashboard', absolute: false));
         }
 
-        // 4. Jika kedua tabel gagal menemukan kredensial / password kendaraan salah
+        /**
+         * Jika admin dan kendaraan sama-sama gagal login
+         */
         throw ValidationException::withMessages([
             'username' => trans('auth.failed'),
         ]);
     }
 
     /**
-     * Handle logout universal for both admins and vehicles.
+     * Logout universal
+     * - admin
+     * - kendaraan
      */
     public function logout(Request $request)
     {
-        // Logout Admin
+        /**
+         * Logout admin jika sedang login via Auth
+         */
         if (Auth::check()) {
             Auth::logout();
         }
 
-        // Logout Kendaraan
-        if ($request->session()->has('kendaraan_id')) {
-            $request->session()->forget(['kendaraan_id', 'kendaraan_polisi']);
-        }
+        /**
+         * Hapus session kendaraan jika ada
+         */
+        $request->session()->forget([
+            'kendaraan_id',
+            'kendaraan_polisi',
+        ]);
 
-        // Invalidasi & regenerasi token CSRF secara global untuk keamanan
+        /**
+         * Invalidasi session lama dan buat token baru
+         */
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login'); // Redirect ke login universal
+        return redirect('/login');
     }
 }

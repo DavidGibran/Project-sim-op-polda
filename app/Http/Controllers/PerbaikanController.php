@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Perbaikan;
 use App\Models\MasterKend;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
+//include privat method - service
+use App\Services\PerbaikanServices;
 
 class PerbaikanController extends Controller
 {
@@ -41,27 +45,16 @@ class PerbaikanController extends Controller
     /**
      * Display COMPLETED repairs (selesai).
      */
+    //Privat method - service (buat reuse di laporan)
+    public function __construct(protected PerbaikanServices $service) {}
+
     public function riwayat(Request $request)
     {
         $search = $request->query('search');
         $perPage = $request->query('per_page', 10);
 
-        $query = Perbaikan::with('kendaraan')
-            ->where('status', 'selesai');
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('keluhan', 'like', "%{$search}%")
-                  ->orWhere('teknisi', 'like', "%{$search}%")
-                  ->orWhereHas('kendaraan', function ($qk) use ($search) {
-                      $qk->where('no_polisi', 'like', "%{$search}%")
-                         ->orWhere('merk', 'like', "%{$search}%")
-                         ->orWhere('tipe', 'like', "%{$search}%");
-                  });
-            });
-        }
-
-        $perbaikans = $query->latest('tgl_selesai')->paginate($perPage)->withQueryString();
+        // query dipindah ke service
+        $perbaikans = $this->service->getRiwayat($search, $perPage);
 
         return view('admin.perbaikan.riwayat', compact('perbaikans', 'search', 'perPage'));
     }
@@ -101,7 +94,7 @@ class PerbaikanController extends Controller
         }
 
         try {
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             // Create repair record
             Perbaikan::create([
@@ -116,10 +109,10 @@ class PerbaikanController extends Controller
             $kendaraan = MasterKend::findOrFail($request->id_kend);
             $kendaraan->update(['status' => 'Perbaikan']);
 
-            \DB::commit();
+            DB::commit();
             return redirect()->route('perbaikan.aktif')->with('success', 'Laporan perbaikan berhasil dibuat. Status kendaraan: Perbaikan');
         } catch (\Exception $e) {
-            \DB::rollBack();
+            DB::rollBack();
             return back()->with('error', 'Gagal membuat laporan: ' . $e->getMessage())->withInput();
         }
     }
@@ -130,7 +123,13 @@ class PerbaikanController extends Controller
     public function show(Perbaikan $perbaikan)
     {
         $perbaikan->load('kendaraan');
-        return view('admin.perbaikan.show', compact('perbaikan'));
+
+        // tentukan route kembali berdasarkan ?from
+        $backRoute = request('from') === 'laporan'
+        ? route('laporan.perbaikan')
+        : route('perbaikan.riwayat');
+
+        return view('admin.perbaikan.show', compact('perbaikan', 'backRoute'));
     }
 
     /**
@@ -166,7 +165,7 @@ class PerbaikanController extends Controller
             ]);
 
             try {
-                \DB::beginTransaction();
+                DB::beginTransaction();
 
                 // Join catatan tambahan if provided
                 $finalNote = $perbaikan->catatan;
@@ -184,10 +183,10 @@ class PerbaikanController extends Controller
                 // Update vehicle status back to Tersedia
                 $perbaikan->kendaraan->update(['status' => 'Tersedia']);
 
-                \DB::commit();
+                DB::commit();
                 return redirect()->route('perbaikan.riwayat')->with('success', 'Perbaikan selesai. Kendaraan kini Tersedia.');
             } catch (\Exception $e) {
-                \DB::rollBack();
+                DB::rollBack();
                 return back()->with('error', 'Gagal menyelesaikan perbaikan: ' . $e->getMessage());
             }
         }
@@ -205,17 +204,17 @@ class PerbaikanController extends Controller
         }
 
         try {
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             // Reset vehicle status if it was in repair
             $perbaikan->kendaraan->update(['status' => 'Tersedia']);
             
             $perbaikan->delete();
 
-            \DB::commit();
+            DB::commit();
             return redirect()->route('perbaikan.aktif')->with('success', 'Laporan perbaikan dihapus.');
         } catch (\Exception $e) {
-            \DB::rollBack();
+            DB::rollBack();
             return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
         }
     }

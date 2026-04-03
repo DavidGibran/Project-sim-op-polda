@@ -50,7 +50,7 @@
 
             <!-- Logo (mobile only) -->
             <a href="/" class="xl:hidden">
-                <img class="dark:hidden" src="/images/logo/logo-tik-polri.png" alt="Logo" />
+                <img class="dark:hidden" src="/images/logo/logo-tik-polri.png" width="55px" alt="Logo" />
                 <img class="hidden dark:block" src="/images/logo/logo-tik-polri.png" width="55px" alt="Logo" />
             </a>
 

@@ -16,7 +16,7 @@
                             </p>
                         </div>
                         <div>
-                            <form method="POST" action="{{ route('login.universal') }}">
+                            <form method="POST" action="{{ route('login.universal', absolute: false) }}">
                                 @csrf
                                 <div class="space-y-5">
                                     <!-- Username -->
