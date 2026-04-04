@@ -1,7 +1,7 @@
 @props(['trendData'])
 
-<div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-    <div class="mb-6 flex items-center justify-between">
+<div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 h-full">
+    <div class="mb-4 flex items-center justify-between">
         <div>
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
                 Trend Operasional Kendaraan
@@ -13,7 +13,7 @@
     </div>
 
     <div>
-        <div id="fleetTrendChart" class="w-full h-[350px] overflow-hidden"></div>
+        <div id="fleetTrendChart" class="w-full h-[420px] overflow-hidden"></div>
     </div>
 </div>
 
@@ -33,7 +33,7 @@
             }],
             chart: {
                 fontFamily: 'Satoshi, sans-serif',
-                height: 350,
+                height: 420,
                 type: 'line',
                 dropShadow: {
                     enabled: true,
@@ -53,6 +53,10 @@
                 curve: 'smooth',
             },
             grid: {
+                padding: {
+                    bottom: 0,
+                    top: 0
+                },
                 xaxis: {
                     lines: {
                         show: true,
@@ -83,7 +87,7 @@
             },
             xaxis: {
                 type: 'category',
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                categories: @json($trendData['categories']),
                 axisBorder: {
                     show: false,
                 },

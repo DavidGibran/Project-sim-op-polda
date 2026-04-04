@@ -104,9 +104,9 @@
                                 <p class="text-xl font-bold text-gray-800 dark:text-white">Belum tersedia</p>
                             </div>
                         </div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">3 Data Perbaikan Terbaru</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">2 Data Perbaikan Terbaru</p>
                         <div class="space-y-3">
-                            @foreach($perbaikanTerbaru as $p)
+                            @forelse($perbaikanTerbaru as $p)
                             <div class="p-4 rounded-2xl bg-gray-50/50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800">
                                 <div class="flex flex-col gap-1">
                                     <p class="text-sm font-bold text-gray-800 dark:text-white">
@@ -119,7 +119,11 @@
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
+                            @empty
+                            <div class="p-6 text-center rounded-2xl border border-dashed border-gray-200 dark:border-gray-800">
+                                <p class="text-xs text-gray-400">Tidak ada data perbaikan terbaru</p>
+                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -174,11 +178,9 @@
             </svg>
         </div>
 
-        <div class="flex items-end justify-between mt-5">
-            <div>
-                <span class="text-sm text-gray-500 dark:text-gray-400">Total Kendaraan</span>
-                <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ $totalKendaraan ?? 0 }}</h4>
-            </div>
+        <div class="mt-5">
+            <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Total Kendaraan</p>
+            <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $totalKendaraan ?? 0 }}</h4>
         </div>
     </div>
 
@@ -199,10 +201,10 @@
 
         <div class="flex items-end justify-between mt-5">
             <div>
-                <span class="text-sm text-gray-500 dark:text-gray-400">Kendaraan Aktif</span>
-                <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ $kendaraanAktif ?? 0 }}</h4>
+                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Kendaraan Aktif</p>
+                <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $kendaraanAktif ?? 0 }}</h4>
             </div>
-            <span class="flex items-center gap-1 rounded-full bg-success-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
+            <span class="flex items-center gap-1 rounded-full bg-success-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
                 <span class="w-2 h-2 rounded-full bg-success-600 animate-pulse"></span>
                 Beroperasi
             </span>
@@ -224,10 +226,10 @@
 
         <div class="flex items-end justify-between mt-5">
             <div>
-                <span class="text-sm text-gray-500 dark:text-gray-400">Kendaraan Perbaikan</span>
-                <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ $kendaraanPerbaikan ?? 0 }}</h4>
+                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Kendaraan Perbaikan</p>
+                <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $kendaraanPerbaikan ?? 0 }}</h4>
             </div>
-            <span class="flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
+            <span class="flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
                 Bengkel
             </span>
         </div>
@@ -252,10 +254,10 @@
 
         <div class="flex items-end justify-between mt-5">
             <div>
-                <span class="text-sm text-gray-500 dark:text-gray-400">Penugasan Aktif</span>
-                <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ $penugasanAktif ?? 0 }}</h4>
+                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Penugasan Aktif</p>
+                <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $penugasanAktif ?? 0 }}</h4>
             </div>
-             <span class="flex items-center gap-1 rounded-full bg-warning-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
+             <span class="flex items-center gap-1 rounded-full bg-warning-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
                 Dalam Tugas
             </span>
         </div>

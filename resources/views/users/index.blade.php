@@ -12,11 +12,11 @@
 
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="max-w-full overflow-x-auto custom-scrollbar">
-                <table class="w-full min-w-[1102px]">
+                <table class="w-full">
                     <thead>
                         <tr class="border-b border-gray-100 dark:border-gray-800">
                             <th class="px-5 py-3 text-left sm:px-6">
-                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Name</p>
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Nama</p>
                             </th>
                             <th class="px-5 py-3 text-left sm:px-6">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Email</p>
@@ -26,6 +26,9 @@
                             </th>
                             <th class="px-5 py-3 text-left sm:px-6">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Updated At</p>
+                            </th>
+                            <th class="px-5 py-3 text-center sm:px-6">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p>
                             </th>
                         </tr>
                     </thead>
@@ -45,7 +48,7 @@
                                     <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ $user->updated_at }}</p>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex items-center justify-end gap-2">
                                         <a href="{{ route('users.edit', $user) }}"
                                             class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"

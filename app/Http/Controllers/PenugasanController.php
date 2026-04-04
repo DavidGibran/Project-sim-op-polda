@@ -83,10 +83,16 @@ class PenugasanController extends Controller
 
             DB::commit();
             return redirect()->route('penugasan.index')->with('success', 'Penugasan berhasil dibuat.');
+            return redirect()->route('penugasan.index')
+                ->with('success', 'Penugasan baru telah berhasil dibuat dan kendaraan kini berstatus Diterbitkan.')
+                ->with('title', 'Penugasan Dibuat');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating penugasan: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Gagal membuat penugasan: ' . $e->getMessage());
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal membuat penugasan: ' . $e->getMessage())
+                ->with('title', 'Gagal Membuat Penugasan');
         }
     }
 
@@ -133,6 +139,9 @@ class PenugasanController extends Controller
         ]);
 
         return redirect()->route('penugasan.index')->with('success', 'Data penugasan berhasil diperbarui.');
+        return redirect()->route('penugasan.index')
+            ->with('success', 'Data penugasan berhasil diperbarui.')
+            ->with('title', 'Perubahan Disimpan');
     }
 
     /**
@@ -147,6 +156,9 @@ class PenugasanController extends Controller
             // Allow cancel only if not already cancelled or selesai
             if (in_array($penugasan->status, ['selesai', 'dibatalkan'])) {
                 return redirect()->route('penugasan.index')->with('error', 'Penugasan tidak dapat dibatalkan karena sudah selesai atau dibatalkan.');
+                return redirect()->route('penugasan.index')
+                    ->with('error', 'Penugasan tidak dapat dibatalkan karena statusnya sudah Selesai atau Dibatalkan.')
+                    ->with('title', 'Pembatalan Ditolak');
             }
 
             $penugasan->update(['status' => 'dibatalkan']);
@@ -158,9 +170,15 @@ class PenugasanController extends Controller
 
             DB::commit();
             return redirect()->route('penugasan.index')->with('success', 'Penugasan berhasil dibatalkan.');
+            return redirect()->route('penugasan.index')
+                ->with('success', 'Penugasan telah dibatalkan. Status kendaraan kembali Tersedia.')
+                ->with('title', 'Penugasan Dibatalkan');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('penugasan.index')->with('error', 'Gagal membatalkan penugasan: ' . $e->getMessage());
+            return redirect()->route('penugasan.index')
+                ->with('error', 'Gagal membatalkan penugasan: ' . $e->getMessage())
+                ->with('title', 'Terjadi Kesalahan');
         }
     }
 
@@ -174,5 +192,8 @@ class PenugasanController extends Controller
         $penugasan->delete();
         
         return redirect()->route('penugasan.index')->with('success', 'Data penugasan berhasil dihapus permanen.');
+        return redirect()->route('penugasan.index')
+            ->with('success', 'Data penugasan berhasil dihapus permanen.')
+            ->with('title', 'Data Dihapus');
     }
 }

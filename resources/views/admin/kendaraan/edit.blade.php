@@ -28,7 +28,8 @@
                 <!-- No Polisi -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">No. Polisi <span class="text-error">*</span></label>
-                    <input type="text" name="no_polisi" value="{{ old('no_polisi', $kendaraan->no_polisi) }}" required placeholder="Misal: L 1234 AB" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('no_polisi') border-error @enderror">
+                    <input type="text" id="no_polisi" name="no_polisi" value="{{ old('no_polisi', $kendaraan->no_polisi) }}" required placeholder="Misal: L 1234 AB" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white transition-colors @error('no_polisi') border-error @enderror">
+                    <span id="nopol-feedback" class="text-xs mt-1 block hidden"></span>
                     @error('no_polisi') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
@@ -117,3 +118,47 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nopolInput = document.getElementById('no_polisi');
+        const feedback = document.getElementById('nopol-feedback');
+        let timeout = null;
+
+        nopolInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const nopol = this.value;
+            const currentId = '{{ $kendaraan->id_kend }}'; // Hapus baris ini jika di file create.blade.php
+
+            if (nopol.length < 3) {
+                feedback.classList.add('hidden');
+                return;
+            }
+
+            // Delay 500ms agar tidak request setiap ketikan huruf (debounce)
+            timeout = setTimeout(() => {
+                fetch(`{{ route('kendaraan.check-availability') }}?no_polisi=${nopol}&exclude_id=${currentId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            feedback.textContent = 'Nomor Polisi ini sudah digunakan!';
+                            feedback.className = 'text-xs mt-1 block text-error font-bold animate-pulse';
+                            
+                            // Ubah border input jadi merah
+                            nopolInput.classList.add('border-error');
+                            nopolInput.classList.remove('focus:border-primary', 'border-gray-200', 'dark:border-gray-800');
+                        } else {
+                            feedback.textContent = 'Nomor Polisi tersedia.';
+                            feedback.className = 'text-xs mt-1 block text-success font-medium';
+                            
+                            // Kembalikan border normal
+                            nopolInput.classList.remove('border-error');
+                            nopolInput.classList.add('focus:border-primary', 'border-gray-200', 'dark:border-gray-800');
+                        }
+                    });
+            }, 500); 
+        });
+    });
+</script>
+@endpush

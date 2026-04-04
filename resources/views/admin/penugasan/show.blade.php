@@ -136,15 +136,48 @@
                     </div>
                     <div>
                         <span class="block text-xs font-medium text-gray-500 dark:text-gray-400">KM Akhir</span>
-                        @if($penugasan->km_akhir)
+                        @if($penugasan->status === 'selesai')
                             <span class="block text-lg font-bold text-gray-900 dark:text-white mt-1">{{ number_format($penugasan->km_akhir, 0, ',', '.') }} KM</span>
                         @else
-                            <span class="block text-sm font-medium text-gray-400 dark:text-gray-500 mt-1 italic">Belum tercatat (Penugasan berjalan)</span>
+                            <span class="block text-sm font-medium text-gray-400 dark:text-gray-500 mt-1 italic">Belum tercatat</span>
                         @endif
                     </div>
                 </div>
 
+                @if($penugasan->status === 'selesai')
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 border-b border-gray-100 dark:border-gray-800">
+                    <div>
+                        <span class="block text-xs font-medium text-gray-500 dark:text-gray-400">Waktu Mulai</span>
+                        <span class="block text-sm font-semibold text-gray-900 dark:text-white mt-1">{{ $penugasan->waktu_mulai ? $penugasan->waktu_mulai->format('d/m/Y H:i') : '-' }}</span>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-medium text-gray-500 dark:text-gray-400">Waktu Selesai</span>
+                        <span class="block text-sm font-semibold text-gray-900 dark:text-white mt-1">{{ $penugasan->waktu_selesai ? $penugasan->waktu_selesai->format('d/m/Y H:i') : '-' }}</span>
+                    </div>
+                </div>
+
                 <div>
+                    <span class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">Foto Odometer Akhir</span>
+                    @if($penugasan->foto_odometer)
+                        <div class="relative group max-w-sm">
+                            <img src="{{ asset('storage/' . $penugasan->foto_odometer) }}" 
+                                 alt="Foto Odometer" 
+                                 class="rounded-2xl border border-gray-200 shadow-sm dark:border-gray-800 w-full object-cover max-h-64">
+                            <a href="{{ asset('storage/' . $penugasan->foto_odometer) }}" 
+                               target="_blank"
+                               class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl text-white font-medium">
+                               Lihat Ukuran Penuh
+                            </a>
+                        </div>
+                    @else
+                        <div class="rounded-xl border-2 border-dashed border-gray-200 p-8 text-center text-gray-400 dark:border-gray-800">
+                            Tidak ada foto odometer yang diunggah.
+                        </div>
+                    @endif
+                </div>
+                @endif
+
+                <div class="pt-2">
                     <span class="block text-xs font-medium text-gray-500 dark:text-gray-400">Catatan/Instruksi</span>
                     <p class="text-sm font-medium text-gray-800 dark:text-gray-300 mt-2 bg-gray-50 p-4 rounded-xl dark:bg-white/5 border border-transparent dark:border-gray-800 w-full overflow-hidden">
                         {{ $penugasan->catatan ?: 'Tidak ada catatan khusus.' }}

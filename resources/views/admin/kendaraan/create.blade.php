@@ -27,28 +27,28 @@
                 <!-- No Polisi -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">No. Polisi <span class="text-error">*</span></label>
-                    <input type="text" name="no_polisi" value="{{ old('no_polisi') }}" required placeholder="Misal: L 1234 AB" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('no_polisi') border-error @enderror">
+                    <input type="text" name="no_polisi" value="{{ old('no_polisi') }}" required placeholder="Contoh: L 1234 AB" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('no_polisi') border-error @enderror">
                     @error('no_polisi') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Merk -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Merk <span class="text-error">*</span></label>
-                    <input type="text" name="merk" value="{{ old('merk') }}" required placeholder="Misal: Honda" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('merk') border-error @enderror">
+                    <input type="text" name="merk" value="{{ old('merk') }}" required placeholder="Contoh: Honda" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('merk') border-error @enderror">
                     @error('merk') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Tipe -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Tipe <span class="text-error">*</span></label>
-                    <input type="text" name="tipe" value="{{ old('tipe') }}" required placeholder="Misal: CR-V" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tipe') border-error @enderror">
+                    <input type="text" name="tipe" value="{{ old('tipe') }}" required placeholder="Contoh: CR-V" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tipe') border-error @enderror">
                     @error('tipe') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Tahun -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Tahun <span class="text-error">*</span></label>
-                    <input type="number" name="tahun" value="{{ old('tahun') }}" required min="1900" max="{{ date('Y') + 1 }}" placeholder="Misal: 2021" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tahun') border-error @enderror">
+                    <input type="number" name="tahun" value="{{ old('tahun') }}" required min="1900" max="{{ date('Y') + 1 }}" placeholder="Contoh: 2021" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tahun') border-error @enderror">
                     @error('tahun') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
@@ -81,7 +81,7 @@
                 <!-- KM Terakhir -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">KM Terakhir <span class="text-error">*</span></label>
-                    <input type="number" name="km_terakhir" value="{{ old('km_terakhir', 0) }}" required min="0" placeholder="Misal: 12000" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('km_terakhir') border-error @enderror">
+                    <input type="number" name="km_terakhir" value="{{ old('km_terakhir', 0) }}" required min="0" placeholder="Contoh: 12000" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('km_terakhir') border-error @enderror">
                     @error('km_terakhir') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 

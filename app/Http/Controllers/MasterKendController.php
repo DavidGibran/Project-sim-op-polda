@@ -31,7 +31,8 @@ class MasterKendController extends Controller
             $query->where('status', $request->status);
         }
 
-        $kendaraans = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $perPage = $request->input('per_page', 10);
+        $kendaraans = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
         return view('admin.kendaraan.index', compact('kendaraans'))->with('title', 'Master Kendaraan');
     }
@@ -59,6 +60,8 @@ class MasterKendController extends Controller
             'keterangan_penggunaan' => 'nullable|string',
             'km_terakhir' => 'required|integer|min:0',
             'status' => 'required|in:Tersedia,Dipakai,Perbaikan',
+        ], [
+            'no_polisi.unique' => 'Nomor Polisi ini sudah digunakan. Silakan cek kembali database atau gunakan nomor lain.',
         ]);
 
         $data = $request->all();
@@ -68,7 +71,9 @@ class MasterKendController extends Controller
         
         MasterKend::create($data);
 
-        return redirect()->route('kendaraan.index')->with('success', 'Data Kendaraan berhasil ditambahkan.');
+        return redirect()->route('kendaraan.index')
+            ->with('success', 'Data Kendaraan berhasil ditambahkan ke database.')
+            ->with('title', 'Registrasi Berhasil'); // Opsional: Custom Title
     }
 
     /**
@@ -119,11 +124,14 @@ class MasterKendController extends Controller
             'keterangan_penggunaan' => 'nullable|string',
             'km_terakhir' => 'required|integer|min:0',
             'status' => 'required|in:Tersedia,Dipakai,Perbaikan',
+        ], [
+            'no_polisi.unique' => 'Nomor Polisi ini sudah digunakan oleh kendaraan lain.',
         ]);
 
         $kendaraan->update($request->all());
 
-        return redirect()->route('kendaraan.index')->with('success', 'Data Kendaraan berhasil diperbarui.');
+        return redirect()->route('kendaraan.index')
+            ->with('success', 'Perubahan data kendaraan telah disimpan.');
     }
 
     /**
@@ -135,5 +143,22 @@ class MasterKendController extends Controller
         $kendaraan->delete();
 
         return redirect()->route('kendaraan.index')->with('success', 'Data Kendaraan berhasil dihapus.');
+    }
+
+    /**
+     * AJAX: Cek ketersediaan No Polisi secara realtime
+     */
+    public function checkAvailability(Request $request)
+    {
+        $noPolisi = $request->input('no_polisi');
+        $excludeId = $request->input('exclude_id');
+
+        $query = MasterKend::where('no_polisi', $noPolisi);
+
+        if ($excludeId) {
+            $query->where('id_kend', '!=', $excludeId);
+        }
+
+        return response()->json(['exists' => $query->exists()]);
     }
 }

@@ -18,19 +18,13 @@
 </div>
 
 <!-- Alert Success -->
-@if(session('success'))
-<div class="mb-6 flex w-full border-l-6 border-success-500 bg-success/10 px-7 py-4 shadow-md dark:bg-success/20 dark:border-success-500 rounded-lg">
-    <div class="mr-5 flex h-9 w-full max-w-9 items-center justify-center rounded-lg bg-success/20">
-        <svg class="text-success-500 dark:text-success-500" width="26" height="26" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.6667 4.54546L5.65685 10.5553L2.82843 7.72688" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-    </div>
-    <div class="w-full">
-        <h5 class="mb-1 text-lg font-bold text-success-500 dark:text-success-500">Berhasil</h5>
-        <p class="text-base text-gray-600 dark:text-gray-300">{{ session('success') }}</p>
-    </div>
-</div>
-@endif
+<x-ui.alert type="success" :message="session('success')" :title="session('title')" />
+
+<!-- Alert Error (Jika ada) -->
+<x-ui.alert type="error" :message="session('error')" :title="session('title')" />
+
+<!-- Alert Warning (Jika ada) -->
+<x-ui.alert type="warning" :message="session('warning')" :title="session('title')" />
 
 <!-- Main Content Card -->
 <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
@@ -61,16 +55,20 @@
 
             @if(request()->has('search') || request()->has('status'))
             <a href="{{ route('kendaraan.index') }}" 
-               class="text-sm font-medium text-error hover:underline whitespace-nowrap dark:text-gray-400">
-                Reset Filter
+               class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-error shadow-sm hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900/50 dark:text-red-400 dark:hover:bg-gray-800 transition-all w-full sm:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+                Reset
             </a>
             @endif
         </form>
 
         <!-- Actions - Adjusted to match input height -->
-        <div class="flex items-center gap-3 justify-end">
+        <div class="flex items-center gap-3 justify-end w-full xl:w-auto">
             <a href="{{ route('kendaraan.create') }}"
-               class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-sm hover:bg-brand-600 transition-all">
+               class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-sm hover:bg-brand-600 transition-all whitespace-nowrap">
                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -117,14 +115,33 @@
                     </td>
                     <td class="px-5 py-4">
                         @php
+                        /**
+                         * Mapping warna badge berdasarkan status kendaraan
+                         * Disesuaikan dengan flow terbaru
+                         */
                         $statusConfig = [
                             'Tersedia' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
-                            'Dipakai' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
-                            'Perbaikan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
+                    
+                            // Saat ada tugas diterbitkan
                             'Diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400',
+                    
+                            // NEW: kendaraan sudah menerima tugas tapi belum jalan
+                            'Diterima' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+                    
+                            // Saat kendaraan sedang digunakan
+                            'Perjalanan' => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400',
+                    
+                            // Saat kendaraan sedang perbaikan
+                            'Perbaikan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
                         ];
-                        $configClass = $statusConfig[$kendaraan->status] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+                    
+                        /**
+                         * Default fallback jika status tidak dikenal
+                         */
+                        $configClass = $statusConfig[$kendaraan->status] 
+                            ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
                         @endphp
+                    
                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $configClass }}">
                             {{ $kendaraan->status }}
                         </span>
