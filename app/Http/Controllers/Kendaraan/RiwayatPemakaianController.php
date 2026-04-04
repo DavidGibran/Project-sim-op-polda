@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Kendaraan;
 
 use App\Http\Controllers\Controller;
-use App\Models\Log;
+use App\Models\Penugasan;
 use App\Models\MasterKend;
 use Illuminate\Http\Request;
 
@@ -51,30 +51,17 @@ class RiwayatPemakaianController extends Controller
          * - modul log_pemakaian
          * - id_kend sesuai kendaraan login
          */
-        $riwayatPemakaian = Log::query()
-            ->where('modul', 'log_pemakaian')
+        $riwayatPemakaian = Penugasan::query()
             ->where('id_kend', $kendaraan->id_kend)
+            ->where('status', 'selesai')
 
             /**
              * Filter search
-             *
-             * Bisa cari berdasarkan:
-             * - kode_tugas
-             * - nama_pengemudi
-             * - nopol
-             * - tujuan
-             * - jenis_kendaraan
-             * - tipe_kendaraan
-             * - catatan
              */
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('kode_tugas', 'like', '%' . $search . '%')
-                        ->orWhere('nama_pengemudi', 'like', '%' . $search . '%')
-                        ->orWhere('nopol', 'like', '%' . $search . '%')
-                        ->orWhere('tujuan', 'like', '%' . $search . '%')
-                        ->orWhere('jenis_kendaraan', 'like', '%' . $search . '%')
-                        ->orWhere('tipe_kendaraan', 'like', '%' . $search . '%')
+                    $q->where('tujuan', 'like', '%' . $search . '%')
+                        ->orWhere('pengemudi', 'like', '%' . $search . '%')
                         ->orWhere('catatan', 'like', '%' . $search . '%');
                 });
             })
@@ -83,18 +70,18 @@ class RiwayatPemakaianController extends Controller
              * Filter tanggal tugas
              */
             ->when($tanggalDari, function ($query) use ($tanggalDari) {
-                $query->whereDate('tanggal_tugas', '>=', $tanggalDari);
+                $query->whereDate('tgl_tugas', '>=', $tanggalDari);
             })
 
             ->when($tanggalSampai, function ($query) use ($tanggalSampai) {
-                $query->whereDate('tanggal_tugas', '<=', $tanggalSampai);
+                $query->whereDate('tgl_tugas', '<=', $tanggalSampai);
             })
 
             /**
              * Urutkan dari yang terbaru
              */
-            ->orderByDesc('tanggal_tugas')
-            ->orderByDesc('id_log')
+            ->orderByDesc('tgl_tugas')
+            ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
 

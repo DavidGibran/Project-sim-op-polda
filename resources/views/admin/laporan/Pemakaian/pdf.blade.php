@@ -51,11 +51,11 @@
     <tbody>
         @foreach($logs as $log)
             <tr>
-                <td>{{ $log->kode_tugas }}</td>
-                <td>{{ $log->nama_pengemudi }}</td>
-                <td>{{ $log->nopol }}</td>
-                <td>{{ $log->jenis_kendaraan }}</td>
-                <td>{{ $log->tipe_kendaraan }}</td>
+                <td>#{{ $log->id }}</td>
+                <td>{{ $log->pengemudi }}</td>
+                <td>{{ $log->kendaraan->no_polisi ?? '-' }}</td>
+                <td>{{ $log->kendaraan->jenis_kendaraan ?? '-' }}</td>
+                <td>{{ $log->kendaraan->tipe ?? '-' }}</td>
                 <td>{{ $log->tujuan }}</td>
                 <td>{{ $log->km_awal }}</td>
                 <td>{{ $log->km_akhir }}</td>

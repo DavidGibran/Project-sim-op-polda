@@ -10,7 +10,7 @@
 
       <div class="flex items-center gap-3">
         <a href="{{ route('kendaraan.import') }}" 
-           class="inline-flex items-center justify-center gap-2.5 rounded-lg bg-primary py-2.5 px-6 text-center font-medium text-white shadow-md hover:bg-opacity-90 transition-all duration-300 lg:px-8 xl:px-10">
+           class="inline-flex items-center justify-center gap-2.5 rounded-lg bg-primary py-2.5 px-6 text-center font-medium text-black dark:text-white hover:bg-opacity-90 transition-all duration-300 lg:px-8 xl:px-10">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
@@ -50,14 +50,14 @@
           />
       </div>
 
-      <!-- Row 3: Recent Info (Split View on Large Screens) -->
-      <div class="col-span-12 xl:col-span-6">
+      <!-- Row 3: Recent Info (Stacked Vertically) -->
+      <div class="col-span-12">
           <x-dashboard.recent-assignments 
               :penugasanTerbaru="$penugasanTerbaru"
           />
       </div>
 
-      <div class="col-span-12 xl:col-span-6">
+      <div class="col-span-12">
           <x-dashboard.recent-repairs 
               :perbaikanTerbaru="$perbaikanTerbaru"
           />

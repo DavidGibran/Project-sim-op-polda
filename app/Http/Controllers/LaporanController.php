@@ -9,6 +9,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Models\Perbaikan;
+use App\Models\Penugasan;
+use App\Models\MasterKend;
 use App\Exports\PerbaikanExport;
 
 // include private method - service
@@ -42,10 +44,26 @@ class LaporanController extends Controller
      */
     public function perbaikan(Request $request)
     {
-        $search = $request->query('search');
-        $perPage = (int) $request->query('per_page', 10);
+        $search = $request->query('search', '');
+        $perPage = 25;
+        $periode = $request->query('periode', 'all');
         $tanggalDari = $request->query('tanggal_dari');
         $tanggalSampai = $request->query('tanggal_sampai');
+
+        // Logic periode preset
+        if ($periode === 'this_month') {
+            $tanggalDari = now()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->endOfMonth()->toDateString();
+        } elseif ($periode === 'last_month') {
+            $tanggalDari = now()->subMonth()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->subMonth()->endOfMonth()->toDateString();
+        } elseif ($periode === 'this_year') {
+            $tanggalDari = now()->startOfYear()->toDateString();
+            $tanggalSampai = now()->endOfYear()->toDateString();
+        } elseif ($periode === 'all') {
+            $tanggalDari = null;
+            $tanggalSampai = null;
+        }
 
         // Data tabel laporan
         $perbaikans = $this->getPerbaikanQuery($search, $tanggalDari, $tanggalSampai)
@@ -90,6 +108,7 @@ class LaporanController extends Controller
             'perbaikans',
             'search',
             'perPage',
+            'periode',
             'tanggalDari',
             'tanggalSampai',
             'repairStatusChart',
@@ -103,8 +122,23 @@ class LaporanController extends Controller
     public function exportExcel(Request $request, string $type)
     {
         $search = $request->query('search');
+        $periode = $request->query('periode', 'all');
         $tanggalDari = $request->query('tanggal_dari');
         $tanggalSampai = $request->query('tanggal_sampai');
+
+        if ($periode === 'this_month') {
+            $tanggalDari = now()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->endOfMonth()->toDateString();
+        } elseif ($periode === 'last_month') {
+            $tanggalDari = now()->subMonth()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->subMonth()->endOfMonth()->toDateString();
+        } elseif ($periode === 'this_year') {
+            $tanggalDari = now()->startOfYear()->toDateString();
+            $tanggalSampai = now()->endOfYear()->toDateString();
+        } elseif ($periode === 'all') {
+            $tanggalDari = null;
+            $tanggalSampai = null;
+        }
 
         /**
          * ===============================
@@ -135,8 +169,8 @@ class LaporanController extends Controller
                             ->orWhere('nama_pengemudi', 'like', "%$search%");
                     });
                 })
-                ->when($tanggalDari, fn($q) => $q->whereDate('tanggal_tugas', '>=', $tanggalDari))
-                ->when($tanggalSampai, fn($q) => $q->whereDate('tanggal_tugas', '<=', $tanggalSampai))
+                ->when($tanggalDari, fn($q) => $q->whereDate('created_at', '>=', $tanggalDari))
+                ->when($tanggalSampai, fn($q) => $q->whereDate('created_at', '<=', $tanggalSampai))
                 ->get();
 
             $filename = 'laporan-pemakaian-' . now()->format('Ymd_His') . '.xlsx';
@@ -170,8 +204,23 @@ class LaporanController extends Controller
     public function exportPdf(Request $request, string $type)
     {
         $search = $request->query('search');
+        $periode = $request->query('periode', 'all');
         $tanggalDari = $request->query('tanggal_dari');
         $tanggalSampai = $request->query('tanggal_sampai');
+
+        if ($periode === 'this_month') {
+            $tanggalDari = now()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->endOfMonth()->toDateString();
+        } elseif ($periode === 'last_month') {
+            $tanggalDari = now()->subMonth()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->subMonth()->endOfMonth()->toDateString();
+        } elseif ($periode === 'this_year') {
+            $tanggalDari = now()->startOfYear()->toDateString();
+            $tanggalSampai = now()->endOfYear()->toDateString();
+        } elseif ($periode === 'all') {
+            $tanggalDari = null;
+            $tanggalSampai = null;
+        }
 
         /**
          * ===============================
@@ -208,8 +257,8 @@ class LaporanController extends Controller
                             ->orWhere('nama_pengemudi', 'like', "%$search%");
                     });
                 })
-                ->when($tanggalDari, fn($q) => $q->whereDate('tanggal_tugas', '>=', $tanggalDari))
-                ->when($tanggalSampai, fn($q) => $q->whereDate('tanggal_tugas', '<=', $tanggalSampai))
+                ->when($tanggalDari, fn($q) => $q->whereDate('created_at', '>=', $tanggalDari))
+                ->when($tanggalSampai, fn($q) => $q->whereDate('created_at', '<=', $tanggalSampai))
                 ->get();
 
             $pdf = Pdf::loadView('admin.laporan.pemakaian.pdf', [
@@ -228,52 +277,67 @@ class LaporanController extends Controller
 
     public function pemakaian(Request $request)
     {
-        $search = $request->query('search');
-        $perPage = (int) $request->query('per_page', 10);
+        $search = $request->query('search', '');
+        $perPage = 25;
+        $periode = $request->query('periode', 'all');
         $tanggalDari = $request->query('tanggal_dari');
         $tanggalSampai = $request->query('tanggal_sampai');
 
+        // Logic periode preset
+        if ($periode === 'this_month') {
+            $tanggalDari = now()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->endOfMonth()->toDateString();
+        } elseif ($periode === 'last_month') {
+            $tanggalDari = now()->subMonth()->startOfMonth()->toDateString();
+            $tanggalSampai = now()->subMonth()->endOfMonth()->toDateString();
+        } elseif ($periode === 'this_year') {
+            $tanggalDari = now()->startOfYear()->toDateString();
+            $tanggalSampai = now()->endOfYear()->toDateString();
+        } elseif ($periode === 'all') {
+            $tanggalDari = null;
+            $tanggalSampai = null;
+        }
+
         /**
          * Data tabel laporan pemakaian
-         *
-         * Sumber data dari tb_logs
-         * dan hanya mengambil modul log_pemakaian
+         * Sumber data dari tb_penugasans yang sudah selesai
          */
-        $logs = \App\Models\Log::query()
-            ->where('modul', 'log_pemakaian')
+        $logs = Penugasan::with('kendaraan')
+            ->whereIn('status', ['diterbitkan', 'diterima', 'berjalan', 'selesai'])
 
             // Filter pencarian
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('kode_tugas', 'like', '%' . $search . '%')
-                        ->orWhere('nama_pengemudi', 'like', '%' . $search . '%')
-                        ->orWhere('nopol', 'like', '%' . $search . '%')
+                    $q->where('pengemudi', 'like', '%' . $search . '%')
                         ->orWhere('tujuan', 'like', '%' . $search . '%')
-                        ->orWhere('tipe_kendaraan', 'like', '%' . $search . '%')
-                        ->orWhere('jenis_kendaraan', 'like', '%' . $search . '%')
-                        ->orWhere('catatan', 'like', '%' . $search . '%');
+                        ->orWhere('catatan', 'like', '%' . $search . '%')
+                        ->orWhereHas('kendaraan', function($k) use ($search) {
+                            $k->where('no_polisi', 'like', '%' . $search . '%')
+                                ->orWhere('merk', 'like', '%' . $search . '%')
+                                ->orWhere('tipe', 'like', '%' . $search . '%');
+                        });
                 });
             })
 
             // Filter tanggal tugas
-            ->when($tanggalDari, fn($q) => $q->whereDate('tanggal_tugas', '>=', $tanggalDari))
-            ->when($tanggalSampai, fn($q) => $q->whereDate('tanggal_tugas', '<=', $tanggalSampai))
+            ->when($tanggalDari, fn($q) => $q->whereDate('tgl_tugas', '>=', $tanggalDari))
+            ->when($tanggalSampai, fn($q) => $q->whereDate('tgl_tugas', '<=', $tanggalSampai))
 
-            ->orderByDesc('tanggal_tugas')
-            ->orderByDesc('id_log')
+            ->orderByDesc('tgl_tugas')
+            ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
 
         /**
-         * Chart 1: Tren pemakaian per bulan
+         * Chart 1: Tren pemakaian per bulan (Berdasarkan tgl_tugas)
          */
-        $monthlyData = \App\Models\Log::selectRaw("
-                DATE_FORMAT(tanggal_tugas, '%Y-%m') as bulan,
+        $monthlyData = Penugasan::selectRaw("
+                DATE_FORMAT(tgl_tugas, '%Y-%m') as bulan,
                 COUNT(*) as total
             ")
-            ->where('modul', 'log_pemakaian')
-            ->when($tanggalDari, fn($q) => $q->whereDate('tanggal_tugas', '>=', $tanggalDari))
-            ->when($tanggalSampai, fn($q) => $q->whereDate('tanggal_tugas', '<=', $tanggalSampai))
+            ->whereIn('status', ['diterbitkan', 'diterima', 'berjalan', 'selesai'])
+            ->when($tanggalDari, fn($q) => $q->whereDate('tgl_tugas', '>=', $tanggalDari))
+            ->when($tanggalSampai, fn($q) => $q->whereDate('tgl_tugas', '<=', $tanggalSampai))
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();
@@ -286,14 +350,13 @@ class LaporanController extends Controller
         /**
          * Chart 2: Distribusi jenis kendaraan
          */
-        $jenisData = \App\Models\Log::selectRaw("
-                jenis_kendaraan,
-                COUNT(*) as total
-            ")
-            ->where('modul', 'log_pemakaian')
-            ->when($tanggalDari, fn($q) => $q->whereDate('tanggal_tugas', '>=', $tanggalDari))
-            ->when($tanggalSampai, fn($q) => $q->whereDate('tanggal_tugas', '<=', $tanggalSampai))
-            ->groupBy('jenis_kendaraan')
+        $jenisData = DB::table('tb_penugasans')
+            ->join('master_kends', 'tb_penugasans.id_kend', '=', 'master_kends.id_kend')
+            ->selectRaw('master_kends.jenis_kendaraan, COUNT(*) as total')
+            ->whereIn('tb_penugasans.status', ['diterbitkan', 'diterima', 'berjalan', 'selesai'])
+            ->when($tanggalDari, fn($q) => $q->whereDate('tb_penugasans.tgl_tugas', '>=', $tanggalDari))
+            ->when($tanggalSampai, fn($q) => $q->whereDate('tb_penugasans.tgl_tugas', '<=', $tanggalSampai))
+            ->groupBy('master_kends.jenis_kendaraan')
             ->get();
 
         $usageTypeChart = [
@@ -310,6 +373,7 @@ class LaporanController extends Controller
             'logs',
             'search',
             'perPage',
+            'periode',
             'tanggalDari',
             'tanggalSampai',
             'usageTrendChart',

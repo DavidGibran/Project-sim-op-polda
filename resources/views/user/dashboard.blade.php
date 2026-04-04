@@ -211,7 +211,7 @@
                             @csrf
                             <button
                                 type="submit"
-                                class="inline-flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-medium text-white hover:opacity-90 md:w-auto"
+                                class="inline-flex w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-medium bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400 hover:bg-success-600 hover:text-white dark:hover:text-white dark:hover:bg-success-600 md:w-auto"
                             >
                                 Terima Tugas
                             </button>

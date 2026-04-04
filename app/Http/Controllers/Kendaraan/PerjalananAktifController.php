@@ -61,7 +61,9 @@ class PerjalananAktifController extends Controller
             'status' => 'Diterima',
         ]);
 
-        return back()->with('success', 'Tugas berhasil diterima.');
+        return redirect()
+            ->route('kendaraan.perjalanan-aktif')
+            ->with('success', 'Tugas berhasil diterima. Silakan mulai perjalanan.');
     }
 
     /**
@@ -108,22 +110,24 @@ class PerjalananAktifController extends Controller
 
         $validated = $request->validate([
             'km_akhir' => ['required', 'numeric'],
-            'foto_odometer' => ['required', 'image', 'max:4096'],
+            'foto_odometer' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'catatan' => ['nullable', 'string', 'max:255'],
         ]);
 
         $kmAwal = (int) ($penugasan->km_awal ?? 0);
-        $kmAkhir = (int) $validated['km_akhir'];
+        $kmAkhir = (int) $request->km_akhir;
 
         if ($kmAkhir < $kmAwal) {
             return back()->with('error', 'KM akhir tidak boleh lebih kecil dari KM awal.');
         }
 
         /**
-         * Simpan foto
+         * Handle upload file (Point 6 user request)
          */
-        $fotoPath = $request->file('foto_odometer')
-            ->store('odometer', 'public');
+        $fotoPath = $penugasan->foto_odometer;
+        if ($request->hasFile('foto_odometer')) {
+            $fotoPath = $request->file('foto_odometer')->store('odometer', 'public');
+        }
 
         /**
          * Update penugasan
@@ -141,8 +145,8 @@ class PerjalananAktifController extends Controller
          * Update kendaraan
          */
         $penugasan->kendaraan()->update([
-            'km_terakhir' => $kmAkhir,
             'status' => 'Tersedia',
+            'km_terakhir' => $kmAkhir,
         ]);
 
         return redirect()

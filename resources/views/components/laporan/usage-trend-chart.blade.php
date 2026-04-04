@@ -16,17 +16,66 @@ document.addEventListener("DOMContentLoaded", function () {
     const options = {
         chart: {
             type: 'line',
-            height: 300,
+            height: 280,
+            width: '100%',
+            toolbar: {
+                show: false
+            },
+            fontFamily: 'Inter, sans-serif'
         },
         series: [{
-            name: 'Pemakaian',
+            name: 'Total Penugasan',
             data: @json($trendData['series'])
         }],
+        colors: ['#3C50E0'],
         xaxis: {
-            categories: @json($trendData['categories'])
+            categories: @json($trendData['categories']),
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            }
+        },
+        yaxis: {
+            title: {
+                style: {
+                    fontSize: '0px'
+                }
+            }
+        },
+        grid: {
+            strokeDashArray: 5,
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            },
+            yaxis: {
+                lines: {
+                    show: true
+                }
+            }
         },
         stroke: {
-            curve: 'smooth'
+            curve: 'smooth',
+            width: 3
+        },
+        markers: {
+            size: 4,
+            colors: ['#3C50E0'],
+            strokeColors: '#fff',
+            strokeWidth: 2,
+            hover: {
+                size: 7
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val + " Penugasan"
+                }
+            }
         }
     };
 

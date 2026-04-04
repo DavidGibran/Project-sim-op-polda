@@ -34,7 +34,7 @@ class DashboardController extends Controller
          */
         $penugasanAktif = Penugasan::query()
             ->where('id_kend', $kendaraan->id_kend)
-            ->whereIn('status', ['diterbitkan', 'berjalan'])
+            ->whereIn('status', ['diterbitkan', 'diterima', 'berjalan'])
             ->orderByDesc('tgl_tugas')
             ->orderByDesc('id')
             ->first();

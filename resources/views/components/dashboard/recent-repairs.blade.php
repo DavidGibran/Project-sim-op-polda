@@ -1,13 +1,13 @@
 @props(['perbaikanTerbaru'])
 
-<div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+<div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 h-full flex flex-col">
     <div class="mb-5 flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
             Riwayat Perbaikan Terbaru
         </h3>
     </div>
 
-    <div class="space-y-4">
+    <div class="space-y-4 flex-1 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
         @forelse($perbaikanTerbaru as $perbaikan)
             <div class="flex items-start gap-4 rounded-xl bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]">
                 <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-500">
@@ -24,17 +24,20 @@
                     </p>
                     <div class="mt-1">
                         <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium 
-                            @if($perbaikan->status == 'Diproses') bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-500
-                            @elseif($perbaikan->status == 'Selesai') bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500
+                            @if($perbaikan->status == 'diproses') bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-500
+                            @elseif($perbaikan->status == 'selesai') bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500
                             @else bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-400 @endif">
-                            Status: {{ $perbaikan->status }}
+                            Status: {{ ucfirst($perbaikan->status) }}
                         </span>
                     </div>
                 </div>
             </div>
         @empty
-            <div class="py-10 text-center">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada riwayat perbaikan kendaraan.</p>
+            <div class="flex flex-col items-center justify-center p-8 text-center border border-dashed border-gray-200 dark:border-gray-800 rounded-2xl">
+                <div class="text-gray-300 dark:text-gray-600 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                </div>
+                <p class="text-sm text-gray-400">Tidak ada data perbaikan terbaru</p>
             </div>
         @endforelse
     </div>

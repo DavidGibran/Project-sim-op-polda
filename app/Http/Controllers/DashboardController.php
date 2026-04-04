@@ -46,17 +46,45 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Data Riwayat Perbaikan Terbaru (3 Data)
+        // Data Riwayat Perbaikan Terbaru (2 Data for Modal height)
         $perbaikanTerbaru = Perbaikan::with('kendaraan')
             ->latest('tanggal_lapor')
-            ->take(3)
+            ->take(2)
             ->get();
 
-        // Data Trend Operasional (Line Chart - 12 Bulan)
+        // Data Trend Operasional (Last 12 Months)
+        $months = [];
+        $aktifData = [];
+        $penugasanData = [];
+        $perbaikanData = [];
+
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $monthName = $date->translatedFormat('M');
+            $yearMonth = $date->format('Y-m');
+            
+            $months[] = $monthName;
+
+            // Penugasan in this month
+            $penugasanCount = Penugasan::where('tgl_tugas', 'like', "$yearMonth%")->count();
+            $penugasanData[] = $penugasanCount;
+
+            // Perbaikan in this month
+            $perbaikanCount = Perbaikan::where('tanggal_lapor', 'like', "$yearMonth%")->count();
+            $perbaikanData[] = $perbaikanCount;
+
+            // Proxy for "Aktif": Unique vehicles that had a penugasan in this month
+            $aktifCount = Penugasan::where('tgl_tugas', 'like', "$yearMonth%")
+                ->distinct('id_kend')
+                ->count('id_kend');
+            $aktifData[] = $aktifCount;
+        }
+
         $trendData = [
-            'aktif' => [15, 18, 17, 20, 22, 21, 25, 24, 26, 28, 27, 30],
-            'penugasan' => [10, 12, 11, 14, 15, 13, 18, 17, 19, 21, 20, 22],
-            'perbaikan' => [2, 3, 2, 4, 3, 2, 5, 4, 3, 5, 4, 6]
+            'categories' => $months,
+            'aktif' => $aktifData,
+            'penugasan' => $penugasanData,
+            'perbaikan' => $perbaikanData
         ];
 
         return view('dashboard', compact(

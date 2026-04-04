@@ -170,19 +170,19 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                             <td class="px-5 py-4">
                                 <p class="text-sm font-bold text-gray-900 dark:text-white">
-                                    {{ $item->kode_tugas ?? '-' }}
+                                    #{{ $item->id }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $item->nopol ?? '-' }}
+                                    {{ $kendaraan->no_polisi ?? '-' }}
                                 </p>
                             </td>
 
                             <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                {{ $item->nama_pengemudi ?? '-' }}
+                                {{ $item->pengemudi ?? '-' }}
                             </td>
 
                             <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                {{ $item->tipe_kendaraan ?? '-' }}
+                                {{ $kendaraan->tipe ?? '-' }}
                             </td>
 
                             <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
@@ -200,14 +200,14 @@
                             <td class="px-5 py-4 text-center">
                                 @php
                                     $detailData = [
-                                        'kode_tugas' => $item->kode_tugas,
-                                        'tanggal_tugas' => $item->tanggal_tugas
-                                            ? \Carbon\Carbon::parse($item->tanggal_tugas)->translatedFormat('d F Y')
+                                        'kode_tugas' => '#' . $item->id,
+                                        'tanggal_tugas' => $item->tgl_tugas
+                                            ? \Carbon\Carbon::parse($item->tgl_tugas)->translatedFormat('d F Y')
                                             : '-',
-                                        'nama_pengemudi' => $item->nama_pengemudi,
-                                        'nopol' => $item->nopol,
-                                        'jenis_kendaraan' => $item->jenis_kendaraan,
-                                        'tipe_kendaraan' => $item->tipe_kendaraan,
+                                        'nama_pengemudi' => $item->pengemudi,
+                                        'nopol' => $kendaraan->no_polisi,
+                                        'jenis_kendaraan' => $kendaraan->jenis_kendaraan,
+                                        'tipe_kendaraan' => $kendaraan->tipe,
                                         'tujuan' => $item->tujuan,
                                         'km_awal' => number_format((int) ($item->km_awal ?? 0), 0, ',', '.'),
                                         'km_akhir' => number_format((int) ($item->km_akhir ?? 0), 0, ',', '.'),

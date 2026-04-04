@@ -156,11 +156,44 @@
 
                     {{-- 
                         Jika status masih diterbitkan
-                        berarti tugas belum diterima / belum masuk fase berjalan
+                        maka pengemudi harus menerima tugas di sini atau di dashboard
                     --}}
                     @if($penugasan->status === 'diterbitkan')
-                        <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-700 dark:border-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-400">
-                            Tugas ini belum diterima. Silakan kembali ke dashboard untuk menerima tugas terlebih dahulu.
+                        <div class="space-y-3">
+                            <div class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-500/10 dark:text-blue-400">
+                                Penugasan baru telah diterbitkan untuk kendaraan ini.
+                            </div>
+                            
+                            <form action="{{ route('kendaraan.penugasan.terima', $penugasan->id) }}" method="POST">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="inline-flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-medium text-white hover:opacity-90"
+                                >
+                                    Terima Tugas
+                                </button>
+                            </form>
+                        </div>
+
+                    {{-- 
+                        Jika status diterima
+                        munculkan tombol mulai perjalanan
+                    --}}
+                    @elseif($penugasan->status === 'diterima')
+                        <div class="space-y-3">
+                            <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-500/10 dark:text-green-400">
+                                Tugas telah diterima. Silakan mulai perjalanan jika sudah siap.
+                            </div>
+                            
+                            <form action="{{ route('kendaraan.penugasan.mulai', $penugasan->id) }}" method="POST">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="inline-flex w-full items-center justify-center rounded-xl bg-success-600 px-5 py-3 text-sm font-medium text-white hover:opacity-90"
+                                >
+                                    Mulai Perjalanan
+                                </button>
+                            </form>
                         </div>
 
                     {{-- 
@@ -207,7 +240,7 @@
     Akan dipakai saat pengemudi menekan tombol "Selesaikan Perjalanan"
 --}}
 @if($penugasan && $penugasan->status === 'berjalan')
-<div id="selesaiModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50 px-4">
+<div id="selesaiModal" class="fixed inset-0 z-999999 hidden items-center justify-center bg-black/50 px-4">
     <div class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
         <div class="mb-4 flex items-center justify-between">
             <div>
@@ -263,7 +296,7 @@
                 {{-- Foto odometer --}}
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Foto Odometer <span class="text-red-500">*</span>
+                        Foto Odometer (Opsional)
                     </label>
                     <input
                         type="file"

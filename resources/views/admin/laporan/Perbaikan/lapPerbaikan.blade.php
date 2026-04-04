@@ -91,47 +91,50 @@
                     </span>
                 </div>
 
-                <!-- Filter tanggal dari -->
-                <input
-                    type="date"
-                    name="tanggal_dari"
-                    value="{{ $tanggalDari ?? '' }}"
-                    class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                    title="Tanggal Dari"
-                >
+                <!-- Filter Periode -->
+                <div class="flex items-center gap-2">
+                    <select
+                        name="periode"
+                        id="filter_periode"
+                        class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                        onchange="toggleCustomDates(this.value)"
+                    >
+                        <option value="all" {{ ($periode ?? '') == 'all' ? 'selected' : '' }}>Semua Waktu</option>
+                        <option value="this_month" {{ ($periode ?? '') == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                        <option value="last_month" {{ ($periode ?? '') == 'last_month' ? 'selected' : '' }}>Bulan Lalu</option>
+                        <option value="this_year" {{ ($periode ?? '') == 'this_year' ? 'selected' : '' }}>Tahun Ini</option>
+                        <option value="custom" {{ ($periode ?? '') == 'custom' ? 'selected' : '' }}>Kustom Range</option>
+                    </select>
 
-                <!-- Filter tanggal sampai -->
-                <input
-                    type="date"
-                    name="tanggal_sampai"
-                    value="{{ $tanggalSampai ?? '' }}"
-                    class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                    title="Tanggal Sampai"
-                >
+                    <div id="custom_date_range" class="{{ ($periode ?? '') == 'custom' ? 'flex' : 'hidden' }} items-center gap-2">
+                        <input
+                            type="date"
+                            name="tanggal_dari"
+                            value="{{ $tanggalDari ?? '' }}"
+                            class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                            title="Tanggal Dari"
+                        >
+                        <span class="text-gray-400">-</span>
+                        <input
+                            type="date"
+                            name="tanggal_sampai"
+                            value="{{ $tanggalSampai ?? '' }}"
+                            class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                            title="Tanggal Sampai"
+                        >
+                    </div>
+                </div>
 
                 <!-- Tombol cari -->
                 <button
                     type="submit"
                     class="inline-flex h-9 items-center justify-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all"
                 >
-                    Cari
+                    Terapkan
                 </button>
 
-                <!-- Select jumlah data -->
-                <select
-                    name="per_page"
-                    onchange="this.form.submit()"
-                    class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                >
-                    @foreach([10, 25, 50, 100] as $val)
-                        <option value="{{ $val }}" {{ $perPage == $val ? 'selected' : '' }}>
-                            {{ $val }} data
-                        </option>
-                    @endforeach
-                </select>
-
                 <!-- Reset filter -->
-                @if($search || ($tanggalDari ?? null) || ($tanggalSampai ?? null))
+                @if($search || ($periode ?? 'all') !== 'all')
                     <a
                         href="{{ route('laporan.perbaikan') }}"
                         class="text-sm text-gray-500 hover:text-primary dark:text-gray-400"
@@ -239,7 +242,7 @@
     Modal Export
     Popup ini akan muncul saat tombol Export di header tabel ditekan.
 -->
-<div id="exportModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50 px-4">
+<div id="exportModal" class="fixed inset-0 z-999999 hidden items-center justify-center bg-black/50 px-4">
     <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
         <div class="mb-4 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -261,9 +264,25 @@
             Excel juga tetap bisa langsung terdownload.
         -->
         <form id="exportForm" method="GET" target="_blank">
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="mb-4">
+                <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Periode Laporan
+                </label>
+                <select
+                    name="periode"
+                    id="export_periode"
+                    class="w-full rounded-lg border border-gray-200 bg-transparent px-3 py-2 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                    onchange="toggleExportCustomDates(this.value)"
+                >
+                    <option value="all">Semua Waktu</option>
+                    <option value="this_month" selected>Bulan Ini</option>
+                    <option value="last_month">Bulan Lalu</option>
+                    <option value="this_year">Tahun Ini</option>
+                    <option value="custom">Kustom Range</option>
+                </select>
+            </div>
 
-                <!-- Tanggal dari -->
+            <div id="export_custom_date_range" class="hidden grid-cols-1 gap-4 md:grid-cols-2 mb-4">
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Tanggal Dari
@@ -276,7 +295,6 @@
                     >
                 </div>
 
-                <!-- Tanggal sampai -->
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Tanggal Sampai
@@ -352,6 +370,34 @@
         }
 
         form.submit();
+    }
+
+    /**
+     * Toggle custom date range inputs
+     */
+    function toggleCustomDates(value) {
+        const customRange = document.getElementById('custom_date_range');
+        if (value === 'custom') {
+            customRange.classList.remove('hidden');
+            customRange.classList.add('flex');
+        } else {
+            customRange.classList.add('hidden');
+            customRange.classList.remove('flex');
+        }
+    }
+
+    /**
+     * Toggle custom date range inputs in export modal
+     */
+    function toggleExportCustomDates(value) {
+        const customRange = document.getElementById('export_custom_date_range');
+        if (value === 'custom') {
+            customRange.classList.remove('hidden');
+            customRange.classList.add('grid');
+        } else {
+            customRange.classList.add('hidden');
+            customRange.classList.remove('grid');
+        }
     }
 
     /**
