@@ -74,44 +74,55 @@
                             name="search"
                             value="{{ $search ?? '' }}"
                             placeholder="Cari kode tugas, pengemudi, tujuan..."
-                            class="w-full sm:w-72 rounded-lg border border-gray-200 bg-transparent py-2 pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                            class="w-full sm:w-64 rounded-lg border border-gray-200 bg-transparent py-2 pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
                         >
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </span>
                     </div>
 
-                    {{-- Tanggal dari --}}
-                    <input
-                        type="date"
-                        name="tanggal_dari"
-                        value="{{ $tanggalDari ?? '' }}"
-                        class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                        title="Tanggal Dari"
-                    >
+                    {{-- Filter Periode --}}
+                    <div class="flex items-center gap-2">
+                        <select
+                            name="periode"
+                            id="filter_periode"
+                            class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                            onchange="toggleCustomDates(this.value)"
+                        >
+                            <option value="all" {{ ($periode ?? '') == 'all' ? 'selected' : '' }}>Semua Waktu</option>
+                            <option value="this_month" {{ ($periode ?? '') == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                            <option value="last_month" {{ ($periode ?? '') == 'last_month' ? 'selected' : '' }}>Bulan Lalu</option>
+                            <option value="this_year" {{ ($periode ?? '') == 'this_year' ? 'selected' : '' }}>Tahun Ini</option>
+                            <option value="custom" {{ ($periode ?? '') == 'custom' ? 'selected' : '' }}>Kustom Range</option>
+                        </select>
 
-                    {{-- Tanggal sampai --}}
-                    <input
-                        type="date"
-                        name="tanggal_sampai"
-                        value="{{ $tanggalSampai ?? '' }}"
-                        class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                        title="Tanggal Sampai"
-                    >
+                        <div id="custom_date_range" class="{{ ($periode ?? '') == 'custom' ? 'flex' : 'hidden' }} items-center gap-2">
+                            <input
+                                type="date"
+                                name="tanggal_dari"
+                                value="{{ $tanggalDari ?? '' }}"
+                                class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                                title="Tanggal Dari"
+                            >
+                            <span class="text-gray-400">-</span>
+                            <input
+                                type="date"
+                                name="tanggal_sampai"
+                                value="{{ $tanggalSampai ?? '' }}"
+                                class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                                title="Tanggal Sampai"
+                            >
+                        </div>
+                    </div>
 
                     {{-- Tombol filter --}}
                     <button
                         type="submit"
                         class="inline-flex h-9 items-center justify-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all"
                     >
-                        Filter
+                        Terapkan
                     </button>
 
                     {{-- Per page --}}
@@ -128,7 +139,7 @@
                     </select>
 
                     {{-- Reset --}}
-                    @if(($search ?? null) || ($tanggalDari ?? null) || ($tanggalSampai ?? null))
+                    @if(($search ?? null) || ($periode ?? 'all') !== 'all')
                         <a
                             href="{{ route('log.index') }}"
                             class="text-sm text-gray-500 hover:text-primary dark:text-gray-400"
@@ -144,29 +155,34 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
-                    <tr class="bg-gray-50 dark:bg-white/5">
+                <tr class="bg-gray-50 dark:bg-white/5">
+                    @php
+                        $sorts = [
+                            'id' => 'Kode Tugas',
+                            'pengemudi' => 'Pengemudi',
+                            'tipe_kendaraan' => 'Tipe Kendaraan',
+                            'tujuan' => 'Tujuan',
+                            'km_awal' => 'KM Awal',
+                            'km_akhir' => 'KM Akhir',
+                        ];
+                    @endphp
+
+                    @foreach($sorts as $key => $label)
                         <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            Kode Tugas
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => $key, 'order' => ($sortBy == $key && $order == 'asc') ? 'desc' : 'asc']) }}" class="flex items-center gap-1 hover:text-primary">
+                                {{ $label }}
+                                @if($sortBy == $key)
+                                    <svg class="h-3 w-3 {{ $order == 'desc' ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                    </svg>
+                                @endif
+                            </a>
                         </th>
-                        <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            Pengemudi
-                        </th>
-                        <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            Tipe Kendaraan
-                        </th>
-                        <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            Tujuan
-                        </th>
-                        <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            KM Awal
-                        </th>
-                        <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            KM Akhir
-                        </th>
-                        <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
-                            Aksi
-                        </th>
-                    </tr>
+                    @endforeach
+                    <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
+                        Aksi
+                    </th>
+                </tr>
                 </thead>
 
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -174,19 +190,19 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                             <td class="px-5 py-4">
                                 <p class="text-sm font-bold text-gray-900 dark:text-white">
-                                    {{ $log->kode_tugas ?? '-' }}
+                                    #{{ $log->id }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $log->nopol ?? '-' }}
+                                    {{ $log->kendaraan->no_polisi ?? '-' }}
                                 </p>
                             </td>
 
                             <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                {{ $log->nama_pengemudi ?? '-' }}
+                                {{ $log->pengemudi ?? '-' }}
                             </td>
 
                             <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                {{ $log->tipe_kendaraan ?? '-' }}
+                                {{ $log->kendaraan->tipe ?? '-' }}
                             </td>
 
                             <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
@@ -198,29 +214,29 @@
                             </td>
 
                             <td class="px-5 py-4 text-sm font-semibold text-gray-900 dark:text-white">
-                                {{ number_format((int) ($log->km_akhir ?? 0), 0, ',', '.') }}
+                                {{ $log->km_akhir ? number_format((int) $log->km_akhir, 0, ',', '.') : '-' }}
                             </td>
 
                             <td class="px-5 py-4 text-center">
                                 @php
                                     $detailData = [
-                                        'kode_tugas' => $log->kode_tugas,
-                                        'tanggal_tugas' => $log->tanggal_tugas
-                                            ? \Carbon\Carbon::parse($log->tanggal_tugas)->translatedFormat('d F Y')
+                                        'kode_tugas' => '#' . $log->id,
+                                        'tanggal_tugas' => $log->tgl_tugas
+                                            ? $log->tgl_tugas->translatedFormat('d F Y')
                                             : '-',
-                                        'nama_pengemudi' => $log->nama_pengemudi,
-                                        'nopol' => $log->nopol,
-                                        'jenis_kendaraan' => $log->jenis_kendaraan,
-                                        'tipe_kendaraan' => $log->tipe_kendaraan,
+                                        'nama_pengemudi' => $log->pengemudi,
+                                        'nopol' => $log->kendaraan->no_polisi ?? '-',
+                                        'jenis_kendaraan' => $log->kendaraan->jenis ?? '-',
+                                        'tipe_kendaraan' => $log->kendaraan->tipe ?? '-',
                                         'tujuan' => $log->tujuan,
                                         'km_awal' => number_format((int) ($log->km_awal ?? 0), 0, ',', '.'),
-                                        'km_akhir' => number_format((int) ($log->km_akhir ?? 0), 0, ',', '.'),
+                                        'km_akhir' => $log->km_akhir ? number_format((int) $log->km_akhir, 0, ',', '.') : '-',
                                         'foto_odometer' => $log->foto_odometer ? asset('storage/' . $log->foto_odometer) : null,
                                         'waktu_mulai' => $log->waktu_mulai
-                                            ? \Carbon\Carbon::parse($log->waktu_mulai)->format('d-m-Y H:i')
+                                            ? $log->waktu_mulai->format('d-m-Y H:i')
                                             : '-',
                                         'waktu_selesai' => $log->waktu_selesai
-                                            ? \Carbon\Carbon::parse($log->waktu_selesai)->format('d-m-Y H:i')
+                                            ? $log->waktu_selesai->format('d-m-Y H:i')
                                             : '-',
                                         'catatan' => $log->catatan ?: '-',
                                     ];
@@ -381,6 +397,20 @@
         const modal = document.getElementById('detailModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+    }
+
+    /**
+     * Toggle custom date range inputs
+     */
+    function toggleCustomDates(value) {
+        const customRange = document.getElementById('custom_date_range');
+        if (value === 'custom') {
+            customRange.classList.remove('hidden');
+            customRange.classList.add('flex');
+        } else {
+            customRange.classList.add('hidden');
+            customRange.classList.remove('flex');
+        }
     }
 
     /**

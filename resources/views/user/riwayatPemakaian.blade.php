@@ -254,8 +254,9 @@
     </div>
 </div>
 
+@push('modals')
 {{-- Modal Detail --}}
-<div id="detailModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50 px-4">
+<div id="detailModal" class="fixed inset-0 z-[999999] hidden items-center justify-center bg-black/50 px-4">
     <div class="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
         <div class="mb-4 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -340,7 +341,10 @@
         </div>
     </div>
 </div>
+@endpush
 
+
+@push('scripts')
 <script>
     function openDetailModal(button) {
         const data = JSON.parse(button.dataset.detail);
@@ -388,4 +392,6 @@
         }
     });
 </script>
+@endpush
+
 @endsection

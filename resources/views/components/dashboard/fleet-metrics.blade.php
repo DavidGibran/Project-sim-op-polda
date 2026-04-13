@@ -7,7 +7,18 @@
     'totalR4' => 0,
     'siapDipakai' => 0,
     'sedangTugas' => 0,
-    'perbaikanTerbaru' => []
+    'perbaikanTerbaru' => [],
+    // New Props
+    'avgOdometer' => 0,
+    'oldestVehicle' => null,
+    'newestVehicle' => null,
+    'utilizationRate' => 0,
+    'topVehicles' => [],
+    'avgRepairDuration' => 0,
+    'oldestRepair' => null,
+    'assignmentsToday' => 0,
+    'assignmentsFinishedToday' => 0,
+    'topDestination' => null,
 ])
 
 <div x-data="{ 
@@ -34,27 +45,59 @@
             <template x-if="modalType === 'total'">
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Ringkasan Status Kendaraan</h3>
-                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Komposisi Armada</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Gambaran menyeluruh inventaris kendaraan</p>
+                        </div>
+                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors bg-gray-100 dark:bg-gray-800 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="p-4 rounded-2xl bg-success-50 dark:bg-success-500/10 col-span-2">
-                            <p class="text-xs font-medium text-success-600 dark:text-success-400 uppercase tracking-wider">Kendaraan Aktif</p>
-                            <p class="text-2xl font-bold text-success-600 dark:text-success-500">{{ $kendaraanAktif }} Unit</p>
+                    
+                    <div class="space-y-6">
+                        <!-- Composition Bar -->
+                        <div>
+                            <div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
+                                <span class="text-primary">Roda 2 ({{ $totalR2 }})</span>
+                                <span class="text-gray-400">Roda 4 ({{ $totalR4 }})</span>
+                            </div>
+                            <div class="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex">
+                                <div class="h-full bg-primary transition-all duration-500" style="width: {{ $totalKendaraan > 0 ? ($totalR2 / $totalKendaraan) * 100 : 0 }}%"></div>
+                                <div class="h-full bg-gray-300 dark:bg-gray-600 transition-all duration-500" style="width: {{ $totalKendaraan > 0 ? ($totalR4 / $totalKendaraan) * 100 : 0 }}%"></div>
+                            </div>
                         </div>
-                        <div class="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800">
-                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Roda 2</p>
-                            <p class="text-xl font-bold text-gray-800 dark:text-white">{{ $totalR2 }} Unit</p>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                                <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Rata-rata Odometer</p>
+                                <p class="text-xl font-black text-gray-800 dark:text-white">{{ number_format($avgOdometer, 0, ',', '.') }} <span class="text-xs font-normal">KM</span></p>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800">
+                                <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Rentang Armada</p>
+                                <p class="text-xl font-black text-gray-800 dark:text-white">{{ $oldestVehicle }} - {{ $newestVehicle }}</p>
+                            </div>
                         </div>
-                        <div class="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800">
-                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Roda 4</p>
-                            <p class="text-xl font-bold text-gray-800 dark:text-white">{{ $totalR4 }} Unit</p>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 rounded-xl bg-success-50/50 dark:bg-success-500/5 border border-success-100/50 dark:border-success-500/10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-success-500"></div>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Siap Operasional</span>
+                                </div>
+                                <span class="text-sm font-bold text-success-600">{{ $siapDipakai }} Unit</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 rounded-xl bg-error-50/50 dark:bg-error-500/5 border border-error-100/50 dark:border-error-500/10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-error-500"></div>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Dalam Perbaikan</span>
+                                </div>
+                                <span class="text-sm font-bold text-error-600">{{ $kendaraanPerbaikan }} Unit</span>
+                            </div>
                         </div>
-                        <div class="p-5 rounded-2xl bg-primary/10 dark:bg-primary/20 col-span-2 flex justify-between items-center border border-primary/20">
-                            <span class="font-bold text-gray-900 dark:text-white uppercase tracking-widest text-sm">Total Kendaraan</span>
-                            <span class="text-2xl font-black text-primary dark:text-white">{{ $totalKendaraan }} Unit</span>
+
+                        <div class="pt-4 mt-2 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-gray-900 dark:text-white">
+                            <span class="font-bold uppercase tracking-widest text-xs">Total Inventaris</span>
+                            <span class="text-2xl font-black">{{ $totalKendaraan }} <span class="text-sm font-medium opacity-50">Unit</span></span>
                         </div>
                     </div>
                 </div>
@@ -63,23 +106,56 @@
             <template x-if="modalType === 'aktif'">
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Status Kendaraan Operasional</h3>
-                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Status Operasional</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Efektivitas penggunaan armada saat ini</p>
+                        </div>
+                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors bg-gray-100 dark:bg-gray-800 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
                     </div>
-                    <div class="space-y-4">
-                        <div class="p-6 text-center rounded-2xl bg-success-50 dark:bg-success-500/10 border border-success-100 dark:border-success-500/20 mb-4">
-                            <p class="text-sm font-semibold text-success-600 dark:text-success-400 uppercase tracking-widest">Total Kendaraan Aktif</p>
-                            <p class="text-4xl font-black text-success-600 dark:text-success-500">{{ $kendaraanAktif }} Unit</p>
+
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-6 p-6 rounded-2xl bg-success-50/30 dark:bg-success-500/5 border border-success-100 dark:border-success-500/10">
+                            <div class="relative flex items-center justify-center">
+                                <svg class="w-20 h-20 transform -rotate-90">
+                                    <circle cx="40" cy="40" r="34" stroke="currentColor" stroke-width="8" fill="transparent" class="text-gray-200 dark:text-gray-800" />
+                                    <circle cx="40" cy="40" r="34" stroke="currentColor" stroke-width="8" fill="transparent" 
+                                            stroke-dasharray="{{ 2 * pi() * 34 }}" 
+                                            stroke-dashoffset="{{ (1 - ($utilizationRate / 100)) * (2 * pi() * 34) }}" 
+                                            class="text-success-500 transition-all duration-1000" />
+                                </svg>
+                                <span class="absolute text-lg font-black text-success-600 dark:text-success-400">{{ $utilizationRate }}%</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-success-700 dark:text-success-500 uppercase tracking-widest">Tingkat Utilitas</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    <span class="font-bold text-gray-900 dark:text-white">{{ $kendaraanAktif }}</span> kendaraan dari total <span class="font-bold text-gray-900 dark:text-white">{{ $totalKendaraan }}</span> sedang aktif.
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 transition-all hover:border-success-200 dark:hover:border-success-500/30">
-                            <span class="text-gray-700 dark:text-gray-300 font-medium">Kendaraan Siap Dipakai</span>
-                            <span class="text-xl font-bold text-gray-800 dark:text-white">{{ $siapDipakai }} Unit</span>
-                        </div>
-                        <div class="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 transition-all hover:border-warning-200 dark:hover:border-warning-500/30">
-                            <span class="text-gray-700 dark:text-gray-300 font-medium">Kendaraan Dalam Penugasan</span>
-                            <span class="text-xl font-bold text-gray-800 dark:text-white">{{ $sedangTugas }} Unit</span>
+
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Top 3 Kendaraan Paling Aktif</p>
+                            <div class="space-y-2">
+                                @foreach($topVehicles as $v)
+                                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center text-[10px] font-bold shadow-sm border border-gray-100 dark:border-gray-700">
+                                            {{ $v->kategori_kendaraan }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-gray-800 dark:text-white">{{ $v->no_polisi }}</p>
+                                            <p class="text-[10px] text-gray-500 dark:text-gray-400">{{ $v->merk }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-xs font-bold text-gray-700 dark:text-gray-300">{{ $v->penugasans_count }}</p>
+                                        <p class="text-[9px] text-gray-400 uppercase">Tugas</p>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -88,42 +164,70 @@
             <template x-if="modalType === 'perbaikan'">
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Status Perbaikan Kendaraan</h3>
-                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Manajemen Pemeliharaan</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Status perbaikan dan efisiensi teknis</p>
+                        </div>
+                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors bg-gray-100 dark:bg-gray-800 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
                     </div>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="p-4 text-center rounded-2xl bg-error-50 dark:bg-error-500/10 border border-error-100 dark:border-error-500/20">
-                                <p class="text-xs font-semibold text-error-600 uppercase tracking-widest">Dalam Perbaikan</p>
-                                <p class="text-3xl font-bold text-error-600">{{ $kendaraanPerbaikan }} Unit</p>
+
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 rounded-2xl bg-error-50 dark:bg-error-500/5 border border-error-100 dark:border-error-500/10">
+                                <p class="text-[10px] font-bold text-error-600 uppercase tracking-widest mb-1">Dalam Perbaikan</p>
+                                <p class="text-2xl font-black text-error-600">{{ $kendaraanPerbaikan }} <span class="text-xs font-medium opacity-70">Unit</span></p>
                             </div>
-                            <div class="p-4 text-center rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800">
-                                <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Rata-rata Durasi</p>
-                                <p class="text-xl font-bold text-gray-800 dark:text-white">Belum tersedia</p>
+                            <div class="p-4 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800">
+                                <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Avg. Durasi</p>
+                                <p class="text-2xl font-black text-gray-800 dark:text-white">{{ $avgRepairDuration }} <span class="text-xs font-medium opacity-50">Hari</span></p>
                             </div>
                         </div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">2 Data Perbaikan Terbaru</p>
-                        <div class="space-y-3">
-                            @forelse($perbaikanTerbaru as $p)
-                            <div class="p-4 rounded-2xl bg-gray-50/50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800">
-                                <div class="flex flex-col gap-1">
-                                    <p class="text-sm font-bold text-gray-800 dark:text-white">
-                                        {{ $p->kendaraan->no_polisi }} - {{ $p->kendaraan->merk }}
-                                    </p>
-                                    <div class="grid grid-cols-1 gap-1 text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-                                        <p><span class="font-semibold text-error-600/70">Kerusakan:</span> {{ $p->keluhan }}</p>
-                                        <p><span class="font-semibold">Sejak:</span> {{ \Carbon\Carbon::parse($p->tanggal_lapor)->translatedFormat('d F Y') }}</p>
-                                        <p><span class="font-semibold">Durasi:</span> {{ (int) \Carbon\Carbon::parse($p->tanggal_lapor)->diffInDays() }} Hari</p>
+
+                        @if($oldestRepair)
+                        <div class="p-4 rounded-xl bg-warning-50/50 dark:bg-warning-500/5 border border-warning-100/50 dark:border-warning-500/10 flex items-start gap-3">
+                            <div class="mt-0.5 text-warning-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            </div>
+                            <div>
+                                <p class="text-[11px] font-bold text-warning-700 dark:text-warning-500 uppercase tracking-wider">Perbaikan Terlama</p>
+                                <p class="text-xs text-gray-700 dark:text-gray-300 mt-0.5">
+                                    <span class="font-bold">{{ $oldestRepair->kendaraan->no_polisi }}</span> telah diperbaiki selama {{ \Carbon\Carbon::parse($oldestRepair->tanggal_lapor)->diffInDays() }} hari.
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Update Perbaikan Terkini</p>
+                            <div class="space-y-3">
+                                @forelse($perbaikanTerbaru as $p)
+                                <div class="p-4 rounded-2xl bg-gray-50/50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-error-500/50"></div>
+                                    <div class="flex flex-col gap-1">
+                                        <p class="text-sm font-bold text-gray-800 dark:text-white">
+                                            {{ $p->kendaraan->no_polisi }}
+                                        </p>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-1">{{ $p->keluhan }}</p>
+                                        <div class="flex items-center gap-4 mt-2">
+                                            <div class="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-medium">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                                {{ \Carbon\Carbon::parse($p->tanggal_lapor)->translatedFormat('d M Y') }}
+                                            </div>
+                                            <div class="flex items-center gap-1.5 text-[10px] text-error-600 uppercase font-bold">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                                {{ (int) \Carbon\Carbon::parse($p->tanggal_lapor)->diffInDays() }} Hari
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                @empty
+                                <div class="p-8 text-center rounded-2xl border border-dashed border-gray-200 dark:border-gray-800">
+                                    <p class="text-xs text-gray-400">Semua armada dalam kondisi prima</p>
+                                </div>
+                                @endforelse
                             </div>
-                            @empty
-                            <div class="p-6 text-center rounded-2xl border border-dashed border-gray-200 dark:border-gray-800">
-                                <p class="text-xs text-gray-400">Tidak ada data perbaikan terbaru</p>
-                            </div>
-                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -132,23 +236,62 @@
             <template x-if="modalType === 'tugas'">
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Status Penugasan Kendaraan</h3>
-                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Aktivitas Penugasan</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Monitoring pergerakan armada harian</p>
+                        </div>
+                        <button @click="showInfo = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors bg-gray-100 dark:bg-gray-800 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
                     </div>
-                    <div class="space-y-4">
-                        <div class="p-6 text-center rounded-2xl bg-warning-50 dark:bg-warning-500/10 border border-warning-100 dark:border-warning-500/20 mb-4">
-                            <p class="text-sm font-semibold text-warning-600 dark:text-warning-400 uppercase tracking-widest">Penugasan Aktif</p>
-                            <p class="text-4xl font-black text-warning-600 dark:text-warning-500">{{ $penugasanAktif }} Unit</p>
+
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 rounded-2xl bg-warning-50/50 dark:bg-warning-500/5 border border-warning-100/50 dark:border-warning-500/10">
+                                <p class="text-[10px] font-bold text-warning-600 uppercase tracking-widest mb-1">Mulai Hari Ini</p>
+                                <p class="text-2xl font-black text-warning-600">{{ $assignmentsToday }} <span class="text-xs font-medium opacity-70">Tugas</span></p>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-success-50/50 dark:bg-success-500/5 border border-success-100/50 dark:border-success-500/10">
+                                <p class="text-[10px] font-bold text-success-600 uppercase tracking-widest mb-1">Selesai Hari Ini</p>
+                                <p class="text-2xl font-black text-success-600">{{ $assignmentsFinishedToday }} <span class="text-xs font-medium opacity-70">Tugas</span></p>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 transition-all hover:border-warning-200 dark:hover:border-warning-500/30">
-                            <span class="text-gray-700 dark:text-gray-300 font-medium">Penugasan Hari Ini</span>
-                            <span class="text-xl font-bold text-gray-800 dark:text-white">- Unit</span>
+
+                        @if($topDestination)
+                        <div class="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Destinasi Terpopuler</p>
+                                <p class="text-sm font-bold text-gray-800 dark:text-white line-clamp-1">{{ $topDestination->tujuan }}</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 px-3 py-1 rounded-full border border-primary/20 text-xs font-black text-primary">
+                                {{ $topDestination->total }} <span class="text-[10px] font-normal opacity-70">Unit</span>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 transition-all hover:border-success-200 dark:hover:border-success-500/30">
-                            <span class="text-gray-700 dark:text-gray-300 font-medium">Penugasan Selesai Hari Ini</span>
-                            <span class="text-xl font-bold text-gray-800 dark:text-white">- Unit</span>
+                        @endif
+
+                        <div class="space-y-3 pt-2">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Distribusi Status Saat Ini</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex">
+                                    <div class="h-full bg-blue-500" style="width: {{ $penugasanAktif > 0 ? ((\App\Models\Penugasan::where('status', 'diterbitkan')->count() / $penugasanAktif) * 100) : 0 }}%"></div>
+                                    <div class="h-full bg-warning-500" style="width: {{ $penugasanAktif > 0 ? ((\App\Models\Penugasan::where('status', 'diterima')->count() / $penugasanAktif) * 100) : 0 }}%"></div>
+                                    <div class="h-full bg-success-500" style="width: {{ $penugasanAktif > 0 ? ((\App\Models\Penugasan::where('status', 'berjalan')->count() / $penugasanAktif) * 100) : 0 }}%"></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-center">
+                                    <p class="text-[10px] font-bold text-blue-500 uppercase">Diterbitkan</p>
+                                    <p class="text-sm font-black text-gray-800 dark:text-white">{{ \App\Models\Penugasan::where('status', 'diterbitkan')->count() }}</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[10px] font-bold text-warning-500 uppercase">Diterima</p>
+                                    <p class="text-sm font-black text-gray-800 dark:text-white">{{ \App\Models\Penugasan::where('status', 'diterima')->count() }}</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[10px] font-bold text-success-500 uppercase">On-Road</p>
+                                    <p class="text-sm font-black text-gray-800 dark:text-white">{{ \App\Models\Penugasan::where('status', 'berjalan')->count() }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -230,7 +373,7 @@
                 <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $kendaraanPerbaikan ?? 0 }}</h4>
             </div>
             <span class="flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
-                Bengkel
+                Diperbaiki
             </span>
         </div>
     </div>
@@ -258,7 +401,7 @@
                 <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $penugasanAktif ?? 0 }}</h4>
             </div>
              <span class="flex items-center gap-1 rounded-full bg-warning-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
-                Dalam Tugas
+                Bertugas
             </span>
         </div>
     </div>

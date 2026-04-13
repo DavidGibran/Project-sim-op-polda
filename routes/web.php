@@ -172,4 +172,10 @@ Route::middleware(['kendaraan'])
         */
         Route::get('/riwayat-pemakaian', [RiwayatPemakaianController::class, 'index'])
             ->name('riwayat-pemakaian');
+
+        /*
+        | Update Profile / Password
+        */
+        Route::post('/update-password', [KendaraanDashboardController::class, 'updatePassword'])
+            ->name('update-password');
     });

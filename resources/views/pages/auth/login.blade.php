@@ -1,19 +1,51 @@
 @extends('layouts.fullscreen-layout')
 
 @section('content')
-    <div class="relative z-1 bg-white p-6 sm:p-0 dark:bg-gray-900">
-        <div class="relative flex h-screen w-full flex-col justify-center sm:p-0 lg:flex-row dark:bg-gray-900">
-            <!-- Form -->
-            <div class="flex w-full flex-1 flex-col lg:w-1/2">
-                <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
+    <div class="relative z-1 bg-white dark:bg-gray-900">
+        <div class="relative flex h-screen w-full flex-col justify-center lg:flex-row">
+            <!-- Form Section -->
+            <div class="flex w-full flex-1 flex-col lg:w-1/2 relative overflow-hidden bg-white dark:bg-gray-900 lg:bg-transparent">
+                <!-- Background Decor for Mobile -->
+                <div class="lg:hidden absolute inset-0 z-0 opacity-40 dark:opacity-20 pointer-events-none">
+                    <x-common.common-grid-shape/>
+                </div>
+                
+                <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 lg:px-0 relative z-10">
                     <div>
-                        <div class="mb-5 sm:mb-8">
-                            <h1 class="text-title-sm sm:text-title-md mb-2 font-semibold text-gray-800 dark:text-white/90">
-                                Sistem Pengelolaan Kendaraan Operasional
-                            </h1>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Masukkan kredensial Anda untuk masuk ke dalam sistem.
-                            </p>
+                        <div class="mb-10 text-left">
+                            <!-- Mobile Header (Layar Kecil) -->
+                            <div class="lg:hidden">
+                                <div class="flex items-center gap-4 mb-8">
+                                    <div class="flex-shrink-0">
+                                        <img src="{{ asset('images/logo/logo-tik-polri.png') }}" class="w-16 h-auto" alt="Logo" />
+                                    </div>
+                                    <div class="text-left border-l-2 border-gray-200 dark:border-gray-800 pl-4">
+                                        <p class="text-[9px] leading-tight font-bold text-gray-400 uppercase tracking-widest mb-1">
+                                            Bidang Teknologi Informasi & Komunikasi<br>Polda Jawa Timur
+                                        </p>
+                                        <h2 class="text-xs font-bold text-gray-800 dark:text-white uppercase tracking-tighter">
+                                            Pengelolaan Kendaraan Operasional
+                                        </h2>
+                                    </div>
+                                </div>
+
+                                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
+                                    Selamat Datang!
+                                </h1>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    Masukkan kredensial Anda
+                                </p>
+                            </div>
+
+                            <!-- Desktop Header (Layar Besar) -->
+                            <div class="hidden lg:block text-left">
+                                <h1 class="text-title-sm sm:text-title-md mb-2 font-semibold text-gray-800 dark:text-white/90">
+                                    Sistem Pengelolaan Kendaraan Operasional
+                                </h1>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    Masukkan kredensial Anda
+                                </p>
+                            </div>
                         </div>
                         <div>
                             <form method="POST" action="{{ route('login.universal', absolute: false) }}">

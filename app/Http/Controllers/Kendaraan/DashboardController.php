@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterKend;
 use App\Models\Penugasan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
@@ -65,5 +66,40 @@ class DashboardController extends Controller
         ];
 
         return view('user.dashboard', compact('kendaraan', 'penugasanAktif', 'dashboardData'));
+    }
+
+    /**
+     * Update password untuk kendaraan yang sedang login
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'current_password.required' => 'Password saat ini wajib diisi.',
+            'new_password.required' => 'Password baru wajib diisi.',
+            'new_password.min' => 'Password baru minimal 6 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+        ]);
+
+        $kendaraanId = session('kendaraan_id');
+        $kendaraan = MasterKend::find($kendaraanId);
+
+        if (! $kendaraan) {
+            return back()->with('error', 'Sesi tidak valid.');
+        }
+
+        // Cek password saat ini
+        if (! Hash::check($request->current_password, $kendaraan->password)) {
+            return back()->with('error', 'Password saat ini salah.');
+        }
+
+        // Update password
+        $kendaraan->update([
+            'password' => $request->new_password,
+        ]);
+
+        return back()->with('success', 'Password berhasil diperbarui.');
     }
 }

@@ -87,6 +87,44 @@ class DashboardController extends Controller
             'perbaikan' => $perbaikanData
         ];
 
+        // --- NEW METRICS FOR ENHANCED MODALS ---
+        
+        // 1. Total Kendaraan Extras
+        $avgOdometer = round(MasterKend::avg('km_terakhir') ?? 0, 0);
+        $oldestVehicle = MasterKend::min('tahun');
+        $newestVehicle = MasterKend::max('tahun');
+        
+        // 2. Kendaraan Aktif Extras
+        $utilizationRate = $totalKendaraan > 0 ? round(($kendaraanAktif / $totalKendaraan) * 100, 1) : 0;
+        $topVehicles = MasterKend::withCount('penugasans')
+            ->orderBy('penugasans_count', 'desc')
+            ->take(3)
+            ->get();
+            
+        // 3. Kendaraan Perbaikan Extras
+        $avgRepairDuration = Perbaikan::whereNotNull('tgl_selesai')
+            ->whereNotNull('tgl_mulai')
+            ->select(DB::raw('AVG(DATEDIFF(tgl_selesai, tgl_mulai)) as avg_days'))
+            ->first()->avg_days ?? 0;
+        $avgRepairDuration = round($avgRepairDuration, 1);
+        
+        $oldestRepair = Perbaikan::with('kendaraan')
+            ->whereNull('tgl_selesai')
+            ->orderBy('tanggal_lapor', 'asc')
+            ->first();
+            
+        // 4. Penugasan Aktif Extras
+        $assignmentsToday = Penugasan::whereDate('created_at', now()->toDateString())->count();
+        $assignmentsFinishedToday = Penugasan::whereDate('tgl_selesai', now()->toDateString())
+            ->where('status', 'selesai')
+            ->count();
+        
+        $topDestination = Penugasan::whereIn('status', ['berjalan', 'diterima'])
+            ->select('tujuan', DB::raw('count(*) as total'))
+            ->groupBy('tujuan')
+            ->orderBy('total', 'desc')
+            ->first();
+
         return view('dashboard', compact(
             'totalKendaraan',
             'kendaraanAktif',
@@ -99,7 +137,18 @@ class DashboardController extends Controller
             'sedangTugas',
             'penugasanTerbaru',
             'perbaikanTerbaru',
-            'trendData'
+            'trendData',
+            // New variables
+            'avgOdometer',
+            'oldestVehicle',
+            'newestVehicle',
+            'utilizationRate',
+            'topVehicles',
+            'avgRepairDuration',
+            'oldestRepair',
+            'assignmentsToday',
+            'assignmentsFinishedToday',
+            'topDestination'
         ))->with('title', 'Dashboard');
     }
 }

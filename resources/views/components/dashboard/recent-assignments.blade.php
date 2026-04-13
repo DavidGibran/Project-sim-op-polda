@@ -34,7 +34,7 @@
                             {{ $tugas->kendaraan->tipe ?? 'N/A' }}
                         </td>
                         <td class="py-4 text-sm text-gray-800 dark:text-gray-300">
-                            {{ $tugas->nama_sopir }}
+                            {{ $tugas->pengemudi }}
                         </td>
                         <td class="py-4 text-sm text-gray-500 dark:text-gray-400">
                             {{ \Carbon\Carbon::parse($tugas->tgl_tugas)->translatedFormat('d M Y') }}

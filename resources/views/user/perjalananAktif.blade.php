@@ -149,7 +149,40 @@
 
             {{-- CARD AKSI --}}
             <div class="xl:col-span-4">
+                {{-- LIVE TIMER CARD --}}
+                @if($penugasan->status === 'berjalan')
+                    <div class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                Waktu Perjalanan
+                            </h3>
+                            <span class="flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 dark:bg-green-500/20 dark:text-green-400">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
+                                    <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+                                </span>
+                                LIVE
+                            </span>
+                        </div>
+                        
+                        <div class="flex flex-col items-center justify-center py-6">
+                            <div id="journey-timer" 
+                                data-start-time="{{ \Carbon\Carbon::parse($penugasan->waktu_mulai)->toIso8601String() }}" 
+                                class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl font-mono">
+                                00:00:00
+                            </div>
+                            <p class="mt-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+                                Perjalanan dimulai pada pukul<br>
+                                <span class="font-medium text-gray-900 dark:text-white">
+                                    {{ \Carbon\Carbon::parse($penugasan->waktu_mulai)->format('H:i') }} WIB
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+
                     <h3 class="mb-5 text-lg font-semibold text-gray-900 dark:text-white">
                         Aksi Perjalanan
                     </h3>
@@ -168,7 +201,7 @@
                                 @csrf
                                 <button
                                     type="submit"
-                                    class="inline-flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-medium text-white hover:opacity-90"
+                                    class="inline-flex w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-medium bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400 hover:bg-success-600 hover:text-white dark:hover:text-white dark:hover:bg-success-600"
                                 >
                                     Terima Tugas
                                 </button>
@@ -357,8 +390,50 @@
 
 <script>
     /**
+     * Timer Perjalanan Aktif
+     */
+    @if($penugasan && $penugasan->status === 'berjalan')
+    function updateJourneyTimer() {
+        const timerElement = document.getElementById('journey-timer');
+        if (!timerElement) return;
+
+        const startTimeText = timerElement.dataset.startTime;
+        const startTime = new Date(startTimeText).getTime();
+        const now = new Date().getTime();
+        const diff = now - startTime;
+
+        if (diff < 0) {
+            timerElement.textContent = "00:00:00";
+            return;
+        }
+
+        const seconds = Math.floor((diff / 1000) % 60);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+        let display = "";
+        
+        if (days > 0) {
+            display += days + "h ";
+        }
+
+        display += String(hours).padStart(2, '0') + ":" + 
+                   String(minutes).padStart(2, '0') + ":" + 
+                   String(seconds).padStart(2, '0');
+
+        timerElement.textContent = display;
+    }
+
+    // Update immediately and then every second
+    updateJourneyTimer();
+    setInterval(updateJourneyTimer, 1000);
+    @endif
+
+    /**
      * Membuka modal selesai perjalanan
      */
+
     function openSelesaiModal() {
         const modal = document.getElementById('selesaiModal');
         if (!modal) return;
