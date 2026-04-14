@@ -12,6 +12,7 @@ class MasterKend extends Model
 
     protected $fillable = [
         'no_polisi',
+        'nama_pemegang',
         'merk',
         'tipe',
         'tahun',

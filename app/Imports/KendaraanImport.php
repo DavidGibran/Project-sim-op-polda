@@ -34,6 +34,7 @@ class KendaraanImport implements ToModel, WithHeadingRow
         $noPolisi = strtoupper(str_replace(' ', '', (string)$noPolisiRaw));
 
         // Other fields with fallbacks
+        $namaPemegang = $row['nama_pemegang'] ?? $row['pemegang'] ?? $row['penanggung_jawab'] ?? $row['pj'] ?? $row['holder'] ?? null;
         $merk = $row['merk'] ?? $row['merek'] ?? '';
         $tipe = $row['nama_pada_simak'] ?? $row['tipe'] ?? '';
         $tahun = $row['tahun'] ?? date('Y');
@@ -50,6 +51,7 @@ class KendaraanImport implements ToModel, WithHeadingRow
 
         if ($kendaraan) {
             $kendaraan->update([
+                'nama_pemegang'         => $namaPemegang,
                 'merk'                  => $merk,
                 'tipe'                  => $tipe,
                 'tahun'                 => $tahun,
@@ -64,6 +66,7 @@ class KendaraanImport implements ToModel, WithHeadingRow
 
         return new MasterKend([
             'no_polisi'             => $noPolisi,
+            'nama_pemegang'         => $namaPemegang,
             'merk'                  => $merk,
             'tipe'                  => $tipe,
             'tahun'                 => $tahun,

@@ -79,7 +79,26 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
-    const chart = new ApexCharts(document.querySelector("#usageTrendChart"), options);
-    chart.render();
+    let chart;
+
+    function renderChart() {
+        if (chart) {
+            chart.destroy();
+        }
+        chart = new ApexCharts(document.querySelector("#usageTrendChart"), options);
+        chart.render();
+    }
+
+    // Render on load
+    renderChart();
+
+    // Use ResizeObserver to detect when container size changes (e.g. sidebar toggle)
+    const container = document.querySelector("#usageTrendChart").parentElement;
+    const resizeObserver = new ResizeObserver(() => {
+        if (chart) {
+            chart.windowResizeHandler();
+        }
+    });
+    resizeObserver.observe(container);
 });
 </script>

@@ -40,6 +40,7 @@ class RiwayatPemakaianController extends Controller
          * Ambil query filter dari request
          */
         $search = $request->query('search');
+        $periode = $request->query('periode', 'all');
         $tanggalDari = $request->query('tanggal_dari');
         $tanggalSampai = $request->query('tanggal_sampai');
         $perPage = (int) $request->query('per_page', 10);
@@ -51,36 +52,41 @@ class RiwayatPemakaianController extends Controller
          * - modul log_pemakaian
          * - id_kend sesuai kendaraan login
          */
-        $riwayatPemakaian = Penugasan::query()
+        $query = Penugasan::query()
             ->where('id_kend', $kendaraan->id_kend)
-            ->where('status', 'selesai')
+            ->where('status', 'selesai');
 
-            /**
-             * Filter search
-             */
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('tujuan', 'like', '%' . $search . '%')
-                        ->orWhere('pengemudi', 'like', '%' . $search . '%')
-                        ->orWhere('catatan', 'like', '%' . $search . '%');
-                });
-            })
+        /**
+         * Filter search
+         */
+        $query->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('tujuan', 'like', '%' . $search . '%')
+                    ->orWhere('pengemudi', 'like', '%' . $search . '%')
+                    ->orWhere('catatan', 'like', '%' . $search . '%');
+            });
+        });
 
-            /**
-             * Filter tanggal tugas
-             */
-            ->when($tanggalDari, function ($query) use ($tanggalDari) {
-                $query->whereDate('tgl_tugas', '>=', $tanggalDari);
-            })
+        /**
+         * Filter Periode
+         */
+        if ($periode === 'this_month') {
+            $query->whereMonth('tgl_tugas', now()->month)
+                  ->whereYear('tgl_tugas', now()->year);
+        } elseif ($periode === 'last_month') {
+            $query->whereMonth('tgl_tugas', now()->subMonth()->month)
+                  ->whereYear('tgl_tugas', now()->subMonth()->year);
+        } elseif ($periode === 'this_year') {
+            $query->whereYear('tgl_tugas', now()->year);
+        } elseif ($periode === 'custom' && $tanggalDari && $tanggalSampai) {
+            $query->whereDate('tgl_tugas', '>=', $tanggalDari)
+                  ->whereDate('tgl_tugas', '<=', $tanggalSampai);
+        }
 
-            ->when($tanggalSampai, function ($query) use ($tanggalSampai) {
-                $query->whereDate('tgl_tugas', '<=', $tanggalSampai);
-            })
-
-            /**
-             * Urutkan dari yang terbaru
-             */
-            ->orderByDesc('tgl_tugas')
+        /**
+         * Urutkan dari yang terbaru
+         */
+        $riwayatPemakaian = $query->orderByDesc('tgl_tugas')
             ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
@@ -92,6 +98,7 @@ class RiwayatPemakaianController extends Controller
             'kendaraan',
             'riwayatPemakaian',
             'search',
+            'periode',
             'tanggalDari',
             'tanggalSampai',
             'perPage'

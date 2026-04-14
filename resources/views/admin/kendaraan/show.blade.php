@@ -40,6 +40,11 @@
                     <span class="block text-xs font-medium text-gray-500 dark:text-gray-400">No. Polisi</span>
                     <span class="font-bold text-lg text-gray-900 dark:text-white">{{ $kendaraan->no_polisi }}</span>
                 </div>
+
+                <div>
+                    <span class="block text-xs font-medium text-gray-500 dark:text-gray-400">Nama Pemegang</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ $kendaraan->nama_pemegang ?: '-' }}</span>
+                </div>
                 
                 <div class="flex items-center justify-between">
                     <div>

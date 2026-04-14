@@ -359,7 +359,7 @@
 </div>
 
 <!-- Modal Detail -->
-<div id="detailModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50 px-4">
+<div id="detailModal" class="fixed inset-0 z-[100001] hidden items-center justify-center bg-black/50 px-4">
     <div class="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
         <div class="mb-4 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">

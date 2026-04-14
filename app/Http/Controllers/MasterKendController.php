@@ -52,6 +52,7 @@ class MasterKendController extends Controller
     {
         $request->validate([
             'no_polisi' => 'required|string|max:255|unique:master_kends,no_polisi',
+            'nama_pemegang' => 'nullable|string|max:255',
             'merk' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),
@@ -116,6 +117,7 @@ class MasterKendController extends Controller
                 'max:255',
                 Rule::unique('master_kends')->ignore($kendaraan->id_kend, 'id_kend'),
             ],
+            'nama_pemegang' => 'nullable|string|max:255',
             'merk' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),

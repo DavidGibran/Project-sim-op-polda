@@ -117,6 +117,14 @@ document.addEventListener("DOMContentLoaded", function () {
         attributes: true,
         attributeFilter: ['class']
     });
+
+    // Use ResizeObserver for layout changes
+    const resizeObserver = new ResizeObserver(() => {
+        if (chart) {
+            chart.windowResizeHandler();
+        }
+    });
+    resizeObserver.observe(el.parentElement);
 });
 </script>
 @endpush

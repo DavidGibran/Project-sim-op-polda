@@ -84,30 +84,46 @@
                         </span>
                     </div>
 
-                    {{-- Tanggal dari --}}
-                    <input
-                        type="date"
-                        name="tanggal_dari"
-                        value="{{ $tanggalDari ?? '' }}"
-                        class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                        title="Tanggal Dari"
-                    >
+                    {{-- Filter Periode --}}
+                    <div class="flex items-center gap-2">
+                        <select
+                            name="periode"
+                            id="filter_periode"
+                            class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                            onchange="toggleCustomDates(this.value)"
+                        >
+                            <option value="all" {{ ($periode ?? '') == 'all' ? 'selected' : '' }}>Semua Waktu</option>
+                            <option value="this_month" {{ ($periode ?? '') == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                            <option value="last_month" {{ ($periode ?? '') == 'last_month' ? 'selected' : '' }}>Bulan Lalu</option>
+                            <option value="this_year" {{ ($periode ?? '') == 'this_year' ? 'selected' : '' }}>Tahun Ini</option>
+                            <option value="custom" {{ ($periode ?? '') == 'custom' ? 'selected' : '' }}>Kustom Range</option>
+                        </select>
 
-                    {{-- Tanggal sampai --}}
-                    <input
-                        type="date"
-                        name="tanggal_sampai"
-                        value="{{ $tanggalSampai ?? '' }}"
-                        class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                        title="Tanggal Sampai"
-                    >
+                        <div id="custom_date_range" class="{{ ($periode ?? '') == 'custom' ? 'flex' : 'hidden' }} items-center gap-2">
+                            <input
+                                type="date"
+                                name="tanggal_dari"
+                                value="{{ $tanggalDari ?? '' }}"
+                                class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                                title="Tanggal Dari"
+                            >
+                            <span class="text-gray-400">-</span>
+                            <input
+                                type="date"
+                                name="tanggal_sampai"
+                                value="{{ $tanggalSampai ?? '' }}"
+                                class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                                title="Tanggal Sampai"
+                            >
+                        </div>
+                    </div>
 
                     {{-- Tombol filter --}}
                     <button
                         type="submit"
                         class="inline-flex h-9 items-center justify-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all"
                     >
-                        Filter
+                        Terapkan
                     </button>
 
                     {{-- Per page --}}
@@ -124,7 +140,7 @@
                     </select>
 
                     {{-- Reset --}}
-                    @if(($search ?? null) || ($tanggalDari ?? null) || ($tanggalSampai ?? null))
+                    @if(($search ?? null) || ($periode ?? 'all') !== 'all')
                         <a
                             href="{{ route('kendaraan.riwayat-pemakaian') }}"
                             class="text-sm text-gray-500 hover:text-primary dark:text-gray-400"
@@ -378,6 +394,20 @@
         const modal = document.getElementById('detailModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+    }
+
+    /**
+     * Toggle custom date range inputs
+     */
+    function toggleCustomDates(value) {
+        const customRange = document.getElementById('custom_date_range');
+        if (value === 'custom') {
+            customRange.classList.remove('hidden');
+            customRange.classList.add('flex');
+        } else {
+            customRange.classList.add('hidden');
+            customRange.classList.remove('flex');
+        }
     }
 
     function closeDetailModal() {

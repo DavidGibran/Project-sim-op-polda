@@ -30,6 +30,13 @@
                     <input type="text" name="no_polisi" value="{{ old('no_polisi') }}" required placeholder="Contoh: L 1234 AB" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('no_polisi') border-error @enderror">
                     @error('no_polisi') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
+
+                <!-- Nama Pemegang -->
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Nama Pemegang (Opsional)</label>
+                    <input type="text" name="nama_pemegang" value="{{ old('nama_pemegang') }}" placeholder="Contoh: Budi Santoso" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('nama_pemegang') border-error @enderror">
+                    @error('nama_pemegang') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                </div>
                 
                 <!-- Merk -->
                 <div>

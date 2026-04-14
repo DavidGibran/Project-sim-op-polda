@@ -58,18 +58,18 @@
                         <!-- Composition Bar -->
                         <div>
                             <div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
-                                <span class="text-primary">Roda 2 ({{ $totalR2 }})</span>
+                                <span class="text-primary dark:text-white">Roda 2 ({{ $totalR2 }})</span>
                                 <span class="text-gray-400">Roda 4 ({{ $totalR4 }})</span>
                             </div>
                             <div class="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex">
-                                <div class="h-full bg-primary transition-all duration-500" style="width: {{ $totalKendaraan > 0 ? ($totalR2 / $totalKendaraan) * 100 : 0 }}%"></div>
+                                <div class="h-full bg-primary dark:bg-white transition-all duration-500" style="width: {{ $totalKendaraan > 0 ? ($totalR2 / $totalKendaraan) * 100 : 0 }}%"></div>
                                 <div class="h-full bg-gray-300 dark:bg-gray-600 transition-all duration-500" style="width: {{ $totalKendaraan > 0 ? ($totalR4 / $totalKendaraan) * 100 : 0 }}%"></div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="p-4 rounded-2xl bg-primary/5 border border-primary/10">
-                                <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Rata-rata Odometer</p>
+                            <div class="p-4 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800">
+                                <p class="text-[10px] dark:text-white font-bold text-primary uppercase tracking-widest mb-1">Rata-rata Odometer</p>
                                 <p class="text-xl font-black text-gray-800 dark:text-white">{{ number_format($avgOdometer, 0, ',', '.') }} <span class="text-xs font-normal">KM</span></p>
                             </div>
                             <div class="p-4 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800">
@@ -96,7 +96,7 @@
                         </div>
 
                         <div class="pt-4 mt-2 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-gray-900 dark:text-white">
-                            <span class="font-bold uppercase tracking-widest text-xs">Total Inventaris</span>
+                            <span class="font-bold uppercase tracking-widest text-xs">Total Kendaraan</span>
                             <span class="text-2xl font-black">{{ $totalKendaraan }} <span class="text-sm font-medium opacity-50">Unit</span></span>
                         </div>
                     </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Models\MasterKend;
 
 class UserController extends Controller
 {
@@ -13,8 +14,9 @@ class UserController extends Controller
     public function index()
     {
         $users = User::paginate(10);
+        $kendaraans = MasterKend::orderBy('id_kend', 'desc')->paginate(10, ['*'], 'page_kend');
 
-        return view('users.index', compact('users'));
+        return view('users.index', compact('users', 'kendaraans'));
     }
 
     /**
