@@ -85,6 +85,8 @@ Route::middleware(['auth', 'admin'])
         | Master Data
         */
         Route::resource('users', UserController::class);
+        Route::get('kendaraan/check-availability', [MasterKendController::class, 'checkAvailability'])
+            ->name('kendaraan.check-availability');
         Route::resource('kendaraan', MasterKendController::class);
 
         /*

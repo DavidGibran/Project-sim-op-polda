@@ -61,7 +61,7 @@
                 @error('id_kend')
                     <p class="mt-1 text-xs text-error">{{ $message }}</p>
                 @enderror
-                <p class="mt-2 text-xs text-gray-500 italic">Hanya kendaraan yang tidak sedang dalam perbaikan yang muncul di sini.</p>
+                <p class="mt-2 text-xs text-gray-500 italic">Hanya kendaraan dengan status "Tersedia" yang muncul di sini.</p>
             </div>
 
             <!-- Tanggal Lapor -->

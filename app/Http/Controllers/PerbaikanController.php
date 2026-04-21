@@ -64,8 +64,8 @@ class PerbaikanController extends Controller
      */
     public function create()
     {
-        // Get vehicles that are NOT currently in repair
-        $kendaraans = MasterKend::where('status', '!=', 'Perbaikan')
+        // Get vehicles that are Tersedia only
+        $kendaraans = MasterKend::where('status', 'Tersedia')
             ->orderBy('no_polisi')
             ->get();
 
@@ -88,6 +88,11 @@ class PerbaikanController extends Controller
         $activeRepair = Perbaikan::where('id_kend', $request->id_kend)
             ->whereIn('status', ['dilaporkan', 'diproses'])
             ->first();
+
+        $kendaraan = MasterKend::findOrFail($request->id_kend);
+        if ($kendaraan->status !== 'Tersedia') {
+            return back()->with('error', 'Kendaraan sedang digunakan atau dalam perbaikan. Status harus "Tersedia" untuk dilaporkan perbaikan.')->withInput();
+        }
 
         if ($activeRepair) {
             return back()->with('error', 'Kendaraan sedang dalam proses perbaikan')->withInput();

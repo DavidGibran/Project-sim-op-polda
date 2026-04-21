@@ -108,7 +108,7 @@
         <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800 flex justify-between items-center">
                 <h3 class="font-semibold text-gray-900 dark:text-white">Riwayat Penugasan Terbaru</h3>
-                <span class="text-xs text-gray-500 dark:text-gray-400">5 Data Terakhir</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">3 Data Terakhir</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
@@ -163,7 +163,7 @@
         <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800 flex justify-between items-center">
                 <h3 class="font-semibold text-gray-900 dark:text-white">Riwayat Perbaikan Terbaru</h3>
-                <span class="text-xs text-gray-500 dark:text-gray-400">5 Data Terakhir</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">3 Data Terakhir</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
@@ -180,23 +180,23 @@
                         @forelse($kendaraan->perbaikans as $perbaikan)
                         <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                             <td class="px-5 py-3">
-                                <span class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($perbaikan->tanggal_laporan)->translatedFormat('d F Y') }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($perbaikan->tanggal_lapor)->translatedFormat('d F Y') }}</span>
                             </td>
                             <td class="px-5 py-3">
                                 <span class="text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($perbaikan->keluhan, 30) }}</span>
                             </td>
                             <td class="px-5 py-3">
-                                <span class="text-sm text-gray-600 dark:text-gray-300">{{ $perbaikan->nama_bengkel ?: '-' }}</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-300">{{ $perbaikan->teknisi ?: '-' }}</span>
                             </td>
                             <td class="px-5 py-3">
-                                <span class="text-sm text-gray-600 dark:text-gray-300">{{ $perbaikan->estimasi_biaya ? 'Rp ' . number_format($perbaikan->estimasi_biaya, 0, ',', '.') : '-' }}</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-300">{{ $perbaikan->biaya ? 'Rp ' . number_format($perbaikan->biaya, 0, ',', '.') : '-' }}</span>
                             </td>
                             <td class="px-5 py-3">
                                 @php
                                     $s_color = match($perbaikan->status) {
-                                        'Dilaporkan' => 'bg-yellow-50 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400',
-                                        'Proses Perbaikan' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
-                                        'Selesai' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
+                                        'dilaporkan' => 'bg-yellow-50 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400',
+                                        'diproses' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+                                        'selesai' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
                                         default => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
                                     };
                                 @endphp

@@ -84,10 +84,10 @@ class MasterKendController extends Controller
     {
         $kendaraan = MasterKend::with([
             'penugasans' => function($query) {
-                $query->latest('tgl_tugas')->take(5);
+                $query->latest('tgl_tugas')->take(3);
             },
             'perbaikans' => function($query) {
-                $query->latest('tanggal_lapor')->take(5);
+                $query->latest('tanggal_lapor')->take(3);
             }
         ])->findOrFail($id);
         
