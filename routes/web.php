@@ -12,6 +12,8 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\KendaraanImportController;
 use App\Http\Controllers\Auth\VehicleAuthController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanKerusakanController;
+
 
 /**
  * Controller sisi pengemudi / kendaraan
@@ -22,6 +24,8 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Kendaraan\DashboardController as KendaraanDashboardController;
 use App\Http\Controllers\Kendaraan\PerjalananAktifController;
 use App\Http\Controllers\Kendaraan\RiwayatPemakaianController;
+use App\Http\Controllers\Kendaraan\VehicleLaporanController;
+
 
 // Library Export
 use App\Exports\UsersExport;
@@ -100,6 +104,13 @@ Route::middleware(['auth', 'admin'])
         )->name('penugasan.batalkan');
 
         /*
+        | Laporan Kerusakan
+        */
+        Route::get('/laporan-kerusakan/riwayat', [LaporanKerusakanController::class, 'riwayat'])
+            ->name('admin.laporan-kerusakan.riwayat');
+        Route::resource('laporan-kerusakan', LaporanKerusakanController::class)->names('admin.laporan-kerusakan');
+
+        /*
         | Perbaikan Kendaraan
         */
         Route::get('perbaikan-aktif', [PerbaikanController::class, 'aktif'])->name('perbaikan.aktif');
@@ -174,6 +185,14 @@ Route::middleware(['kendaraan'])
         */
         Route::get('/riwayat-pemakaian', [RiwayatPemakaianController::class, 'index'])
             ->name('riwayat-pemakaian');
+
+        /*
+        | Laporan Kerusakan (Driver)
+        */
+        Route::get('/laporan-kerusakan/baru', [VehicleLaporanController::class, 'create'])
+            ->name('laporan-kerusakan.create');
+        Route::post('/laporan-kerusakan', [VehicleLaporanController::class, 'store'])
+            ->name('laporan-kerusakan.store');
 
         /*
         | Update Profile / Password

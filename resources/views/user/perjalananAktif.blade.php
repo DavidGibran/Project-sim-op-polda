@@ -237,12 +237,12 @@
                         <div class="space-y-3">
                             {{-- Tombol laporkan kendala --}}
                             <a
-                                href="https://wa.me/"
-                                target="_blank"
+                                href="{{ route('kendaraan.laporan-kerusakan.create') }}"
                                 class="inline-flex w-full items-center justify-center rounded-xl bg-warning-500 px-5 py-3 text-sm font-medium text-white hover:opacity-90"
                             >
-                                Laporkan Kendala
+                                Laporkan Kerusakan
                             </a>
+
 
                             {{-- Tombol selesai perjalanan --}}
                             <button
@@ -378,7 +378,7 @@
 
                 <button
                     type="submit"
-                    class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+                    class="rounded-lg px-4 py-2 text-sm font-medium border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 hover:bg-green-700 hover:text-white hover:dark:bg-green-400 hover:dark:text-black dark:border-green-800 dark:bg-green-500/10 dark:text-green-400 hover:opacity-90"
                 >
                     Konfirmasi
                 </button>

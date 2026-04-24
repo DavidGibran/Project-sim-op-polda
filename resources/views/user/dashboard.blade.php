@@ -76,12 +76,12 @@
                         Nanti tinggal isi nomor admin pada href.
                     --}}
                     <a
-                        href="https://wa.me/"
-                        target="_blank"
+                        href="{{ route('kendaraan.laporan-kerusakan.create') }}"
                         class="inline-flex items-center justify-center gap-2 rounded-lg bg-warning-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90"
                     >
-                        Laporkan Kendala
+                        Laporkan Kerusakan
                     </a>
+
                 </div>
 
                 {{-- Konten utama card --}}

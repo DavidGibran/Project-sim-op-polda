@@ -226,7 +226,8 @@
                                             : '-',
                                         'nama_pengemudi' => $log->pengemudi,
                                         'nopol' => $log->kendaraan->no_polisi ?? '-',
-                                        'jenis_kendaraan' => $log->kendaraan->jenis ?? '-',
+                                        'jenis_kendaraan' => $log->kendaraan->jenis_kendaraan ?? '-',
+
                                         'tipe_kendaraan' => $log->kendaraan->tipe ?? '-',
                                         'tujuan' => $log->tujuan,
                                         'km_awal' => number_format((int) ($log->km_awal ?? 0), 0, ',', '.'),

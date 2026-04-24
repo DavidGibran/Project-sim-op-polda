@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 
 use App\Models\Perbaikan;
 use App\Models\MasterKend;
+use App\Models\LaporanKerusakan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+
 
 //include privat method - service
 use App\Services\PerbaikanServices;
@@ -62,15 +64,31 @@ class PerbaikanController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        // Get vehicles that are Tersedia only
-        $kendaraans = MasterKend::where('status', 'Tersedia')
-            ->orderBy('no_polisi')
-            ->get();
+        $laporan_id = $request->query('laporan_id');
+        $laporan = null;
+        $laporans = null;
 
-        return view('admin.perbaikan.create', compact('kendaraans'));
+        if ($laporan_id) {
+            $laporan = LaporanKerusakan::with('kendaraan')->findOrFail($laporan_id);
+            
+            // Validasi: Laporan harus berstatus diterbitkan
+            if ($laporan->status !== 'diterbitkan') {
+                return redirect()->route('admin.laporan-kerusakan.index')
+                    ->with('error', 'Laporan kerusakan ini sudah diproses atau selesai.');
+            }
+        } else {
+            // Jika tidak ada laporan_id, ambil semua laporan yang berstatus diterbitkan
+            $laporans = LaporanKerusakan::with('kendaraan')
+                ->where('status', 'diterbitkan')
+                ->latest()
+                ->get();
+        }
+
+        return view('admin.perbaikan.create', compact('laporan', 'laporans'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -78,49 +96,45 @@ class PerbaikanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_kend' => 'required|exists:master_kends,id_kend',
-            'tanggal_lapor' => 'required|date',
-            'keluhan' => 'required',
-            'catatan' => 'nullable',
+            'id_laporan' => 'required|exists:tb_laporan_kerusakans,id',
+            'teknisi' => 'required|string',
+            'biaya' => 'nullable|numeric',
+            'tgl_mulai' => 'required|date',
+            'detail_perbaikan' => 'required|string',
         ]);
 
-        // Check for active repair for this vehicle
-        $activeRepair = Perbaikan::where('id_kend', $request->id_kend)
-            ->whereIn('status', ['dilaporkan', 'diproses'])
-            ->first();
-
-        $kendaraan = MasterKend::findOrFail($request->id_kend);
-        if ($kendaraan->status !== 'Tersedia') {
-            return back()->with('error', 'Kendaraan sedang digunakan atau dalam perbaikan. Status harus "Tersedia" untuk dilaporkan perbaikan.')->withInput();
-        }
-
-        if ($activeRepair) {
-            return back()->with('error', 'Kendaraan sedang dalam proses perbaikan')->withInput();
-        }
+        $laporan = LaporanKerusakan::findOrFail($request->id_laporan);
 
         try {
             DB::beginTransaction();
 
-            // Create repair record
-            Perbaikan::create([
-                'id_kend' => $request->id_kend,
-                'tanggal_lapor' => $request->tanggal_lapor,
-                'keluhan' => $request->keluhan,
-                'status' => 'dilaporkan',
-                'catatan' => $request->catatan,
+            $perbaikan = Perbaikan::create([
+                'id_kend' => $laporan->id_kend,
+                'id_laporan' => $laporan->id,
+                'tanggal_lapor' => $laporan->tanggal_lapor,
+                'keluhan' => $laporan->keluhan,
+                'status' => 'diproses',
+                'teknisi' => $request->teknisi,
+                'biaya' => $request->biaya ?? 0,
+                'tgl_mulai' => $request->tgl_mulai,
+                'catatan' => $request->detail_perbaikan,
             ]);
 
+            // Update Laporan status
+            $laporan->update(['status' => 'diproses']);
+
+
             // Update vehicle status
-            $kendaraan = MasterKend::findOrFail($request->id_kend);
-            $kendaraan->update(['status' => 'Perbaikan']);
+            $laporan->kendaraan->update(['status' => 'Perbaikan']);
 
             DB::commit();
-            return redirect()->route('perbaikan.aktif')->with('success', 'Laporan perbaikan berhasil dibuat. Status kendaraan: Perbaikan');
+            return redirect()->route('perbaikan.aktif')->with('success', 'Perbaikan berhasil diproses. Status laporan: Diproses.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal membuat laporan: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Gagal memproses perbaikan: ' . $e->getMessage())->withInput();
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -185,8 +199,14 @@ class PerbaikanController extends Controller
                     'catatan' => $finalNote,
                 ]);
 
+                // Update Laporan status
+                if ($perbaikan->id_laporan) {
+                    $perbaikan->laporan->update(['status' => 'selesai']);
+                }
+
                 // Update vehicle status back to Tersedia
                 $perbaikan->kendaraan->update(['status' => 'Tersedia']);
+
 
                 DB::commit();
                 return redirect()->route('perbaikan.riwayat')->with('success', 'Perbaikan selesai. Kendaraan kini Tersedia.');
@@ -211,16 +231,29 @@ class PerbaikanController extends Controller
         try {
             DB::beginTransaction();
 
-            // Reset vehicle status if it was in repair
-            $perbaikan->kendaraan->update(['status' => 'Tersedia']);
-            
+            $laporan = $perbaikan->laporan;
+            $kendaraan = $perbaikan->kendaraan;
+
+            // Delete repair record
             $perbaikan->delete();
 
+            // Jika ada laporan terkait, kembalikan statusnya ke diterbitkan
+            if ($laporan) {
+                $laporan->update(['status' => 'diterbitkan']);
+            }
+
+            // Kembalikan status kendaraan ke Tersedia
+            if ($kendaraan) {
+                $kendaraan->update(['status' => 'Tersedia']);
+            }
+
             DB::commit();
-            return redirect()->route('perbaikan.aktif')->with('success', 'Laporan perbaikan dihapus.');
+
+            return redirect()->route('perbaikan.aktif')
+                ->with('success', 'Data perbaikan berhasil dihapus dan status laporan dikembalikan.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
     }
 }

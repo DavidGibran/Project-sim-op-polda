@@ -150,12 +150,31 @@
                 </div>
             </div>
         </div>
+
+        @if($perbaikan->id_laporan)
+        <!-- Laporan Kerusakan Card -->
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
+            <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
+                <h3 class="font-semibold text-gray-900 dark:text-white">Laporan Asal</h3>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <span class="text-xs font-medium text-gray-500 uppercase block mb-1">No. Laporan</span>
+                    <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $perbaikan->laporan->no_laporan }}</p>
+                </div>
+                <a href="{{ route('admin.laporan-kerusakan.show', $perbaikan->id_laporan) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
+                    Lihat Laporan Asal
+                </a>
+            </div>
+        </div>
+        @endif
     </div>
+
 
     <!-- Right Column: Repair Details -->
     <div class="lg:col-span-2 space-y-6">
         <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03] p-6 sm:p-8">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Detail Laporan Keluhan</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Detail Laporan Perbaikan</h3>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-sm">
                 <div>
@@ -177,7 +196,7 @@
             </div>
 
             <div class="mb-8">
-                <span class="block text-xs font-semibold text-gray-400 uppercase mb-2">Keluhan / Masalah</span>
+                <span class="block text-xs font-semibold text-gray-400 uppercase mb-2">Masalah</span>
                 <div class="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                     {{ $perbaikan->keluhan }}
                 </div>

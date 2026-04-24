@@ -45,4 +45,10 @@ class MasterKend extends Model
     {
         return $this->hasMany(Perbaikan::class, 'id_kend');
     }
+
+    public function laporanKerusakans()
+    {
+        return $this->hasMany(LaporanKerusakan::class, 'id_kend');
+    }
 }
+

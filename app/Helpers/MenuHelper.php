@@ -31,8 +31,25 @@ class MenuHelper
                 'path' => route('log.index', absolute: false),
             ],
             [
+                'icon' => 'warning',
+                'name' => 'Kerusakan',
+
+                'subItems' => [
+                    [
+                        'name' => 'Daftar Kerusakan',
+                        'path' => route('admin.laporan-kerusakan.index', absolute: false),
+                    ],
+                    [
+                        'name' => 'Riwayat Kerusakan',
+                        'path' => route('admin.laporan-kerusakan.riwayat', absolute: false),
+                    ],
+                ],
+            ],
+
+            [
                 'icon' => 'wrench',
                 'name' => 'Perbaikan',
+
                 'subItems' => [
                     [
                         'name' => 'Perbaikan Aktif',
@@ -147,6 +164,9 @@ class MenuHelper
             'chart' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>',
 
             'email' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+
+            'warning' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+
         ];
 
         return $icons[$iconName] ?? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
