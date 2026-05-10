@@ -82,6 +82,9 @@ Route::middleware(['auth', 'admin'])
         Route::get('kendaraan/import', [KendaraanImportController::class, 'index'])
             ->name('kendaraan.import');
 
+        Route::get('kendaraan/import/template', [KendaraanImportController::class, 'downloadTemplate'])
+            ->name('kendaraan.import.template');
+
         Route::post('kendaraan/import', [KendaraanImportController::class, 'import'])
             ->name('kendaraan.import.post');
 

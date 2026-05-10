@@ -77,7 +77,7 @@
                     --}}
                     <a
                         href="{{ route('kendaraan.laporan-kerusakan.create') }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-warning-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0 rounded-lg bg-warning-500 px-5 py-2 text-sm font-medium text-white hover:opacity-90"
                     >
                         Laporkan Kerusakan
                     </a>

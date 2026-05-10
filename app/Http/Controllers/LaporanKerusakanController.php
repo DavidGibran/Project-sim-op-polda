@@ -16,6 +16,7 @@ class LaporanKerusakanController extends Controller
     public function index(Request $request)
     {
         $status = $request->query('status');
+        $mode = $request->query('mode');
         $search = $request->query('search');
         $perPage = $request->query('per_page', 10);
 
@@ -26,6 +27,10 @@ class LaporanKerusakanController extends Controller
             $query->where('status', $status);
         }
 
+        if ($mode) {
+            $query->where('mode', $mode);
+        }
+
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('no_laporan', 'like', "%{$search}%")
@@ -39,7 +44,7 @@ class LaporanKerusakanController extends Controller
 
         $laporans = $query->latest()->paginate($perPage)->withQueryString();
 
-        return view('admin.laporan-kerusakan.index', compact('laporans', 'status', 'search', 'perPage'));
+        return view('admin.laporan-kerusakan.index', compact('laporans', 'status', 'mode', 'search', 'perPage'));
     }
 
     /**
@@ -47,11 +52,16 @@ class LaporanKerusakanController extends Controller
      */
     public function riwayat(Request $request)
     {
+        $mode = $request->query('mode');
         $search = $request->query('search');
         $perPage = $request->query('per_page', 10);
 
         $query = LaporanKerusakan::with(['kendaraan', 'perbaikan'])
             ->where('status', 'selesai');
+
+        if ($mode) {
+            $query->where('mode', $mode);
+        }
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -66,7 +76,7 @@ class LaporanKerusakanController extends Controller
 
         $laporans = $query->latest()->paginate($perPage)->withQueryString();
 
-        return view('admin.laporan-kerusakan.riwayat', compact('laporans', 'search', 'perPage'));
+        return view('admin.laporan-kerusakan.riwayat', compact('laporans', 'mode', 'search', 'perPage'));
     }
 
 

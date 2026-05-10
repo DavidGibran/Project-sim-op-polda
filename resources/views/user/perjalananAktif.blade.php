@@ -238,7 +238,7 @@
                             {{-- Tombol laporkan kendala --}}
                             <a
                                 href="{{ route('kendaraan.laporan-kerusakan.create') }}"
-                                class="inline-flex w-full items-center justify-center rounded-xl bg-warning-500 px-5 py-3 text-sm font-medium text-white hover:opacity-90"
+                                class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap flex-shrink-0 rounded-xl bg-warning-500 px-5 py-3 text-sm font-medium text-white hover:opacity-90"
                             >
                                 Laporkan Kerusakan
                             </a>

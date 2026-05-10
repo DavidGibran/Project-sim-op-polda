@@ -24,13 +24,21 @@
     <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 px-6 py-5 dark:border-gray-800">
         <div class="flex flex-wrap items-center gap-4">
             <!-- Search -->
-            <form action="{{ route('admin.laporan-kerusakan.riwayat') }}" method="GET" class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2">
-                    <svg class="text-gray-400" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.5 17.5L14.5834 14.5833M16.6667 9.58333C16.6667 13.4954 13.4954 16.6667 9.58333 16.6667C5.67131 16.6667 2.5 13.4954 2.5 9.58333C2.5 5.67131 5.67131 2.5 9.58333 2.5C13.4954 2.5 16.6667 5.67131 16.6667 9.58333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </span>
-                <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="No Laporan / Plat..." class="w-full rounded-lg border border-gray-200 bg-transparent py-2 pl-10 pr-4 text-sm text-gray-700 outline-none transition focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white">
+            <form action="{{ route('admin.laporan-kerusakan.riwayat') }}" method="GET" class="flex flex-wrap items-center gap-4">
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2">
+                        <svg class="text-gray-400" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.5 17.5L14.5834 14.5833M16.6667 9.58333C16.6667 13.4954 13.4954 16.6667 9.58333 16.6667C5.67131 16.6667 2.5 13.4954 2.5 9.58333C2.5 5.67131 5.67131 2.5 9.58333 2.5C13.4954 2.5 16.6667 5.67131 16.6667 9.58333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="No Laporan / Plat..." class="w-full rounded-lg border border-gray-200 bg-transparent py-2 pl-10 pr-4 text-sm text-gray-700 outline-none transition focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white">
+                </div>
+
+                <select name="mode" onchange="this.form.submit()" class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm text-gray-700 outline-none transition focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white">
+                    <option value="">Semua Mode Input</option>
+                    <option value="simple" {{ ($mode ?? '') == 'simple' ? 'selected' : '' }}>Simpel</option>
+                    <option value="detail" {{ ($mode ?? '') == 'detail' ? 'selected' : '' }}>Detail</option>
+                </select>
             </form>
         </div>
     </div>
@@ -44,6 +52,7 @@
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kendaraan</th>
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Keluhan</th>
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tgl Selesai</th>
+                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Mode</th>
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
                 </tr>
             </thead>
@@ -65,6 +74,19 @@
                         {{ $laporan->updated_at->format('d/m/Y H:i') }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
+                        @if($laporan->mode == 'detail')
+                            <span class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2"/></svg>
+                                Detail
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/></svg>
+                                Simpel
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-2">
                             <a href="{{ route('admin.laporan-kerusakan.show', $laporan->id) }}" class="p-2 text-gray-400 hover:text-brand-500 dark:hover:text-brand-400" title="Lihat Detail">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2"/></svg>
@@ -74,7 +96,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                         <div class="flex flex-col items-center gap-2">
                             <svg class="w-12 h-12 text-gray-200 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/></svg>
                             <span>Belum ada riwayat kerusakan yang selesai.</span>

@@ -69,6 +69,13 @@
                     <option value="diterbitkan" {{ $status == 'diterbitkan' ? 'selected' : '' }}>Diterbitkan</option>
                     <option value="diproses" {{ $status == 'diproses' ? 'selected' : '' }}>Diproses</option>
                 </select>
+                
+                <select name="mode" onchange="this.form.submit()" class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm text-gray-700 outline-none transition focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white">
+                    <option value="">Semua Mode Input</option>
+                    <option value="simple" {{ $mode == 'simple' ? 'selected' : '' }}>Simpel</option>
+                    <option value="detail" {{ $mode == 'detail' ? 'selected' : '' }}>Detail</option>
+                </select>
+
                 @if($search) <input type="hidden" name="search" value="{{ $search }}"> @endif
             </form>
         </div>
@@ -88,6 +95,7 @@
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kendaraan</th>
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Keluhan</th>
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
+                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Mode</th>
                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
                 </tr>
             </thead>
@@ -118,6 +126,19 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
+                        @if($laporan->mode == 'detail')
+                            <span class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2"/></svg>
+                                Detail
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/></svg>
+                                Simpel
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-2">
                             <a href="{{ route('admin.laporan-kerusakan.show', $laporan->id) }}" class="p-2 text-gray-400 hover:text-brand-500 dark:hover:text-brand-400" title="Detail">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2"/></svg>
@@ -141,7 +162,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                         <div class="flex flex-col items-center gap-2">
                             <svg class="w-12 h-12 text-gray-200 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2"/></svg>
                             <span>Tidak ada laporan kerusakan aktif.</span>

@@ -180,23 +180,15 @@ class PerbaikanController extends Controller
             $request->validate([
                 'tgl_selesai' => 'required|date',
                 'biaya' => 'required|numeric',
-                'catatan_tambahan' => 'nullable',
             ]);
 
             try {
                 DB::beginTransaction();
 
-                // Join catatan tambahan if provided
-                $finalNote = $perbaikan->catatan;
-                if ($request->catatan_tambahan) {
-                    $finalNote .= "\n--- Penyelesaian ---\n" . $request->catatan_tambahan;
-                }
-
                 $perbaikan->update([
                     'status' => 'selesai',
                     'tgl_selesai' => $request->tgl_selesai,
                     'biaya' => $request->biaya,
-                    'catatan' => $finalNote,
                 ]);
 
                 // Update Laporan status

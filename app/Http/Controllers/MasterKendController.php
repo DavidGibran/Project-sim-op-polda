@@ -31,8 +31,19 @@ class MasterKendController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Sort feature
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDir = $request->input('sort_dir', 'desc');
+
+        $allowableSorts = ['no_polisi', 'merk', 'tahun', 'km_terakhir', 'status'];
+        if (in_array($sortBy, $allowableSorts)) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
         $perPage = $request->input('per_page', 10);
-        $kendaraans = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        $kendaraans = $query->paginate($perPage)->withQueryString();
 
         return view('admin.kendaraan.index', compact('kendaraans'))->with('title', 'Master Kendaraan');
     }
@@ -55,20 +66,29 @@ class MasterKendController extends Controller
             'nama_pemegang' => 'nullable|string|max:255',
             'merk' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
+            'nama_pada_simak' => 'nullable|string|max:255',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'bbm' => 'nullable|string|max:255',
             'kategori_kendaraan' => 'required|string|max:50',
-            'jenis_kendaraan' => 'required|string|max:255',
+            'jenis_kendaraan' => 'required|in:RANUM,RANSUS,LAINNYA',
             'keterangan_penggunaan' => 'nullable|string',
             'km_terakhir' => 'required|integer|min:0',
             'status' => 'required|in:Tersedia,Dipakai,Perbaikan',
         ], [
             'no_polisi.unique' => 'Nomor Polisi ini sudah digunakan. Silakan cek kembali database atau gunakan nomor lain.',
+            'jenis_kendaraan.in' => 'Jenis kendaraan harus RANUM, RANSUS, atau LAINNYA.',
         ]);
 
         $data = $request->all();
         // Generate default authentication fields for the vehicle
         $data['username'] = strtolower(str_replace(' ', '', $request->no_polisi));
         $data['password'] = Hash::make('password123'); // Default standard password
+        
+        // Ensure defaults for optional fields
+        if (empty($data['nama_pada_simak'])) $data['nama_pada_simak'] = '-';
+        if (empty($data['nama_pemegang'])) $data['nama_pemegang'] = '-';
+        if (empty($data['bbm'])) $data['bbm'] = '-';
+        if (empty($data['keterangan_penggunaan'])) $data['keterangan_penggunaan'] = '-';
         
         MasterKend::create($data);
 
@@ -120,14 +140,17 @@ class MasterKendController extends Controller
             'nama_pemegang' => 'nullable|string|max:255',
             'merk' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
+            'nama_pada_simak' => 'nullable|string|max:255',
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'bbm' => 'nullable|string|max:255',
             'kategori_kendaraan' => 'required|string|max:50',
-            'jenis_kendaraan' => 'required|string|max:255',
+            'jenis_kendaraan' => 'required|in:RANUM,RANSUS,LAINNYA',
             'keterangan_penggunaan' => 'nullable|string',
             'km_terakhir' => 'required|integer|min:0',
             'status' => 'required|in:Tersedia,Dipakai,Perbaikan',
         ], [
             'no_polisi.unique' => 'Nomor Polisi ini sudah digunakan oleh kendaraan lain.',
+            'jenis_kendaraan.in' => 'Jenis kendaraan harus RANUM, RANSUS, atau LAINNYA.',
         ]);
 
         $kendaraan->update($request->all());

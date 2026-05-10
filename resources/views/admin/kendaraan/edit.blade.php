@@ -53,12 +53,26 @@
                     <input type="text" name="tipe" value="{{ old('tipe', $kendaraan->tipe) }}" required placeholder="Misal: CR-V" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tipe') border-error @enderror">
                     @error('tipe') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
+
+                <!-- Nama Pada SIMAK -->
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Nama Pada SIMAK</label>
+                    <input type="text" name="nama_pada_simak" value="{{ old('nama_pada_simak', $kendaraan->nama_pada_simak) }}" placeholder="Contoh: TOYOTA AVANZA 1.3 G M/T" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('nama_pada_simak') border-error @enderror">
+                    @error('nama_pada_simak') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                </div>
                 
                 <!-- Tahun -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Tahun <span class="text-error">*</span></label>
                     <input type="number" name="tahun" value="{{ old('tahun', $kendaraan->tahun) }}" required min="1900" max="{{ date('Y') + 1 }}" placeholder="Misal: 2021" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tahun') border-error @enderror">
                     @error('tahun') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- BBM -->
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Jenis BBM</label>
+                    <input type="text" name="bbm" value="{{ old('bbm', $kendaraan->bbm) }}" placeholder="Contoh: PERTALITE / PERTAMAX / SOLAR" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('bbm') border-error @enderror">
+                    @error('bbm') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Kategori Kendaraan -->
@@ -81,7 +95,6 @@
                         <option value="" class="text-gray-700 dark:text-white">Pilih Jenis</option>
                         <option value="RANUM" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan', $kendaraan->jenis_kendaraan) == 'RANUM' ? 'selected' : '' }}>RANUM</option>
                         <option value="RANSUS" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan', $kendaraan->jenis_kendaraan) == 'RANSUS' ? 'selected' : '' }}>RANSUS</option>
-                        <option value="OPERASIONAL" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan', $kendaraan->jenis_kendaraan) == 'OPERASIONAL' ? 'selected' : '' }}>OPERASIONAL</option>
                         <option value="LAINNYA" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan', $kendaraan->jenis_kendaraan) == 'LAINNYA' ? 'selected' : '' }}>LAINNYA</option>
                     </select>
                     @error('jenis_kendaraan') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror

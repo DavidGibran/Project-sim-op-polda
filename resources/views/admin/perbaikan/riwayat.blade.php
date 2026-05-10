@@ -64,7 +64,7 @@
             <thead>
                 <tr class="bg-gray-50 dark:bg-white/5">
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kendaraan</th>
-                    <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Keluhan</th>
+                    <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Detail Perbaikan</th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tgl Mulai</th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tgl Selesai</th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-right">Biaya</th>
@@ -79,7 +79,7 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ $perbaikan->kendaraan->merk }} {{ $perbaikan->kendaraan->tipe }}</p>
                     </td>
                     <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                        <p class="line-clamp-1" title="{{ $perbaikan->keluhan }}">{{ $perbaikan->keluhan }}</p>
+                        <p class="line-clamp-1" title="{{ \Illuminate\Support\Str::before($perbaikan->catatan, "\n--- Penyelesaian") }}">{{ \Illuminate\Support\Str::before($perbaikan->catatan, "\n--- Penyelesaian") ?: '-' }}</p>
                     </td>
                     <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
                         {{ \Carbon\Carbon::parse($perbaikan->tgl_mulai)->translatedFormat('d F Y') }}

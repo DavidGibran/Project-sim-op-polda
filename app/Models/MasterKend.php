@@ -16,6 +16,8 @@ class MasterKend extends Model
         'merk',
         'tipe',
         'tahun',
+        'bbm',
+        'nama_pada_simak',
         'kategori_kendaraan',
         'jenis_kendaraan',
         'keterangan_penggunaan',
