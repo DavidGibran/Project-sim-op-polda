@@ -48,6 +48,7 @@ class DashboardController extends Controller
             'merk' => $kendaraan->merk,
             'tipe' => $kendaraan->tipe,
             'nama_pengemudi' => $penugasanAktif->pengemudi ?? '-',
+            'bbm' => $kendaraan->bbm ?? '-',
             'status_perjalanan' => $penugasanAktif->status ?? '-',
             'km_awal' => $penugasanAktif->km_awal ?? $kendaraan->km_terakhir ?? 0,
             'tujuan' => $penugasanAktif->tujuan ?? '-',
@@ -62,6 +63,8 @@ class DashboardController extends Controller
                 : null,
 
             'bisa_terima_tugas' => $penugasanAktif && $penugasanAktif->status === 'diterbitkan',
+            'keperluan' => $penugasanAktif->keperluan ?? '-',
+            'catatan' => $penugasanAktif->catatan ?? '-',
             'penugasan_aktif' => $penugasanAktif,
         ];
 

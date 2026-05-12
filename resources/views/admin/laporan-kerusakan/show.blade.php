@@ -121,18 +121,21 @@
         <!-- Kendaraan -->
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <h3 class="font-bold text-gray-900 dark:text-white mb-4">Data Kendaraan</h3>
-            <div class="space-y-4">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-medium text-gray-500 uppercase">Plat Nomor</span>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">{{ $laporan->kendaraan->no_polisi }}</span>
+            <div class="space-y-3">
+                {{-- Plat Nomor --}}
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 px-4 py-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Plat Nomor</p>
+                    <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $laporan->kendaraan->no_polisi }}</p>
                 </div>
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-medium text-gray-500 uppercase">Unit</span>
-                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $laporan->kendaraan->merk }} {{ $laporan->kendaraan->tipe }}</span>
+                {{-- Unit (merk & tipe bisa panjang) --}}
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 px-4 py-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Unit</p>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{{ $laporan->kendaraan->merk }} {{ $laporan->kendaraan->tipe }}</p>
                 </div>
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-medium text-gray-500 uppercase">Kategori</span>
-                    <span class="text-sm text-gray-900 dark:text-white">{{ $laporan->kendaraan->kategori_kendaraan }}</span>
+                {{-- Kategori --}}
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 px-4 py-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Kategori</p>
+                    <p class="text-sm text-gray-900 dark:text-white">{{ $laporan->kendaraan->kategori_kendaraan ?? '-' }}</p>
                 </div>
             </div>
         </div>

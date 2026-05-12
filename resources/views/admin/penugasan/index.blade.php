@@ -69,6 +69,7 @@
                         class="w-full sm:w-auto rounded-lg border border-gray-300 bg-white py-2.5 px-4 text-sm text-gray-700 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-transparent dark:text-gray-300">
                     <option value="Semua" class="text-gray-700" {{ request('status') === 'Semua' ? 'selected' : '' }}>Semua Status</option>
                     <option value="diterbitkan" class="text-gray-700" {{ request('status') === 'diterbitkan' ? 'selected' : '' }}>Diterbitkan</option>
+                    <option value="diterima" class="text-gray-700" {{ request('status') === 'diterima' ? 'selected' : '' }}>Diterima</option>
                     <option value="berjalan" class="text-gray-700" {{ request('status') === 'berjalan' ? 'selected' : '' }}>Berjalan</option>
                     <option value="selesai" class="text-gray-700" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
                     <option value="dibatalkan" class="text-gray-700" {{ request('status') === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
@@ -112,7 +113,8 @@
                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
                     <td class="px-5 py-4">
                         <p class="text-sm font-bold text-gray-800 dark:text-white/90">{{ $tugas->kendaraan->no_polisi ?? '-' }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $tugas->kendaraan->merk ?? '' }} {{ $tugas->kendaraan->tipe ?? '' }}</p>
+                        @php $merkTipe = trim(($tugas->kendaraan->merk ?? '') . ' ' . ($tugas->kendaraan->tipe ?? '')); @endphp
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate max-w-[180px]" title="{{ $merkTipe }}">{{ $merkTipe }}</p>
                     </td>
                     <td class="px-5 py-4">
                         <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ Str::limit($tugas->tujuan, 30) }}</p>
@@ -127,11 +129,12 @@
                         @php
                         $statusConfig = [
                             'diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400',
-                            'berjalan'    => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+                            'diterima'    => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+                            'berjalan'    => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400',
                             'selesai'     => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
                             'dibatalkan'  => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
                         ];
-                        $configClass = $statusConfig[$tugas->status] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+                        $configClass = $statusConfig[strtolower($tugas->status)] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
                         @endphp
                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $configClass }}">
                             {{ ucfirst($tugas->status) }}

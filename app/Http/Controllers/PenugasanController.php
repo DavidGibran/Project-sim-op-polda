@@ -78,8 +78,8 @@ class PenugasanController extends Controller
                 'catatan'   => $request->catatan,
             ]);
 
-            // Update kendaraan status
-            $kendaraan->update(['status' => 'Diterbitkan']);
+            // Update kendaraan status (tetap Tersedia saat baru diterbitkan)
+            $kendaraan->update(['status' => 'Tersedia']);
 
             DB::commit();
             return redirect()->route('penugasan.index')->with('success', 'Penugasan berhasil dibuat.');

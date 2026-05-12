@@ -8,6 +8,7 @@
     'siapDipakai' => 0,
     'sedangTugas' => 0,
     'perbaikanTerbaru' => [],
+    'perbaikanAktif' => [],
     // New Props
     'avgOdometer' => 0,
     'oldestVehicle' => null,
@@ -18,7 +19,7 @@
     'oldestRepair' => null,
     'assignmentsToday' => 0,
     'assignmentsFinishedToday' => 0,
-    'topDestination' => null,
+    'oldestAssignment' => null,
 ])
 
 <div x-data="{ 
@@ -28,7 +29,7 @@
         this.modalType = type;
         this.showInfo = true;
     }
-}" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
+}">
     <!-- Modal Information -->
     <div x-show="showInfo" 
          x-transition:enter="transition ease-out duration-300"
@@ -40,7 +41,7 @@
          class="fixed inset-0 z-99999 flex items-center justify-center bg-black/50 px-4 py-5"
          style="display: none;">
         <div @click.outside="showInfo = false" 
-             class="w-full max-w-[500px] rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-900">
+             class="w-full max-w-[500px] max-h-[90vh] overflow-y-auto custom-scrollbar rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-900">
             
             <template x-if="modalType === 'total'">
                 <div>
@@ -141,8 +142,8 @@
                                 @foreach($topVehicles as $v)
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center text-[10px] font-bold shadow-sm border border-gray-100 dark:border-gray-700">
-                                            {{ $v->kategori_kendaraan }}
+                                        <div class="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center text-[10px] font-bold text-gray-800 dark:text-white shadow-sm border border-gray-100 dark:border-gray-700 uppercase">
+                                            {{ $v->kategori_kendaraan == 'Lainnya' ? 'LN' : $v->kategori_kendaraan }}
                                         </div>
                                         <div>
                                             <p class="text-sm font-bold text-gray-800 dark:text-white">{{ $v->no_polisi }}</p>
@@ -192,8 +193,21 @@
                             </div>
                             <div>
                                 <p class="text-[11px] font-bold text-warning-700 dark:text-warning-500 uppercase tracking-wider">Perbaikan Terlama</p>
+                                @php
+                                    $startOldest = \Carbon\Carbon::parse($oldestRepair->tanggal_lapor);
+                                    $totalMinutes = (int) $startOldest->diffInMinutes(now());
+                                    $totalHours   = (int) $startOldest->diffInHours(now());
+                                    $totalDays    = (int) $startOldest->diffInDays(now());
+                                    if ($totalDays >= 1) {
+                                        $durasiOldest = $totalDays . ' hari';
+                                    } elseif ($totalHours >= 1) {
+                                        $durasiOldest = $totalHours . ' jam';
+                                    } else {
+                                        $durasiOldest = $totalMinutes . ' menit';
+                                    }
+                                @endphp
                                 <p class="text-xs text-gray-700 dark:text-gray-300 mt-0.5">
-                                    <span class="font-bold">{{ $oldestRepair->kendaraan->no_polisi }}</span> telah diperbaiki selama {{ \Carbon\Carbon::parse($oldestRepair->tanggal_lapor)->diffInDays() }} hari.
+                                    <span class="font-bold">{{ $oldestRepair->kendaraan->no_polisi }}</span> telah diperbaiki selama <span class="font-bold text-warning-700 dark:text-warning-400">{{ $durasiOldest }}</span>.
                                 </p>
                             </div>
                         </div>
@@ -201,8 +215,8 @@
 
                         <div>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Update Perbaikan Terkini</p>
-                            <div class="space-y-3">
-                                @forelse($perbaikanTerbaru as $p)
+                            <div class="space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
+                                @forelse($perbaikanAktif as $p)
                                 <div class="p-4 rounded-2xl bg-gray-50/50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800 relative overflow-hidden">
                                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-error-500/50"></div>
                                     <div class="flex flex-col gap-1">
@@ -217,7 +231,16 @@
                                             </div>
                                             <div class="flex items-center gap-1.5 text-[10px] text-error-600 uppercase font-bold">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                                {{ (int) \Carbon\Carbon::parse($p->tanggal_lapor)->diffInDays() }} Hari
+                                                @php
+                                                    $startItem = \Carbon\Carbon::parse($p->tanggal_lapor);
+                                                    $dDays  = (int) $startItem->diffInDays(now());
+                                                    $dHours = (int) $startItem->diffInHours(now());
+                                                    $dMins  = (int) $startItem->diffInMinutes(now());
+                                                    if ($dDays >= 1) { $durasi = $dDays . ' Hari'; }
+                                                    elseif ($dHours >= 1) { $durasi = $dHours . ' Jam'; }
+                                                    else { $durasi = $dMins . ' Menit'; }
+                                                @endphp
+                                                {{ $durasi }}
                                             </div>
                                         </div>
                                     </div>
@@ -257,14 +280,24 @@
                             </div>
                         </div>
 
-                        @if($topDestination)
-                        <div class="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-between">
+                        @if($oldestAssignment)
+                        <div class="p-4 rounded-xl bg-primary/5 dark:bg-white/[0.02] border border-primary/10 dark:border-gray-800 flex items-center justify-between">
                             <div>
-                                <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Destinasi Terpopuler</p>
-                                <p class="text-sm font-bold text-gray-800 dark:text-white line-clamp-1">{{ $topDestination->tujuan }}</p>
+                                <p class="text-[10px] font-bold text-primary dark:text-blue-300 uppercase tracking-widest mb-1">Penugasan Terlama</p>
+                                <p class="text-sm font-bold text-gray-800 dark:text-white line-clamp-1">{{ $oldestAssignment->kendaraan->no_polisi }} ({{ $oldestAssignment->pengemudi }})</p>
+                                @php
+                                    $startOldestA = \Carbon\Carbon::parse($oldestAssignment->tgl_tugas);
+                                    $totalMinutesA = (int) $startOldestA->diffInMinutes(now());
+                                    $totalHoursA   = (int) $startOldestA->diffInHours(now());
+                                    $totalDaysA    = (int) $startOldestA->diffInDays(now());
+                                    if ($totalDaysA >= 1) { $durasiA = $totalDaysA . ' Hari'; }
+                                    elseif ($totalHoursA >= 1) { $durasiA = $totalHoursA . ' Jam'; }
+                                    else { $durasiA = $totalMinutesA . ' Menit'; }
+                                @endphp
+                                <p class="text-[10px] text-gray-500 mt-0.5">Durasi: {{ $durasiA }}</p>
                             </div>
-                            <div class="bg-white dark:bg-gray-800 px-3 py-1 rounded-full border border-primary/20 text-xs font-black text-primary">
-                                {{ $topDestination->total }} <span class="text-[10px] font-normal opacity-70">Unit</span>
+                            <div class="bg-white dark:bg-gray-800 px-3 py-1 rounded-full border border-primary/20 dark:border-gray-700 text-xs font-black text-primary dark:text-blue-300">
+                                Active
                             </div>
                         </div>
                         @endif
@@ -306,103 +339,129 @@
         </div>
     </div>
 
-    <!-- Card 1: Total Kendaraan -->
-    <div class="relative rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <button @click="openModal('total')" 
-                class="absolute right-4 top-4 text-gray-400 hover:text-primary transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </button>
-        
-        <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800 text-gray-800 dark:text-white/90">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9c-.1.3-.2.6-.2.9V16c0 .6.4 1 1 1h2"></path>
-                <circle cx="7" cy="17" r="2"></circle>
-                <circle cx="17" cy="17" r="2"></circle>
-            </svg>
-        </div>
-
-        <div class="mt-5">
-            <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Total Kendaraan</p>
-            <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $totalKendaraan ?? 0 }}</h4>
-        </div>
-    </div>
-
-    <!-- Card 2: Kendaraan Aktif -->
-    <div class="relative rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <button @click="openModal('aktif')" 
-                class="absolute right-4 top-4 text-gray-400 hover:text-primary transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </button>
-
-        <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800 text-success-600">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 16H9m10 0h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2zM5 16h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2z"></path>
-                <path d="M4.5 16.5 4 11h16l-.5 5.5M6 11l.5-4h11l.5 4"></path>
-                <path d="M12 5V2"></path>
-            </svg>
-        </div>
-
-        <div class="flex items-end justify-between mt-5">
-            <div>
-                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Kendaraan Aktif</p>
-                <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $kendaraanAktif ?? 0 }}</h4>
+    <div class="flex flex-col xl:flex-row gap-4 md:gap-6 2xl:gap-8 mt-4 items-stretch w-full">
+        <!-- Hero Card: Total Armada -->
+        <div class="w-full xl:w-4/12 2xl:w-3/12 relative rounded-3xl border border-gray-200 bg-white p-6 lg:p-8 xl:p-6 2xl:p-8 dark:border-gray-800 dark:bg-gray-900 overflow-hidden shadow-sm flex flex-col justify-between min-h-[280px]">
+            <!-- Background Decoration -->
+            <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl"></div>
+            <div class="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-success-500/10 blur-3xl"></div>
+            
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-6">
+                    <p class="text-[11px] 2xl:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--color-primary),0.5)]"></span>
+                        Status Armada Real-time
+                    </p>
+                    <button @click="openModal('total')" class="p-2 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-400 transition-colors shadow-sm border border-gray-100 dark:border-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    </button>
+                </div>
+                <div class="flex items-baseline gap-3 mb-8">
+                    <h4 class="text-5xl lg:text-7xl xl:text-5xl 2xl:text-7xl font-black text-gray-900 dark:text-white tracking-tight leading-none">{{ $totalKendaraan }}</h4>
+                    <span class="text-sm font-bold text-gray-400 uppercase tracking-widest">Unit</span>
+                </div>
             </div>
-            <span class="flex items-center gap-1 rounded-full bg-success-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-                <span class="w-2 h-2 rounded-full bg-success-600 animate-pulse"></span>
-                Beroperasi
-            </span>
-        </div>
-    </div>
 
-    <!-- Card 3: Kendaraan Perbaikan -->
-    <div class="relative rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <button @click="openModal('perbaikan')" 
-                class="absolute right-4 top-4 text-gray-400 hover:text-primary transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </button>
-
-        <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800 text-error-600">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-            </svg>
-        </div>
-
-        <div class="flex items-end justify-between mt-5">
-            <div>
-                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Kendaraan Perbaikan</p>
-                <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $kendaraanPerbaikan ?? 0 }}</h4>
+            <!-- Visual Bar -->
+            <div class="relative z-10 mt-auto">
+                <div class="flex flex-wrap items-center justify-between text-[10px] 2xl:text-xs font-bold uppercase tracking-wider mb-4 gap-2 xl:gap-3">
+                    <span class="flex items-center gap-1.5 xl:gap-2 text-success-600 dark:text-success-400">
+                        <div class="w-2.5 h-2.5 rounded-full bg-success-500"></div> Tersedia ({{ $siapDipakai }})
+                    </span>
+                    <span class="flex items-center gap-1.5 xl:gap-2 text-warning-600 dark:text-warning-400">
+                        <div class="w-2.5 h-2.5 rounded-full bg-warning-500"></div> Dipakai ({{ $kendaraanAktif }})
+                    </span>
+                    <span class="flex items-center gap-1.5 xl:gap-2 text-error-600 dark:text-error-400">
+                        <div class="w-2.5 h-2.5 rounded-full bg-error-500"></div> Perbaikan ({{ $kendaraanPerbaikan }})
+                    </span>
+                </div>
+                <div class="h-3 2xl:h-4 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex gap-1 shadow-inner">
+                    <div class="h-full bg-success-500 transition-all duration-1000 relative" style="width: {{ $totalKendaraan > 0 ? ($siapDipakai / $totalKendaraan) * 100 : 0 }}%">
+                        <div class="absolute inset-0 bg-white/20 w-full" style="background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 1rem 1rem;"></div>
+                    </div>
+                    <div class="h-full bg-warning-500 transition-all duration-1000" style="width: {{ $totalKendaraan > 0 ? ($kendaraanAktif / $totalKendaraan) * 100 : 0 }}%"></div>
+                    <div class="h-full bg-error-500 transition-all duration-1000" style="width: {{ $totalKendaraan > 0 ? ($kendaraanPerbaikan / $totalKendaraan) * 100 : 0 }}%"></div>
+                </div>
             </div>
-            <span class="flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
-                Diperbaiki
-            </span>
-        </div>
-    </div>
-
-    <!-- Card 4: Penugasan Aktif -->
-    <div class="relative rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <button @click="openModal('tugas')" 
-                class="absolute right-4 top-4 text-gray-400 hover:text-primary transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </button>
-
-        <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800 text-warning-600">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <path d="M9 12h6"></path>
-                <path d="M9 16h6"></path>
-                <path d="M9 8h6"></path>
-            </svg>
         </div>
 
-        <div class="flex items-end justify-between mt-5">
-            <div>
-                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Penugasan Aktif</p>
-                <h4 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $penugasanAktif ?? 0 }}</h4>
+        <!-- 3 Secondary Cards -->
+        <div class="w-full xl:w-8/12 2xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+            
+            <!-- Aktif/Utilitas -->
+            <div class="relative rounded-3xl border border-gray-200 bg-white p-6 xl:p-5 2xl:p-6 dark:border-gray-800 dark:bg-gray-900 shadow-sm flex flex-col justify-between group hover:border-success-500/50 transition-colors min-h-[280px]">
+                <button @click="openModal('aktif')" class="absolute right-5 top-5 text-gray-300 hover:text-success-500 transition-colors bg-gray-50 hover:bg-success-50 dark:bg-gray-800 dark:hover:bg-success-900/30 p-2 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </button>
+                <div>
+                    <div class="flex items-center justify-center w-10 h-10 2xl:w-12 2xl:h-12 mb-5 bg-success-50 rounded-2xl dark:bg-success-500/10 text-success-600 dark:text-success-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <p class="text-[10px] 2xl:text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Tingkat Utilitas</p>
+                    <div class="flex items-baseline gap-1.5">
+                        <h4 class="text-4xl xl:text-3xl 2xl:text-4xl font-black text-gray-900 dark:text-white leading-none">{{ $utilizationRate }}<span class="text-xl 2xl:text-2xl font-bold opacity-70">%</span></h4>
+                    </div>
+                </div>
+                <div class="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
+                    <p class="text-xs 2xl:text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 2xl:w-2 2xl:h-2 rounded-full bg-success-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]"></span>
+                        <span class="font-bold text-gray-900 dark:text-gray-200">{{ $kendaraanAktif }}</span> Kendaraan Aktif
+                    </p>
+                </div>
             </div>
-             <span class="flex items-center gap-1 rounded-full bg-warning-50 py-0.5 pl-2 pr-2.5 text-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
-                Bertugas
-            </span>
+
+            <!-- Tugas Aktif -->
+            <div class="relative rounded-3xl border border-gray-200 bg-white p-6 xl:p-5 2xl:p-6 dark:border-gray-800 dark:bg-gray-900 shadow-sm flex flex-col justify-between group hover:border-warning-500/50 transition-colors min-h-[280px]">
+                <button @click="openModal('tugas')" class="absolute right-5 top-5 text-gray-300 hover:text-warning-500 transition-colors bg-gray-50 hover:bg-warning-50 dark:bg-gray-800 dark:hover:bg-warning-900/30 p-2 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </button>
+                <div>
+                    <div class="flex items-center justify-center w-10 h-10 2xl:w-12 2xl:h-12 mb-5 bg-warning-50 rounded-2xl dark:bg-warning-500/10 text-warning-600 dark:text-warning-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <path d="M9 12h6"></path><path d="M9 16h6"></path><path d="M9 8h6"></path>
+                        </svg>
+                    </div>
+                    <p class="text-[10px] 2xl:text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Penugasan Aktif</p>
+                    <div class="flex items-baseline gap-1.5">
+                        <h4 class="text-4xl xl:text-3xl 2xl:text-4xl font-black text-gray-900 dark:text-white leading-none">{{ $penugasanAktif }}</h4>
+                    </div>
+                </div>
+                <div class="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
+                    <p class="text-xs 2xl:text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 2xl:w-2 2xl:h-2 rounded-full bg-warning-500 shadow-[0_0_6px_rgba(245,158,11,0.4)]"></span>
+                        <span class="font-bold text-gray-900 dark:text-gray-200">{{ $assignmentsToday }}</span> Mulai Hari Ini
+                    </p>
+                </div>
+            </div>
+
+            <!-- Perbaikan Aktif -->
+            <div class="relative rounded-3xl border border-gray-200 bg-white p-6 xl:p-5 2xl:p-6 dark:border-gray-800 dark:bg-gray-900 shadow-sm flex flex-col justify-between group hover:border-error-500/50 transition-colors min-h-[280px]">
+                <button @click="openModal('perbaikan')" class="absolute right-5 top-5 text-gray-300 hover:text-error-500 transition-colors bg-gray-50 hover:bg-error-50 dark:bg-gray-800 dark:hover:bg-error-900/30 p-2 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </button>
+                <div>
+                    <div class="flex items-center justify-center w-10 h-10 2xl:w-12 2xl:h-12 mb-5 bg-error-50 rounded-2xl dark:bg-error-500/10 text-error-600 dark:text-error-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-[10px] 2xl:text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Maintenance</p>
+                    <div class="flex items-baseline gap-1.5">
+                        <h4 class="text-4xl xl:text-3xl 2xl:text-4xl font-black text-gray-900 dark:text-white leading-none">{{ $kendaraanPerbaikan }}</h4>
+                    </div>
+                </div>
+                <div class="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
+                    <p class="text-xs 2xl:text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 2xl:w-2 2xl:h-2 rounded-full bg-error-500 shadow-[0_0_6px_rgba(239,68,68,0.4)]"></span>
+                        Avg <span class="font-bold text-gray-900 dark:text-gray-200">{{ $avgRepairDuration }} Hari</span>
+                    </p>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

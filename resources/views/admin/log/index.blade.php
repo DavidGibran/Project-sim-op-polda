@@ -201,8 +201,8 @@
                                 {{ $log->pengemudi ?? '-' }}
                             </td>
 
-                            <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                {{ $log->kendaraan->tipe ?? '-' }}
+                            <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-[160px]">
+                                <span class="block truncate" title="{{ $log->kendaraan->tipe ?? '-' }}">{{ $log->kendaraan->tipe ?? '-' }}</span>
                             </td>
 
                             <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">

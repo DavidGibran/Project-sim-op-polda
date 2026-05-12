@@ -180,8 +180,9 @@
                             <p class="text-sm font-bold text-gray-900 dark:text-white">
                                 {{ $perbaikan->kendaraan->no_polisi ?? '-' }}
                             </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ $perbaikan->kendaraan->merk ?? '-' }} {{ $perbaikan->kendaraan->tipe ?? '' }}
+                            @php $merkTipe = trim(($perbaikan->kendaraan->merk ?? '') . ' ' . ($perbaikan->kendaraan->tipe ?? '')); @endphp
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]" title="{{ $merkTipe }}">
+                                {{ $merkTipe }}
                             </p>
                         </td>
 

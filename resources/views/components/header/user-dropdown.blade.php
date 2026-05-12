@@ -293,7 +293,7 @@
                 <div class="mt-7 flex flex-col gap-3">
                     <button
                         type="submit"
-                        class="inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+                        class="inline-flex w-full items-center justify-center rounded-lg bg-success-400 dark:bg-success-600 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
                     >
                         Simpan Perubahan
                     </button>

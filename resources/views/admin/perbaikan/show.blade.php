@@ -204,23 +204,25 @@
             </div>
         </div>
 
-        <!-- Vehicle Details Card -->
         <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
             <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
                 <h3 class="font-semibold text-gray-900 dark:text-white">Data Kendaraan</h3>
             </div>
-            <div class="p-6 space-y-4 text-sm">
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-500 dark:text-gray-400">No. Polisi</span>
-                    <span class="font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ $perbaikan->kendaraan->no_polisi }}</span>
+            <div class="p-5 space-y-3">
+                {{-- No. Polisi --}}
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 px-4 py-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">No. Polisi</p>
+                    <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $perbaikan->kendaraan->no_polisi }}</p>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-500 dark:text-gray-400">Merk & Tipe</span>
-                    <span class="font-medium text-gray-900 dark:text-gray-200 text-right">{{ $perbaikan->kendaraan->merk }} {{ $perbaikan->kendaraan->tipe }}</span>
+                {{-- Merk & Tipe (bisa panjang) --}}
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 px-4 py-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Merk & Tipe</p>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{{ $perbaikan->kendaraan->merk }} {{ $perbaikan->kendaraan->tipe }}</p>
                 </div>
-                <div class="flex justify-between items-center border-t border-gray-50 dark:border-gray-800 pt-4">
-                    <span class="text-gray-500 dark:text-gray-400">KM Terakhir</span>
-                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ number_format($perbaikan->kendaraan->km_terakhir, 0, ',', '.') }} KM</span>
+                {{-- KM Terakhir --}}
+                <div class="rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 px-4 py-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">KM Terakhir</p>
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ number_format($perbaikan->kendaraan->km_terakhir, 0, ',', '.') }} KM</p>
                 </div>
             </div>
         </div>

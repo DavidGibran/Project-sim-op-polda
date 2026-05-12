@@ -56,11 +56,11 @@
         {{-- ===================================================== --}}
         {{-- CARD 1 : INFORMASI KENDARAAN --}}
         {{-- ===================================================== --}}
-        <div class="xl:col-span-5">
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="xl:col-span-5 flex flex-col">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] h-full flex flex-col">
                 
                 {{-- Header card --}}
-                <div class="mb-5 flex items-start justify-between gap-4">
+                <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                             Informasi Kendaraan
@@ -71,17 +71,26 @@
                     </div>
 
                     {{-- 
-                        Tombol laporkan kendala
-                        Untuk sekarang nomor WA dikosongkan dulu sesuai instruksi Anda.
-                        Nanti tinggal isi nomor admin pada href.
+                        Tombol laporkan kendala atau aksi sesuai status perjalanan
                     --}}
-                    <a
-                        href="{{ route('kendaraan.laporan-kerusakan.create') }}"
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0 rounded-lg bg-warning-500 px-5 py-2 text-sm font-medium text-white hover:opacity-90"
-                    >
-                        Laporkan Kerusakan
-                    </a>
-
+                    @if(($dashboardData['status_perjalanan'] ?? '') === 'berjalan')
+                        {{-- Sedang berjalan: arahkan ke halaman perjalanan aktif --}}
+                        <a
+                            href="{{ route('kendaraan.perjalanan-aktif') }}"
+                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0 rounded-lg bg-success-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-success-700 dark:bg-success-600 dark:hover:bg-success-500 transition-colors"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            Perjalanan Aktif
+                        </a>
+                    @else
+                        {{-- Masih di garasi (diterbitkan / diterima / tidak ada penugasan): bisa laporkan kerusakan --}}
+                        <a
+                            href="{{ route('kendaraan.laporan-kerusakan.create') }}"
+                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0 rounded-lg bg-warning-500 px-5 py-2 text-sm font-medium text-white hover:opacity-90"
+                        >
+                            Laporkan Kerusakan
+                        </a>
+                    @endif
                 </div>
 
                 {{-- Konten utama card --}}
@@ -106,6 +115,16 @@
                         </p>
                     </div>
 
+                    {{-- Jenis BBM --}}
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-900/50">
+                        <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            Jenis BBM
+                        </p>
+                        <p class="mt-1 text-base font-semibold text-gray-900 dark:text-white">
+                            {{ $dashboardData['bbm'] ?? '-' }}
+                        </p>
+                    </div>
+
                     {{-- Nama pengemudi --}}
                     <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-900/50">
                         <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
@@ -122,8 +141,8 @@
         {{-- ===================================================== --}}
         {{-- CARD 2 : KENDARAAN AKTIF ANDA --}}
         {{-- ===================================================== --}}
-        <div class="xl:col-span-7">
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="xl:col-span-7 flex flex-col">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] h-full flex flex-col">
 
                 {{-- Header card --}}
                 <div class="mb-5 flex items-start justify-between gap-4">
@@ -141,11 +160,12 @@
                         $status = $dashboardData['status_perjalanan'] ?? '-';
 
                         $badgeClass = match($status) {
-                            'diterbitkan' => 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400',
-                            'berjalan' => 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
-                            'selesai' => 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300',
-                            'dibatalkan' => 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
-                            default => 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300',
+                            'diterbitkan' => 'bg-warning-100 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400',
+                            'diterima'    => 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400',
+                            'berjalan'    => 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
+                            'selesai'     => 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300',
+                            'dibatalkan'  => 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+                            default       => 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300',
                         };
                     @endphp
 
@@ -197,13 +217,30 @@
                     </div>
                 </div>
 
+                {{-- Section Tambahan: Detail Penugasan --}}
+                <div class="mt-6 border-t border-gray-100 pt-6 dark:border-gray-800">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4">
+                        Detail Penugasan
+                    </h4>
+                    <div class="grid grid-cols-1 gap-4">
+                        {{-- Catatan Admin --}}
+                        <div class="rounded-xl border border-gray-100 bg-gray-50/50 px-4 py-3 dark:border-gray-800 dark:bg-gray-900/30">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                                Catatan Tambahan (Admin)
+                            </p>
+                            <p class="mt-1 text-sm italic text-gray-600 dark:text-gray-400">
+                                {{ $dashboardData['catatan'] ?? 'Tidak ada catatan tambahan.' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- CTA utama --}}
-                <div class="mt-6">
+                <div class="mt-auto pt-6">
+                    @php $statusPerjalanan = $dashboardData['status_perjalanan'] ?? '-'; @endphp
+
                     @if(!empty($dashboardData['penugasan_aktif']) && ($dashboardData['bisa_terima_tugas'] ?? false))
-                        {{-- 
-                            Tombol aktif jika ada penugasan dengan status diterbitkan
-                            Saat diklik akan mengubah status tugas menjadi berjalan
-                        --}}
+                        {{-- Penugasan baru diterbitkan, perlu diterima --}}
                         <form
                             action="{{ route('kendaraan.penugasan.terima', $dashboardData['penugasan_aktif']->id) }}"
                             method="POST"
@@ -216,21 +253,34 @@
                                 Terima Tugas
                             </button>
                         </form>
-                    @else
-                        {{-- 
-                            Tombol disabled jika tidak ada tugas yang diterbitkan
-                        --}}
-                        <button
-                            type="button"
-                            disabled
-                            class="inline-flex w-full cursor-not-allowed items-center justify-center rounded-xl bg-gray-300 px-5 py-3 text-sm font-medium text-white dark:bg-gray-700 md:w-auto"
-                        >
-                            Terima Tugas
-                        </button>
 
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                            Tidak ada penugasan yang bisa diterima saat ini.
-                        </p>
+                    @elseif($statusPerjalanan === 'diterima')
+                        {{-- Tugas sudah diterima, menunggu mulai perjalanan --}}
+                        <div class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-800/50 dark:bg-blue-500/10">
+                            <p class="font-semibold text-blue-800 dark:text-blue-300 text-sm">Tugas Telah Diterima</p>
+                            <p class="mt-0.5 text-xs text-blue-600 dark:text-blue-400 mb-3">Silakan mulai perjalanan jika sudah siap.</p>
+                            <a
+                                href="{{ route('kendaraan.perjalanan-aktif') }}"
+                                class="inline-flex items-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 hover:underline"
+                            >
+                                Buka Halaman Perjalanan Aktif
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                    @elseif($statusPerjalanan === 'berjalan')
+                        {{-- Sedang dalam perjalanan --}}
+                        <div class="rounded-xl border border-success-200 bg-success-50 px-4 py-3 dark:border-success-800/50 dark:bg-success-500/10">
+                            <p class="font-semibold text-success-800 dark:text-success-300 text-sm">Sedang Dalam Perjalanan</p>
+                            <p class="mt-0.5 text-xs text-success-600 dark:text-success-400">Perjalanan aktif sedang berjalan. Gunakan tombol di atas untuk melihat detail.</p>
+                        </div>
+
+                    @else
+                        {{-- Tidak ada penugasan sama sekali --}}
+                        <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600 dark:border-gray-800 dark:bg-gray-900/50 dark:text-gray-400">
+                            <p class="font-medium text-gray-900 dark:text-white">Tidak Ada Penugasan Baru</p>
+                            <p class="mt-0.5 text-xs">Anda tidak memiliki penugasan baru yang harus diterima saat ini.</p>
+                        </div>
                     @endif
                 </div>
             </div>

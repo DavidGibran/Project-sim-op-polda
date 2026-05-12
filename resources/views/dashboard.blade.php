@@ -22,42 +22,58 @@
     </div>
 
     <div class="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-8">
-      <!-- Row 1: Fleet Metrics (Full Width) -->
+      <!-- Row 1: Fleet Metrics (Hero Style) -->
       <div class="col-span-12">
         <x-dashboard.fleet-metrics 
           :totalKendaraan="$totalKendaraan"
           :kendaraanAktif="$kendaraanAktif"
           :kendaraanPerbaikan="$kendaraanPerbaikan"
           :penugasanAktif="$penugasanAktif"
+          :siapDipakai="$siapDipakai"
           :totalR2="$totalR2"
           :totalR4="$totalR4"
-          :siapDipakai="$siapDipakai"
           :sedangTugas="$sedangTugas"
           :perbaikanTerbaru="$perbaikanTerbaru"
+          :perbaikanAktif="$perbaikanAktif"
+          :avgOdometer="$avgOdometer"
+          :oldestVehicle="$oldestVehicle"
+          :newestVehicle="$newestVehicle"
+          :utilizationRate="$utilizationRate"
+          :topVehicles="$topVehicles"
+          :avgRepairDuration="$avgRepairDuration"
+          :oldestRepair="$oldestRepair"
+          :assignmentsToday="$assignmentsToday"
+          :assignmentsFinishedToday="$assignmentsFinishedToday"
+          :oldestAssignment="$oldestAssignment"
         />
       </div>
 
-      <!-- Row 2: Charts (Trend + Status) -->
-      <!-- Left: Trend Chart (8 Columns) -->
+      <!-- Row 2: Operational Insights & Attention Panel -->
       <div class="col-span-12 xl:col-span-8">
-          <x-dashboard.fleet-trend-chart :trendData="$trendData" />
+          <x-dashboard.operational-insights 
+              :komposisiKategori="$komposisiKategori"
+              :komposisiJenis="$komposisiJenis"
+              :distribusiBBM="$distribusiBBM"
+              :statusArmada="$statusArmada"
+              :totalKendaraan="$totalKendaraan"
+          />
       </div>
 
-      <!-- Right: Unused Vehicles Panel (4 Columns) -->
-      <div class="col-span-12 xl:col-span-4">
+      <!-- Right: Armada Idle / Perlu Perhatian -->
+      <div class="col-span-12 xl:col-span-4 flex flex-col gap-4 md:gap-6 2xl:gap-8">
           <x-dashboard.unused-vehicles 
               :kendaraanTidakDigunakan="$kendaraanTidakDigunakan"
           />
       </div>
 
-      <!-- Row 3: Recent Info (Stacked Vertically) -->
-      <div class="col-span-12">
+      <!-- Row 3: Live Feed Activity -->
+      <div class="col-span-12 xl:col-span-6">
           <x-dashboard.recent-assignments 
               :penugasanTerbaru="$penugasanTerbaru"
           />
       </div>
 
-      <div class="col-span-12">
+      <div class="col-span-12 xl:col-span-6">
           <x-dashboard.recent-repairs 
               :perbaikanTerbaru="$perbaikanTerbaru"
           />

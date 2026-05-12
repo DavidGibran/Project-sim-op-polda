@@ -104,7 +104,8 @@
                 <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                     <td class="px-5 py-4">
                         <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $perbaikan->kendaraan->no_polisi }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $perbaikan->kendaraan->merk }} {{ $perbaikan->kendaraan->tipe }}</p>
+                        @php $merkTipe = trim(($perbaikan->kendaraan->merk ?? '') . ' ' . ($perbaikan->kendaraan->tipe ?? '')); @endphp
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]" title="{{ $merkTipe }}">{{ $merkTipe }}</p>
                     </td>
                     <td class="px-5 py-4">
                         <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-1">{{ \Illuminate\Support\Str::before($perbaikan->catatan, "\n--- Penyelesaian") ?: '-' }}</p>

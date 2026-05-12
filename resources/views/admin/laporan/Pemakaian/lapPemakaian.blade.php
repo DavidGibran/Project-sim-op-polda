@@ -197,9 +197,9 @@
                             </p>
                         </td>
 
-                        <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
+                        <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 max-w-[160px]">
                             {{-- Tipe kendaraan --}}
-                            {{ $log->kendaraan->tipe ?? '-' }}
+                            <span class="block truncate" title="{{ $log->kendaraan->tipe ?? '-' }}">{{ $log->kendaraan->tipe ?? '-' }}</span>
                         </td>
 
                         <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 font-medium">

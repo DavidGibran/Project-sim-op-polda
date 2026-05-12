@@ -164,17 +164,7 @@
                          */
                         $statusConfig = [
                             'Tersedia' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
-                    
-                            // Saat ada tugas diterbitkan
-                            'Diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400',
-                    
-                            // NEW: kendaraan sudah menerima tugas tapi belum jalan
-                            'Diterima' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
-                    
-                            // Saat kendaraan sedang digunakan
-                            'Perjalanan' => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400',
-                    
-                            // Saat kendaraan sedang perbaikan
+                            'Dipakai' => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400',
                             'Perbaikan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
                         ];
                     

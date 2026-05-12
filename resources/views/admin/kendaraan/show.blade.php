@@ -52,11 +52,14 @@
             <div class="flex flex-col items-start md:items-end gap-2">
                 @php
                     $statusConfig = [
-                        'Tersedia' => 'bg-success-50 text-success-700 border-success-200 dark:bg-success-500/10 dark:text-success-400 dark:border-success-500/20',
-                        'Dipakai' => 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
-                        'Perbaikan' => 'bg-error-50 text-error-700 border-error-200 dark:bg-error-500/10 dark:text-error-400 dark:border-error-500/20',
+                        'Tersedia'    => 'bg-success-50 text-success-700 border-success-200 dark:bg-success-500/10 dark:text-success-400 dark:border-success-500/20',
+                        'Diterbitkan' => 'bg-warning-50 text-warning-700 border-warning-200 dark:bg-warning-500/10 dark:text-warning-400 dark:border-warning-500/20',
+                        'Diterima'    => 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+                        'Dipakai'     => 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20',
+                        'Perjalanan'  => 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20',
+                        'Perbaikan'   => 'bg-error-50 text-error-700 border-error-200 dark:bg-error-500/10 dark:text-error-400 dark:border-error-500/20',
                     ];
-                    $configClass = $statusConfig[$kendaraan->status] ?? 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
+                    $configClass = $statusConfig[ucfirst(strtolower($kendaraan->status))] ?? 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
                 @endphp
                 <span class="inline-flex items-center justify-center rounded-full border px-4 py-1.5 text-sm font-bold tracking-wide {{ $configClass }}">
                     <span class="mr-2 h-2 w-2 rounded-full currentColor bg-current animate-pulse"></span>
@@ -151,12 +154,13 @@
                         <div class="mb-1.5 flex flex-wrap items-center justify-between gap-2">
                             <span class="text-[11px] font-black text-blue-500 dark:text-blue-400 tracking-wider">{{ \Carbon\Carbon::parse($tugas->tgl_tugas)->translatedFormat('d M Y') }}</span>
                             @php
-                                $ts_color = match($tugas->status) {
-                                    'berjalan' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
-                                    'selesai' => 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-400',
-                                    'dibatalkan' => 'bg-error-50 text-error-700 dark:bg-error-500/10 dark:text-error-400',
+                                $ts_color = match(strtolower($tugas->status)) {
                                     'diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/10 dark:text-warning-400',
-                                    default => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                                    'diterima'    => 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+                                    'berjalan'    => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400',
+                                    'selesai'     => 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-400',
+                                    'dibatalkan'  => 'bg-error-50 text-error-700 dark:bg-error-500/10 dark:text-error-400',
+                                    default       => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
                                 };
                             @endphp
                             <span class="inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider {{ $ts_color }}">

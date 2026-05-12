@@ -46,45 +46,45 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Data Riwayat Perbaikan Terbaru (2 Data for Modal height)
+        // Data Riwayat Perbaikan Terbaru (Top 5) - Untuk Live Feed
         $perbaikanTerbaru = Perbaikan::with('kendaraan')
             ->latest('tanggal_lapor')
-            ->take(2)
+            ->take(5)
             ->get();
 
-        // Data Trend Operasional (Last 12 Months)
-        $months = [];
-        $aktifData = [];
-        $penugasanData = [];
-        $perbaikanData = [];
+        // Data Perbaikan Aktif (Top 10) - Khusus untuk Modal Maintenance
+        $perbaikanAktif = Perbaikan::with('kendaraan')
+            ->where('status', 'diproses')
+            ->latest('tanggal_lapor')
+            ->take(10)
+            ->get();
 
-        for ($i = 11; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $monthName = $date->translatedFormat('M');
-            $yearMonth = $date->format('Y-m');
-            
-            $months[] = $monthName;
+        // Data Komposisi Armada untuk Visualisasi
+        $komposisiKategori = [
+            'R2' => MasterKend::where('kategori_kendaraan', 'R2')->count(),
+            'R4' => MasterKend::where('kategori_kendaraan', 'R4')->count(),
+            'R6' => MasterKend::where('kategori_kendaraan', 'R6')->count(),
+            'Lainnya' => MasterKend::whereNotIn('kategori_kendaraan', ['R2', 'R4', 'R6'])->count(),
+        ];
 
-            // Penugasan in this month
-            $penugasanCount = Penugasan::where('tgl_tugas', 'like', "$yearMonth%")->count();
-            $penugasanData[] = $penugasanCount;
+        $komposisiJenis = [
+            'RANUM' => MasterKend::where('jenis_kendaraan', 'RANUM')->count(),
+            'RANSUS' => MasterKend::where('jenis_kendaraan', 'RANSUS')->count(),
+            'LAINNYA' => MasterKend::where('jenis_kendaraan', 'LAINNYA')->count(),
+        ];
 
-            // Perbaikan in this month
-            $perbaikanCount = Perbaikan::where('tanggal_lapor', 'like', "$yearMonth%")->count();
-            $perbaikanData[] = $perbaikanCount;
+        $distribusiBBM = MasterKend::select('bbm', DB::raw('count(*) as total'))
+            ->whereNotNull('bbm')
+            ->where('bbm', '!=', '-')
+            ->groupBy('bbm')
+            ->orderBy('total', 'desc')
+            ->pluck('total', 'bbm')
+            ->toArray();
 
-            // Proxy for "Aktif": Unique vehicles that had a penugasan in this month
-            $aktifCount = Penugasan::where('tgl_tugas', 'like', "$yearMonth%")
-                ->distinct('id_kend')
-                ->count('id_kend');
-            $aktifData[] = $aktifCount;
-        }
-
-        $trendData = [
-            'categories' => $months,
-            'aktif' => $aktifData,
-            'penugasan' => $penugasanData,
-            'perbaikan' => $perbaikanData
+        $statusArmada = [
+            'Tersedia' => $siapDipakai,
+            'Dipakai' => $kendaraanAktif,
+            'Perbaikan' => $kendaraanPerbaikan,
         ];
 
         // --- NEW METRICS FOR ENHANCED MODALS ---
@@ -106,7 +106,7 @@ class DashboardController extends Controller
             ->whereNotNull('tgl_mulai')
             ->select(DB::raw('AVG(DATEDIFF(tgl_selesai, tgl_mulai)) as avg_days'))
             ->first()->avg_days ?? 0;
-        $avgRepairDuration = round($avgRepairDuration, 1);
+        $avgRepairDuration = (int) round($avgRepairDuration, 0);
         
         $oldestRepair = Perbaikan::with('kendaraan')
             ->whereNull('tgl_selesai')
@@ -119,10 +119,9 @@ class DashboardController extends Controller
             ->where('status', 'selesai')
             ->count();
         
-        $topDestination = Penugasan::whereIn('status', ['berjalan', 'diterima'])
-            ->select('tujuan', DB::raw('count(*) as total'))
-            ->groupBy('tujuan')
-            ->orderBy('total', 'desc')
+        $oldestAssignment = Penugasan::with('kendaraan')
+            ->whereIn('status', ['berjalan', 'diterima'])
+            ->orderBy('tgl_tugas', 'asc')
             ->first();
 
         return view('dashboard', compact(
@@ -137,7 +136,11 @@ class DashboardController extends Controller
             'sedangTugas',
             'penugasanTerbaru',
             'perbaikanTerbaru',
-            'trendData',
+            'perbaikanAktif',
+            'komposisiKategori',
+            'komposisiJenis',
+            'distribusiBBM',
+            'statusArmada',
             // New variables
             'avgOdometer',
             'oldestVehicle',
@@ -148,7 +151,7 @@ class DashboardController extends Controller
             'oldestRepair',
             'assignmentsToday',
             'assignmentsFinishedToday',
-            'topDestination'
+            'oldestAssignment'
         ))->with('title', 'Dashboard');
     }
 }

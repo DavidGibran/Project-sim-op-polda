@@ -162,14 +162,15 @@
                 @php
                     $statusConfig = [
                         'diterbitkan' => 'bg-warning-50 text-warning-700 border-warning-200 dark:bg-warning-500/10 dark:text-warning-400 dark:border-warning-500/20',
-                        'berjalan'    => 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+                        'diterima'    => 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+                        'berjalan'    => 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20',
                         'selesai'     => 'bg-success-50 text-success-700 border-success-200 dark:bg-success-500/10 dark:text-success-400 dark:border-success-500/20',
                         'dibatalkan'  => 'bg-error-50 text-error-700 border-error-200 dark:bg-error-500/10 dark:text-error-400 dark:border-error-500/20',
                     ];
-                    $configClass = $statusConfig[$penugasan->status] ?? 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300';
+                    $configClass = $statusConfig[strtolower($penugasan->status)] ?? 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300';
                 @endphp
                 <span class="inline-flex items-center justify-center rounded-full border px-5 py-2 text-sm font-bold tracking-wide {{ $configClass }}">
-                    @if(in_array($penugasan->status, ['berjalan', 'diterbitkan']))
+                    @if(in_array(strtolower($penugasan->status), ['berjalan', 'diterbitkan', 'diterima']))
                     <span class="mr-2 h-2 w-2 rounded-full currentColor bg-current animate-pulse"></span>
                     @endif
                     {{ strtoupper($penugasan->status) }}
@@ -228,7 +229,7 @@
         <div class="rounded-3xl border-2 border-dashed border-error-200 bg-error-50/50 shadow-sm dark:border-error-500/20 dark:bg-error-500/5 p-6 text-center">
             <h4 class="text-sm font-bold text-error-600 dark:text-error-400 mb-2">Danger Zone</h4>
             <p class="text-xs text-error-500/80 dark:text-error-400/80 mb-4 px-2">Tindakan ini akan menghentikan penugasan secara permanen dan membebaskan kendaraan.</p>
-            <button @click="$dispatch('open-cancel-modal', { url: '{{ route('penugasan.batalkan', ['penugasan' => $penugasan->id ?? $penugasan->id_tugas ?? 0]) }}', title: '{{ $penugasan->tujuan }}' })" type="button" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-error px-4 py-3 text-sm font-bold text-white shadow-sm shadow-error/20 hover:bg-error-600 hover:shadow-error/40 transition-all">
+            <button @click="$dispatch('open-cancel-modal', { url: '{{ route('penugasan.batalkan', ['penugasan' => $penugasan->id ?? $penugasan->id_tugas ?? 0]) }}', title: '{{ $penugasan->tujuan }}' })" type="button" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-error-500 hover:bg-error-700 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-error/20 hover:bg-error-600/2 hover:shadow-error/40 transition-all">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     <line x1="15" y1="9" x2="9" y2="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />

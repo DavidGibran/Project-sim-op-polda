@@ -58,7 +58,7 @@ class PerjalananAktifController extends Controller
 
         // 🔥 update status kendaraan
         $penugasan->kendaraan()->update([
-            'status' => 'Diterima',
+            'status' => 'Dipakai',
         ]);
 
         return redirect()
@@ -91,7 +91,7 @@ class PerjalananAktifController extends Controller
 
         // 🔥 update kendaraan
         $penugasan->kendaraan()->update([
-            'status' => 'Perjalanan',
+            'status' => 'Dipakai',
         ]);
 
         return back()->with('success', 'Perjalanan dimulai.');

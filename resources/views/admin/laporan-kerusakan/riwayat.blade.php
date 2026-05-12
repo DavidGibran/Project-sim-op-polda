@@ -48,32 +48,46 @@
         <table class="w-full table-auto">
             <thead class="bg-gray-50/50 dark:bg-white/5">
                 <tr class="text-left">
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Laporan</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kendaraan</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Keluhan</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tgl Selesai</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Mode</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
+                    <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Laporan</th>
+                    <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kendaraan</th>
+                    <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 w-full">Keluhan</th>
+                    <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tgl Selesai</th>
+                    <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Mode</th>
+                    <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                 @forelse($laporans as $laporan)
                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $laporan->no_laporan }}</div>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        @php
+                            $noLaporanFull = $laporan->no_laporan;
+                            $noLaporanShort = $noLaporanFull;
+                            if (strpos($noLaporanFull, '-') !== false) {
+                                $parts = explode('-', $noLaporanFull);
+                                if (count($parts) >= 3) {
+                                    $day = substr($parts[1], 6, 2);
+                                    $month = substr($parts[1], 4, 2);
+                                    $shortSeq = substr($parts[2], -2);
+                                    $noLaporanShort = "REP-{$day}{$month}{$shortSeq}";
+                                }
+                            }
+                        @endphp
+                        <div class="text-sm font-bold text-gray-900 dark:text-white" title="{{ $noLaporanFull }}">{{ $noLaporanShort }}</div>
                         <div class="text-xs text-gray-500">Lapor: {{ $laporan->tanggal_lapor->format('d/m/Y') }}</div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $laporan->kendaraan->no_polisi }}</div>
-                        <div class="text-xs text-gray-500">{{ $laporan->kendaraan->merk }} {{ $laporan->kendaraan->tipe }}</div>
+                        @php $merkTipe = trim(($laporan->kendaraan->merk ?? '') . ' ' . ($laporan->kendaraan->tipe ?? '')); @endphp
+                        <div class="text-xs text-gray-500 truncate max-w-[120px]" title="{{ $merkTipe }}">{{ $merkTipe }}</div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-4">
                         <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">{{ $laporan->keluhan }}</p>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                         {{ $laporan->updated_at->format('d/m/Y H:i') }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-4 py-4 whitespace-nowrap text-center">
                         @if($laporan->mode == 'detail')
                             <span class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2"/></svg>
