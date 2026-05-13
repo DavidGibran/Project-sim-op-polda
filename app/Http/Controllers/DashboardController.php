@@ -91,6 +91,8 @@ class DashboardController extends Controller
         
         // 1. Total Kendaraan Extras
         $avgOdometer = round(MasterKend::avg('km_terakhir') ?? 0, 0);
+        $assignmentsLast7Days = Penugasan::where('tgl_tugas', '>=', now()->subDays(7))->count();
+        $avgAssignmentsPerDay = round($assignmentsLast7Days / 7, 1);
         $oldestVehicle = MasterKend::min('tahun');
         $newestVehicle = MasterKend::max('tahun');
         
@@ -143,6 +145,7 @@ class DashboardController extends Controller
             'statusArmada',
             // New variables
             'avgOdometer',
+            'avgAssignmentsPerDay',
             'oldestVehicle',
             'newestVehicle',
             'utilizationRate',

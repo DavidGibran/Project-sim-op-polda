@@ -11,6 +11,7 @@
     'perbaikanAktif' => [],
     // New Props
     'avgOdometer' => 0,
+    'avgAssignmentsPerDay' => 0,
     'oldestVehicle' => null,
     'newestVehicle' => null,
     'utilizationRate' => 0,
@@ -74,8 +75,8 @@
                                 <p class="text-xl font-black text-gray-800 dark:text-white">{{ number_format($avgOdometer, 0, ',', '.') }} <span class="text-xs font-normal">KM</span></p>
                             </div>
                             <div class="p-4 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800">
-                                <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Rentang Armada</p>
-                                <p class="text-xl font-black text-gray-800 dark:text-white">{{ $oldestVehicle }} - {{ $newestVehicle }}</p>
+                                <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Intensitas Penggunaan</p>
+                                <p class="text-xl font-black text-gray-800 dark:text-white">{{ $avgAssignmentsPerDay }} <span class="text-xs font-normal opacity-50">Tugas / Hari</span></p>
                             </div>
                         </div>
 
