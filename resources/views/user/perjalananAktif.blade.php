@@ -237,7 +237,7 @@
                         <div class="space-y-3">
                             {{-- Tombol Hubungi Command Center via WhatsApp --}}
                             <a
-                                href="https://wa.me/6282009036331"
+                                href="https://wa.me/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap flex-shrink-0 rounded-xl bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700"
