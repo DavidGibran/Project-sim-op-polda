@@ -231,7 +231,7 @@
                                     'tujuan' => $log->tujuan,
                                     'km_awal' => number_format((int) ($log->km_awal ?? 0), 0, ',', '.'),
                                     'km_akhir' => number_format((int) ($log->km_akhir ?? 0), 0, ',', '.'),
-                                    'foto_odometer' => $log->foto_odometer ? asset('storage/' . $log->foto_odometer) : null,
+                                    'foto_odometer' => (!empty($log->foto_odometer) && trim($log->foto_odometer) !== '') ? route('penugasan.odometer-foto', $log->id) : null,
                                     'waktu_mulai' => $log->waktu_mulai
                                         ? \Carbon\Carbon::parse($log->waktu_mulai)->format('d-m-Y H:i')
                                         : '-',
@@ -438,7 +438,12 @@
 
             <div class="md:col-span-2">
                 <p class="text-gray-500 dark:text-gray-400 mb-2">Foto Odometer</p>
-                <img id="detail_foto_odometer" src="" alt="Foto Odometer" class="hidden max-h-80 rounded-xl border border-gray-200 dark:border-gray-800">
+                <a id="detail_foto_link" href="" target="_blank" class="hidden inline-flex items-center gap-2 text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 font-semibold underline transition-colors cursor-pointer group">
+                    <svg class="h-4 w-4 text-brand-500 dark:text-brand-400 shrink-0 group-hover:text-brand-600 dark:group-hover:text-brand-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    <span>Lihat Foto Odometer ↗</span>
+                </a>
                 <p id="detail_foto_placeholder" class="text-sm text-gray-500 dark:text-gray-400">Tidak ada foto.</p>
             </div>
         </div>
@@ -498,16 +503,18 @@
         document.getElementById('detail_waktu_selesai').textContent = data.waktu_selesai ?? '-';
         document.getElementById('detail_catatan').textContent = data.catatan ?? '-';
 
-        const image = document.getElementById('detail_foto_odometer');
+        const link = document.getElementById('detail_foto_link');
         const placeholder = document.getElementById('detail_foto_placeholder');
 
         if (data.foto_odometer) {
-            image.src = data.foto_odometer;
-            image.classList.remove('hidden');
+            link.href = data.foto_odometer;
+            link.classList.remove('hidden');
+            link.classList.add('inline-flex');
             placeholder.classList.add('hidden');
         } else {
-            image.src = '';
-            image.classList.add('hidden');
+            link.href = '';
+            link.classList.add('hidden');
+            link.classList.remove('inline-flex');
             placeholder.classList.remove('hidden');
         }
 

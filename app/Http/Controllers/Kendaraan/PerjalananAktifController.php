@@ -110,7 +110,7 @@ class PerjalananAktifController extends Controller
 
         $validated = $request->validate([
             'km_akhir' => ['required', 'numeric'],
-            'foto_odometer' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'foto_odometer' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:20480'],
             'catatan' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -126,7 +126,7 @@ class PerjalananAktifController extends Controller
          */
         $fotoPath = $penugasan->foto_odometer;
         if ($request->hasFile('foto_odometer')) {
-            $fotoPath = $request->file('foto_odometer')->store('odometer', 'public');
+            $fotoPath = $request->file('foto_odometer')->store('odometer', 'local');
         }
 
         /**

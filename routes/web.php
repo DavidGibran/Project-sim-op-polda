@@ -62,6 +62,14 @@ Route::get('/login', function () {
 
 /*
 |--------------------------------------------------------------------------
+| Secure Odometer Photo Routing
+|--------------------------------------------------------------------------
+*/
+Route::get('/penugasan/odometer-foto/{penugasan}', [App\Http\Controllers\OdometerSecureController::class, 'viewFoto'])
+    ->name('penugasan.odometer-foto');
+
+/*
+|--------------------------------------------------------------------------
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
