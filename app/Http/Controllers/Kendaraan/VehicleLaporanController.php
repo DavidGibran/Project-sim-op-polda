@@ -29,6 +29,9 @@ class VehicleLaporanController extends Controller
         // Jika ada penugasan aktif, paksa mode simple
         if ($penugasanAktif) {
             $mode = 'simple';
+        } elseif (!$mode) {
+            // Jika tidak ada penugasan aktif, langsung ke mode detail
+            $mode = 'detail';
         }
 
         return view('user.laporan-kerusakan.create', compact('kendaraan', 'penugasanAktif', 'mode'));

@@ -78,6 +78,10 @@ class MenuHelper
                         'name' => 'Laporan Perbaikan',
                         'path' => route('laporan.perbaikan', absolute: false),
                     ],
+                    [
+                        'name' => 'Laporan Kerusakan',
+                        'path' => route('laporan.kerusakan', absolute: false),
+                    ],
                 ],
             ],
         ];

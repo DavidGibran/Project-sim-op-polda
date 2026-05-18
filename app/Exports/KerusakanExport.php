@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Perbaikan;
+use App\Models\LaporanKerusakan;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class PerbaikanExport implements FromView, ShouldAutoSize, WithStyles
+class KerusakanExport implements FromView, ShouldAutoSize, WithStyles
 {
     public function __construct(
         protected ?string $tanggalDari = null,
@@ -20,12 +20,12 @@ class PerbaikanExport implements FromView, ShouldAutoSize, WithStyles
 
     protected function query(): Builder
     {
-        return Perbaikan::query()
+        return LaporanKerusakan::query()
             ->with('kendaraan')
-            ->where('status', 'selesai')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('keluhan', 'like', '%' . $this->search . '%')
+                        ->orWhere('no_laporan', 'like', '%' . $this->search . '%')
                         ->orWhereHas('kendaraan', function ($kendaraan) {
                             $kendaraan->where('no_polisi', 'like', '%' . $this->search . '%')
                                 ->orWhere('merk', 'like', '%' . $this->search . '%')
@@ -44,13 +44,15 @@ class PerbaikanExport implements FromView, ShouldAutoSize, WithStyles
 
     public function view(): View
     {
-        return view('admin.laporan.perbaikan.excel', [
-            'perbaikans' => $this->query()->get()
+        return view('admin.laporan.kerusakan.excel', [
+            'kerusakans' => $this->query()->get()
         ]);
     }
 
     public function styles(Worksheet $sheet)
     {
+        // Apply borders to table
+        // The table data starts at row 8 based on the template
         $highestRow = $sheet->getHighestRow();
         $highestCol = $sheet->getHighestColumn();
 
@@ -64,6 +66,7 @@ class PerbaikanExport implements FromView, ShouldAutoSize, WithStyles
                 ],
             ]);
             
+            // Header row styling
             $sheet->getStyle('A9:' . $highestCol . '9')->applyFromArray([
                 'font' => [
                     'bold' => true,

@@ -131,6 +131,7 @@ Route::middleware(['auth', 'admin'])
         Route::prefix('laporan')->name('laporan.')->group(function () {
             Route::get('pemakaian',             [LaporanController::class, 'pemakaian'])->name('pemakaian');
             Route::get('perbaikan',             [LaporanController::class, 'perbaikan'])->name('perbaikan');
+            Route::get('kerusakan',             [LaporanController::class, 'kerusakan'])->name('kerusakan');
             Route::get('export/{type}/pdf',     [LaporanController::class, 'exportPdf'])->name('export.pdf');
             Route::get('export/{type}/excel',   [LaporanController::class, 'exportExcel'])->name('export.excel');
         });

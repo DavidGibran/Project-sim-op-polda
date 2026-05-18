@@ -33,37 +33,6 @@
     </div>
     @endif
 
-    <!-- Choice Screen (Only if no assignment and no mode selected) -->
-    @if(!$penugasanAktif && !$mode)
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <!-- Mode Simple Card -->
-        <a href="{{ route('kendaraan.laporan-kerusakan.create', ['mode' => 'simple']) }}" class="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-white p-8 text-center transition-all hover:border-brand-500 hover:bg-brand-50 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:bg-brand-500/5">
-            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-brand-500/10 text-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Laporkan Cepat</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Gunakan form sederhana untuk pelaporan cepat (Simple Mode).</p>
-            <div class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-brand-500">
-                Pilih Mode
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-        </a>
-
-        <!-- Mode Detail Card -->
-        <a href="{{ route('kendaraan.laporan-kerusakan.create', ['mode' => 'detail']) }}" class="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-white p-8 text-center transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:bg-blue-500/5">
-            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Laporan Lengkap</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Isi detail teknis kerusakan secara mendalam (Detail Mode).</p>
-            <div class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-blue-500">
-                Pilih Mode
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-        </a>
-    </div>
-
-    @else
     <!-- Form Screen -->
 
     <!-- Alert Warning (Active Assignment) -->
@@ -78,7 +47,6 @@
             <h5 class="mb-1 text-lg font-bold text-warning-700 dark:text-warning-500">Peringatan Penting</h5>
             <p class="text-sm text-gray-600 dark:text-gray-300">
                 Anda memiliki penugasan aktif ke <strong>{{ $penugasanAktif->tujuan }}</strong>. 
-                Sistem mengaktifkan <strong>Mode Simple</strong> agar pelaporan lebih cepat.
                 Penugasan ini akan otomatis dibatalkan setelah laporan dikirim.
             </p>
         </div>
@@ -88,9 +56,6 @@
     <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-gray-800 dark:bg-white/5 flex items-center justify-between">
             <h3 class="font-bold text-gray-900 dark:text-white">Form Laporan ({{ $mode == 'detail' ? 'Detail' : 'Simple' }})</h3>
-            @if(!$penugasanAktif)
-            <a href="{{ route('kendaraan.laporan-kerusakan.create') }}" class="text-xs font-medium text-brand-500 hover:underline">Ganti Mode</a>
-            @endif
         </div>
 
         <form action="{{ route('kendaraan.laporan-kerusakan.store') }}" method="POST" class="p-6 sm:p-8">
@@ -158,6 +123,5 @@
             </div>
         </form>
     </div>
-    @endif
 </div>
 @endsection

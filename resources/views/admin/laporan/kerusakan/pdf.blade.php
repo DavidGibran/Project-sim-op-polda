@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Pemakaian Kendaraan</title>
+    <title>Laporan Kerusakan Kendaraan</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -150,7 +150,7 @@
     <div class="title-section">
         <h2>DATA RANMOR DINAS R2, R4 DAN R6</h2>
         <h3>SATKER BID TIK POLDA JATIM</h3>
-        <h1>LAPORAN PEMAKAIAN KENDARAAN</h1>
+        <h1>LAPORAN KERUSAKAN KENDARAAN</h1>
     </div>
 
     <!-- META DATA -->
@@ -176,34 +176,32 @@
         <thead>
             <tr>
                 <th width="4%" class="text-center">NO</th>
-                <th width="8%">ID TUGAS</th>
-                <th width="12%">PENGEMUDI</th>
-                <th width="10%">NO POLISI</th>
-                <th width="14%">TIPE KENDARAAN</th>
-                <th width="14%">TUJUAN</th>
-                <th width="8%" class="text-right">KM AWAL</th>
-                <th width="8%" class="text-right">KM AKHIR</th>
-                <th width="12%">CATATAN</th>
-                <th width="10%">STATUS</th>
+                <th width="12%">NO LAPORAN</th>
+                <th width="12%">NO POLISI</th>
+                <th width="12%">MERK</th>
+                <th width="12%">TIPE</th>
+                <th width="18%">KELUHAN</th>
+                <th width="16%">DETAIL TEKNIS</th>
+                <th width="10%" class="text-center">TGL LAPOR</th>
+                <th width="14%">STATUS</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($logs as $index => $log)
+            @forelse ($kerusakans as $index => $laporan)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">#{{ $log->id }}</td>
-                    <td>{{ $log->pengemudi }}</td>
-                    <td><strong>{{ $log->kendaraan->no_polisi ?? '-' }}</strong></td>
-                    <td>{{ trim(($log->kendaraan->jenis_kendaraan ?? '') . ' ' . ($log->kendaraan->tipe ?? '')) }}</td>
-                    <td>{{ $log->tujuan }}</td>
-                    <td class="text-right">{{ number_format($log->km_awal ?? 0, 0, ',', '.') }}</td>
-                    <td class="text-right">{{ $log->km_akhir ? number_format($log->km_akhir, 0, ',', '.') : '-' }}</td>
-                    <td>{{ $log->catatan ?: '-' }}</td>
-                    <td>{{ ucfirst($log->status ?? '-') }}</td>
+                    <td><strong>{{ $laporan->no_laporan ?? '-' }}</strong></td>
+                    <td>{{ $laporan->kendaraan->no_polisi ?? '-' }}</td>
+                    <td>{{ $laporan->kendaraan->merk ?? '-' }}</td>
+                    <td>{{ $laporan->kendaraan->tipe ?? '-' }}</td>
+                    <td>{{ $laporan->keluhan ?? '-' }}</td>
+                    <td>{{ $laporan->detail_teknis ?? '-' }}</td>
+                    <td class="text-center">{{ $laporan->tanggal_lapor ? \Carbon\Carbon::parse($laporan->tanggal_lapor)->format('d-m-Y') : '-' }}</td>
+                    <td>{{ ucfirst($laporan->status ?? '-') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 15px; font-style: italic;">Tidak ada data laporan pemakaian pada periode ini.</td>
+                    <td colspan="9" class="text-center" style="padding: 15px; font-style: italic;">Tidak ada data laporan kerusakan pada periode ini.</td>
                 </tr>
             @endforelse
         </tbody>

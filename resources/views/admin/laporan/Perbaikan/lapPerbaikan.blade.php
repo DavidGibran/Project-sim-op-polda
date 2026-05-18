@@ -76,7 +76,7 @@
                         type="text"
                         name="search"
                         value="{{ $search }}"
-                        placeholder="Cari Nopol atau Keluhan."
+                        placeholder="Cari Nopol atau Detail Perbaikan."
                         class="w-full sm:w-64 rounded-lg border border-gray-200 bg-transparent py-2 pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
                     >
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -155,7 +155,7 @@
                         Kendaraan
                     </th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                        Keluhan
+                        Detail Perbaikan
                     </th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                         Tgl Mulai
@@ -187,9 +187,9 @@
                         </td>
 
                         <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                            {{-- Keluhan --}}
-                            <p class="line-clamp-1" title="{{ $perbaikan->keluhan }}">
-                                {{ $perbaikan->keluhan }}
+                            {{-- Detail Perbaikan --}}
+                            <p class="line-clamp-1" title="{{ $perbaikan->catatan }}">
+                                {{ $perbaikan->catatan ?? '-' }}
                             </p>
                         </td>
 

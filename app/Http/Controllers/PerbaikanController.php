@@ -163,13 +163,25 @@ class PerbaikanController extends Controller
                 return back()->with('error', 'Status tidak valid untuk aksi ini.');
             }
 
-            $perbaikan->update([
-                'status' => 'diproses',
-                'tgl_mulai' => now(),
-                'teknisi' => $request->input('teknisi', 'Internal'),
-            ]);
+            try {
+                DB::beginTransaction();
 
-            return back()->with('success', 'Proses perbaikan dimulai.');
+                $perbaikan->update([
+                    'status' => 'diproses',
+                    'tgl_mulai' => now(),
+                    'teknisi' => $request->input('teknisi', 'Internal'),
+                ]);
+
+                if ($perbaikan->kendaraan) {
+                    $perbaikan->kendaraan->update(['status' => 'Perbaikan']);
+                }
+
+                DB::commit();
+                return back()->with('success', 'Proses perbaikan dimulai.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->with('error', 'Gagal memulai perbaikan: ' . $e->getMessage());
+            }
         }
 
         if ($action === 'selesai') {

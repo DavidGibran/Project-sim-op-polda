@@ -187,13 +187,23 @@ class PenugasanController extends Controller
      */
     public function destroy(string $id)
     {
-        // For deleting the record entirely if needed
         $penugasan = Penugasan::findOrFail($id);
-        $penugasan->delete();
         
-        return redirect()->route('penugasan.index')->with('success', 'Data penugasan berhasil dihapus permanen.');
-        return redirect()->route('penugasan.index')
-            ->with('success', 'Data penugasan berhasil dihapus permanen.')
-            ->with('title', 'Data Dihapus');
+        DB::beginTransaction();
+        try {
+            // Restore vehicle to Tersedia if the deleted penugasan was active
+            if (in_array($penugasan->status, ['diterima', 'berjalan'])) {
+                if ($penugasan->kendaraan && $penugasan->kendaraan->status === 'Dipakai') {
+                    $penugasan->kendaraan->update(['status' => 'Tersedia']);
+                }
+            }
+            
+            $penugasan->delete();
+            DB::commit();
+            return redirect()->route('penugasan.index')->with('success', 'Data penugasan berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('penugasan.index')->with('error', 'Gagal menghapus data penugasan: ' . $e->getMessage());
+        }
     }
 }
