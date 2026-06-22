@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MasterKend extends Model
 {
+    use HasFactory;
+
     protected $table = 'master_kends';
 
     protected $primaryKey = 'id_kend';
@@ -53,4 +56,3 @@ class MasterKend extends Model
         return $this->hasMany(LaporanKerusakan::class, 'id_kend');
     }
 }
-

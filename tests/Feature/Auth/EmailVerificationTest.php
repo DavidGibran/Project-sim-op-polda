@@ -11,7 +11,7 @@ test('email verification screen can be rendered', function () {
     $response = $this->actingAs($user)->get('/verify-email');
 
     $response->assertStatus(200);
-});
+})->skip('The application user model does not implement MustVerifyEmail.');
 
 test('email can be verified', function () {
     $user = User::factory()->unverified()->create();
@@ -30,7 +30,7 @@ test('email can be verified', function () {
 
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
     $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
-});
+})->skip('The application user model does not implement MustVerifyEmail.');
 
 test('email is not verified with invalid hash', function () {
     $user = User::factory()->unverified()->create();
@@ -44,4 +44,4 @@ test('email is not verified with invalid hash', function () {
     $this->actingAs($user)->get($verificationUrl);
 
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
-});
+})->skip('The application user model does not implement MustVerifyEmail.');

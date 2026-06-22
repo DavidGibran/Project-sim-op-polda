@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LaporanKerusakan extends Model
 {
+    use HasFactory;
+
     protected $table = 'tb_laporan_kerusakans';
 
     protected $fillable = [
@@ -45,10 +48,10 @@ class LaporanKerusakan extends Model
      */
     public static function generateNoLaporan()
     {
-        $prefix = 'REP-' . date('Ymd');
-        
+        $prefix = 'REP-'.date('Ymd');
+
         // Cari nomor laporan terakhir hari ini berdasarkan urutan string terbesar
-        $lastReport = self::where('no_laporan', 'like', $prefix . '-%')
+        $lastReport = self::where('no_laporan', 'like', $prefix.'-%')
             ->orderBy('no_laporan', 'desc')
             ->first();
 
@@ -60,8 +63,7 @@ class LaporanKerusakan extends Model
             // Mulai dari 0001 jika belum ada data hari ini
             $nextNumber = '0001';
         }
-        
-        return $prefix . '-' . $nextNumber;
-    }
 
+        return $prefix.'-'.$nextNumber;
+    }
 }
