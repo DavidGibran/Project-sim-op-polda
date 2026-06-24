@@ -7,8 +7,15 @@ use App\Imports\KendaraanImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
 
+use App\Exports\KendaraanTemplateExport;
+
 class KendaraanImportController extends Controller
 {
+    public function downloadTemplate()
+    {
+        return Excel::download(new KendaraanTemplateExport, 'template_import_kendaraan.xlsx');
+    }
+
     public function index()
     {
         return view('admin.kendaraan.import', [

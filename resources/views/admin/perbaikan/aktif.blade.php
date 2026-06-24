@@ -92,7 +92,7 @@
             <thead>
                 <tr class="bg-gray-50 dark:bg-white/5">
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kendaraan</th>
-                    <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Keluhan</th>
+                    <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Detail Perbaikan</th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tgl Lapor</th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
                     <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Teknisi</th>
@@ -104,10 +104,11 @@
                 <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                     <td class="px-5 py-4">
                         <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $perbaikan->kendaraan->no_polisi }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $perbaikan->kendaraan->merk }} {{ $perbaikan->kendaraan->tipe }}</p>
+                        @php $merkTipe = trim(($perbaikan->kendaraan->merk ?? '') . ' ' . ($perbaikan->kendaraan->tipe ?? '')); @endphp
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]" title="{{ $merkTipe }}">{{ $merkTipe }}</p>
                     </td>
                     <td class="px-5 py-4">
-                        <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-1">{{ $perbaikan->keluhan }}</p>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-1">{{ \Illuminate\Support\Str::before($perbaikan->catatan, "\n--- Penyelesaian") ?: '-' }}</p>
                     </td>
                     <td class="px-5 py-4">
                         <p class="text-sm text-gray-700 dark:text-gray-300">{{ \Carbon\Carbon::parse($perbaikan->tanggal_lapor)->translatedFormat('d F Y') }}</p>

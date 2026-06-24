@@ -18,19 +18,13 @@
 </div>
 
 <!-- Alert Success -->
-@if(session('success'))
-<div class="mb-6 flex w-full border-l-6 border-success-500 bg-success/10 px-7 py-4 shadow-md dark:bg-success/20 dark:border-success-500 rounded-lg">
-    <div class="mr-5 flex h-9 w-full max-w-9 items-center justify-center rounded-lg bg-success/20">
-        <svg class="text-success-500 dark:text-success-500" width="26" height="26" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.6667 4.54546L5.65685 10.5553L2.82843 7.72688" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-    </div>
-    <div class="w-full">
-        <h5 class="mb-1 text-lg font-bold text-success-500 dark:text-success-500">Berhasil</h5>
-        <p class="text-base text-gray-600 dark:text-gray-300">{{ session('success') }}</p>
-    </div>
-</div>
-@endif
+<x-ui.alert type="success" :message="session('success')" :title="session('title')" />
+
+<!-- Alert Error (Jika ada) -->
+<x-ui.alert type="error" :message="session('error')" :title="session('title')" />
+
+<!-- Alert Warning (Jika ada) -->
+<x-ui.alert type="warning" :message="session('warning')" :title="session('title')" />
 
 <!-- Main Content Card -->
 <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
@@ -61,16 +55,20 @@
 
             @if(request()->has('search') || request()->has('status'))
             <a href="{{ route('kendaraan.index') }}" 
-               class="text-sm font-medium text-error hover:underline whitespace-nowrap dark:text-gray-400">
-                Reset Filter
+               class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-error shadow-sm hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900/50 dark:text-red-400 dark:hover:bg-gray-800 transition-all w-full sm:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+                Reset
             </a>
             @endif
         </form>
 
         <!-- Actions - Adjusted to match input height -->
-        <div class="flex items-center gap-3 justify-end">
+        <div class="flex items-center gap-3 justify-end w-full xl:w-auto">
             <a href="{{ route('kendaraan.create') }}"
-               class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-sm hover:bg-brand-600 transition-all">
+               class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-sm hover:bg-brand-600 transition-all whitespace-nowrap">
                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -81,16 +79,55 @@
 </div>
 
     <!-- Table -->
+    @php
+        $sortBy = request('sort_by', 'created_at');
+        $sortDir = request('sort_dir', 'desc');
+        
+        $getSortIcon = function($column) use ($sortBy, $sortDir) {
+            if ($sortBy !== $column) {
+                return '<svg class="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>';
+            }
+            if ($sortDir === 'asc') {
+                return '<svg class="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>';
+            }
+            return '<svg class="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
+        };
+
+        $getSortUrl = function($column) use ($sortBy, $sortDir) {
+            $dir = ($sortBy === $column && $sortDir === 'asc') ? 'desc' : 'asc';
+            return request()->fullUrlWithQuery(['sort_by' => $column, 'sort_dir' => $dir]);
+        };
+    @endphp
     <div class="overflow-x-auto">
         <table class="w-full text-left">
             <thead>
                 <tr class="bg-gray-100 dark:bg-white/5">
-                    <th class="border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300">No. Polisi</th>
-                    <th class="border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300">Merk & Tipe</th>
-                    <th class="border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 hidden sm:table-cell">Tahun & Kategori</th>
-                    <th class="border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300">KM Terakhir</th>
-                    <th class="border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300">Status</th>
-                    <th class="border-b border-gray-100 px-5 py-4 pr-6 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 text-center">Aksi</th>
+                    <th class="whitespace-nowrap border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{{ $getSortUrl('no_polisi') }}" class="group flex items-center gap-1.5">
+                            No. Polisi {!! $getSortIcon('no_polisi') !!}
+                        </a>
+                    </th>
+                    <th class="whitespace-nowrap border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{{ $getSortUrl('merk') }}" class="group flex items-center gap-1.5">
+                            Merk & Tipe {!! $getSortIcon('merk') !!}
+                        </a>
+                    </th>
+                    <th class="whitespace-nowrap border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 hidden sm:table-cell hover:bg-gray-200/50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{{ $getSortUrl('tahun') }}" class="group flex items-center gap-1.5">
+                            Tahun & Kategori {!! $getSortIcon('tahun') !!}
+                        </a>
+                    </th>
+                    <th class="whitespace-nowrap border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{{ $getSortUrl('km_terakhir') }}" class="group flex items-center gap-1.5">
+                            KM Terakhir {!! $getSortIcon('km_terakhir') !!}
+                        </a>
+                    </th>
+                    <th class="whitespace-nowrap border-b border-gray-100 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{{ $getSortUrl('status') }}" class="group flex items-center gap-1.5">
+                            Status {!! $getSortIcon('status') !!}
+                        </a>
+                    </th>
+                    <th class="whitespace-nowrap border-b border-gray-100 px-5 py-4 pr-6 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:text-gray-300 text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -104,27 +141,40 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $kendaraan->tipe }}</p>
                     </td>
                     <td class="px-5 py-4 hidden sm:table-cell">
-                        <p class="text-sm text-gray-700 dark:text-gray-300">{{ $kendaraan->tahun }}</p>
-                        <div class="mt-1 flex gap-1">
-                            <span class="inline-flex rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">{{ $kendaraan->kategori_kendaraan }}</span>
-                            <span class="inline-flex rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">{{ $kendaraan->jenis_kendaraan }}</span>
+                        <div class="mb-1.5">
+                            <span class="inline-flex items-center rounded bg-white px-2 py-0.5 text-[11px] font-bold text-gray-700 border border-gray-200 shadow-sm dark:bg-gray-800/80 dark:text-gray-300 dark:border-gray-700">
+                                {{ $kendaraan->tahun }}
+                            </span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="inline-flex rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">{{ $kendaraan->kategori_kendaraan }}</span>
+                            <span class="inline-flex rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">{{ $kendaraan->jenis_kendaraan }}</span>
                         </div>
                     </td>
                     <td class="px-5 py-4">
-                        <span class="inline-flex rounded-lg bg-gray-50 px-2 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                        <span class="inline-flex rounded-md bg-gray-50 px-2 py-0.5 text-[11px] font-bold text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 whitespace-nowrap">
                             {{ number_format($kendaraan->km_terakhir, 0, ',', '.') }} KM
                         </span>
                     </td>
                     <td class="px-5 py-4">
                         @php
+                        /**
+                         * Mapping warna badge berdasarkan status kendaraan
+                         * Disesuaikan dengan flow terbaru
+                         */
                         $statusConfig = [
                             'Tersedia' => 'bg-success-50 text-success-700 dark:bg-success-500/20 dark:text-success-400',
-                            'Dipakai' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+                            'Dipakai' => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400',
                             'Perbaikan' => 'bg-error-50 text-error-700 dark:bg-error-500/20 dark:text-error-400',
-                            'Diterbitkan' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/20 dark:text-warning-400',
                         ];
-                        $configClass = $statusConfig[$kendaraan->status] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+                    
+                        /**
+                         * Default fallback jika status tidak dikenal
+                         */
+                        $configClass = $statusConfig[$kendaraan->status] 
+                            ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
                         @endphp
+                    
                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $configClass }}">
                             {{ $kendaraan->status }}
                         </span>

@@ -14,37 +14,37 @@ class PenugasanSeeder extends Seeder
      */
     public function run(): void
     {
+        // Data 1
         Penugasan::create([
-            'id_kend' => 1, // L1234AB
-            'nama_sopir' => 'Adam',
+            'id_kend'   => 1,
+            'pengemudi' => 'Adam',
             'tgl_tugas' => Carbon::today(),
-            'tujuan' => 'Polda Jatim',
-            'kegiatan' => 'Rapat Koordinasi',
-            'status' => 'diterbitkan'
+            'tujuan'    => 'Polda Jatim',
+            'status'    => 'diterbitkan'
         ]);
 
+        // Data 2
         Penugasan::create([
-            'id_kend' => 2, // L2345BC
-            'nama_sopir' => 'Budi',
+            'id_kend'   => 2,
+            'pengemudi' => 'Budi',
             'tgl_tugas' => Carbon::yesterday(),
-            'tujuan' => 'Polrestabes Surabaya',
-            'kegiatan' => 'Pengamanan Demo',
-            'status' => 'berjalan',
-            'odo_awal' => 54000,
-            'prj_mulai' => Carbon::yesterday()->setHour(8)
+            'tujuan'    => 'Polrestabes Surabaya',
+            'status'    => 'berjalan',
+            'km_awal'   => 54000, // Ganti dari odo_awal
+            // prj_mulai dihapus karena sudah tidak ada di kolom tabel
         ]);
 
+        // Data 3
         Penugasan::create([
-            'id_kend' => 3, // L3456CD
-            'nama_sopir' => 'Rizal',
-            'tgl_tugas' => Carbon::now()->subDays(2),
-            'tujuan' => 'Patroli Kota',
-            'kegiatan' => 'Patroli Rutin',
-            'status' => 'selesai',
-            'odo_awal' => 31950,
-            'odo_akhir' => 32000,
-            'prj_mulai' => Carbon::now()->subDays(2)->setHour(9),
-            'prj_selesai' => Carbon::now()->subDays(2)->setHour(17)
+            'id_kend'     => 3,
+            'pengemudi'   => 'Rizal',
+            'tgl_tugas'   => Carbon::now()->subDays(2),
+            'tgl_selesai' => Carbon::now()->subDays(2), // Tambahan kolom baru dari migrasi
+            'tujuan'      => 'Patroli Kota',
+            'status'      => 'selesai',
+            'km_awal'     => 31950, // Ganti dari odo_awal
+            'km_akhir'    => 32000, // Ganti dari odo_akhir
+            // prj_mulai dan prj_selesai dihapus
         ]);
     }
 }

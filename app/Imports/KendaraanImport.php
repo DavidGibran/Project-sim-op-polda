@@ -20,59 +20,69 @@ class KendaraanImport implements ToModel, WithHeadingRow
         // Logging for debugging
         Log::info('Importing Row:', $row);
 
-        // Flexible column mapping with fallbacks
-        // Laravel Excel heading row usually converts "NO.POL" to "no_pol" or "no_polisi"
-        $noPolisiRaw = $row['no_pol'] ?? $row['nopol'] ?? $row['no_polisi'] ?? $row['nomor_polisi'] ?? null;
+        // Required field: NO_POLISI
+        $noPolisiRaw = $row['no_polisi'] ?? $row['no_pol'] ?? $row['nopol'] ?? null;
         
-        // Skip row if license plate is missing
         if (empty($noPolisiRaw)) {
-            Log::warning('Skipping row due to missing NO.POL');
+            Log::warning('Skipping row due to missing NO_POLISI');
             return null;
         }
 
-        // Sanitize license plate: uppercase and remove spaces
         $noPolisi = strtoupper(str_replace(' ', '', (string)$noPolisiRaw));
 
-        // Other fields with fallbacks
-        $merk = $row['merk'] ?? $row['merek'] ?? '';
-        $tipe = $row['nama_pada_simak'] ?? $row['tipe'] ?? '';
+        // Other fields mapping
+        $merk = $row['merk'] ?? $row['merek'] ?? '-';
+        $tipe = $row['tipe'] ?? '-';
+        $namaPadaSimak = $row['nama_pada_simak'] ?? $row['nama_simak'] ?? '-';
         $tahun = $row['tahun'] ?? date('Y');
-        $jenis = $row['jenis'] ?? $row['jenis_kendaraan'] ?? '';
-        $keterangan = $row['ket'] ?? $row['keterangan'] ?? $row['keterangan_penggunaan'] ?? '';
-
-        $kategori = 'R4'; // Default
-        if (stripos((string)$jenis, 'R2') !== false || stripos((string)$jenis, 'Motor') !== false) {
-            $kategori = 'R2';
+        $bbm = $row['bbm'] ?? $row['bahan_bakar'] ?? '-';
+        $kategori = $row['kategori_kendaraan'] ?? $row['kategori'] ?? 'R4';
+        $jenis = strtoupper($row['jenis_kendaraan'] ?? $row['jenis'] ?? 'RANUM');
+        
+        // Validation for jenis_kendaraan
+        if (!in_array($jenis, ['RANUM', 'RANSUS', 'LAINNYA'])) {
+            $jenis = 'LAINNYA';
         }
+
+        $kmTerakhir = $row['km_terakhir'] ?? $row['km'] ?? 0;
+        if (!is_numeric($kmTerakhir)) $kmTerakhir = 0;
+
+        $status = $row['status_kendaraan'] ?? $row['status'] ?? 'Tersedia';
+        
+        // Optional fields with fallback '-'
+        $namaPemegang = $row['nama_pemegang'] ?? '-';
+        if (empty($namaPemegang)) $namaPemegang = '-';
+
+        $keterangan = $row['keterangan_penggunaan'] ?? $row['keterangan'] ?? '-';
+        if (empty($keterangan)) $keterangan = '-';
 
         // Check if vehicle exists
         $kendaraan = MasterKend::where('no_polisi', $noPolisi)->first();
 
-        if ($kendaraan) {
-            $kendaraan->update([
-                'merk'                  => $merk,
-                'tipe'                  => $tipe,
-                'tahun'                 => $tahun,
-                'jenis_kendaraan'       => $jenis,
-                'keterangan_penggunaan' => $keterangan,
-                'kategori_kendaraan'    => $kategori,
-                'status'                => 'Tersedia',
-                'username'              => $noPolisi,
-            ]);
-            return null; // Return null because we updated it manually
-        }
-
-        return new MasterKend([
-            'no_polisi'             => $noPolisi,
+        $data = [
+            'nama_pemegang'         => $namaPemegang,
             'merk'                  => $merk,
             'tipe'                  => $tipe,
+            'nama_pada_simak'       => $namaPadaSimak,
             'tahun'                 => $tahun,
-            'jenis_kendaraan'       => $jenis,
-            'keterangan_penggunaan' => $keterangan,
+            'bbm'                   => $bbm,
             'kategori_kendaraan'    => $kategori,
-            'status'                => 'Tersedia',
-            'username'              => $noPolisi,
-            'password'              => 'kendaraan123', // Model cast will handle hashing
-        ]);
+            'jenis_kendaraan'       => $jenis,
+            'km_terakhir'           => $kmTerakhir,
+            'status'                => $status,
+            'keterangan_penggunaan' => $keterangan,
+            'username'              => strtolower($noPolisi),
+        ];
+
+        if ($kendaraan) {
+            $kendaraan->update($data);
+            return null; 
+        }
+
+        // Add password for new data
+        $data['no_polisi'] = $noPolisi;
+        $data['password'] = 'kendaraan123';
+
+        return new MasterKend($data);
     }
 }

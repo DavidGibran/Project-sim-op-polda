@@ -27,29 +27,51 @@
                 <!-- No Polisi -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">No. Polisi <span class="text-error">*</span></label>
-                    <input type="text" name="no_polisi" value="{{ old('no_polisi') }}" required placeholder="Misal: L 1234 AB" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('no_polisi') border-error @enderror">
+                    <input type="text" id="no_polisi" name="no_polisi" value="{{ old('no_polisi') }}" required placeholder="Contoh: L 1234 AB" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('no_polisi') border-error @enderror">
+                    <span id="nopol-feedback" class="text-xs mt-1 block hidden"></span>
                     @error('no_polisi') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Nama Pemegang -->
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Nama Pemegang (Opsional)</label>
+                    <input type="text" name="nama_pemegang" value="{{ old('nama_pemegang') }}" placeholder="Contoh: Budi Santoso" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('nama_pemegang') border-error @enderror">
+                    @error('nama_pemegang') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Merk -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Merk <span class="text-error">*</span></label>
-                    <input type="text" name="merk" value="{{ old('merk') }}" required placeholder="Misal: Honda" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('merk') border-error @enderror">
+                    <input type="text" name="merk" value="{{ old('merk') }}" required placeholder="Contoh: Honda" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('merk') border-error @enderror">
                     @error('merk') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Tipe -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Tipe <span class="text-error">*</span></label>
-                    <input type="text" name="tipe" value="{{ old('tipe') }}" required placeholder="Misal: CR-V" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tipe') border-error @enderror">
+                    <input type="text" name="tipe" value="{{ old('tipe') }}" required placeholder="Contoh: CR-V" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tipe') border-error @enderror">
                     @error('tipe') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Nama Pada SIMAK -->
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Nama Pada SIMAK</label>
+                    <input type="text" name="nama_pada_simak" value="{{ old('nama_pada_simak', '-') }}" placeholder="Contoh: TOYOTA AVANZA 1.3 G M/T" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('nama_pada_simak') border-error @enderror">
+                    @error('nama_pada_simak') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Tahun -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Tahun <span class="text-error">*</span></label>
-                    <input type="number" name="tahun" value="{{ old('tahun') }}" required min="1900" max="{{ date('Y') + 1 }}" placeholder="Misal: 2021" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tahun') border-error @enderror">
+                    <input type="number" name="tahun" value="{{ old('tahun') }}" required min="1900" max="{{ date('Y') + 1 }}" placeholder="Contoh: 2021" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('tahun') border-error @enderror">
                     @error('tahun') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- BBM -->
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Jenis BBM</label>
+                    <input type="text" name="bbm" value="{{ old('bbm', '-') }}" placeholder="Contoh: PERTALITE / PERTAMAX / SOLAR" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('bbm') border-error @enderror">
+                    @error('bbm') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Kategori Kendaraan -->
@@ -72,7 +94,6 @@
                         <option value="" class="text-gray-700 dark:text-white">Pilih Jenis</option>
                         <option value="RANUM" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan') == 'RANUM' ? 'selected' : '' }}>RANUM</option>
                         <option value="RANSUS" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan') == 'RANSUS' ? 'selected' : '' }}>RANSUS</option>
-                        <option value="OPERASIONAL" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan') == 'OPERASIONAL' ? 'selected' : '' }}>OPERASIONAL</option>
                         <option value="LAINNYA" class="text-gray-700 dark:text-white" {{ old('jenis_kendaraan') == 'LAINNYA' ? 'selected' : '' }}>LAINNYA</option>
                     </select>
                     @error('jenis_kendaraan') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
@@ -81,7 +102,7 @@
                 <!-- KM Terakhir -->
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">KM Terakhir <span class="text-error">*</span></label>
-                    <input type="number" name="km_terakhir" value="{{ old('km_terakhir', 0) }}" required min="0" placeholder="Misal: 12000" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('km_terakhir') border-error @enderror">
+                    <input type="number" name="km_terakhir" value="{{ old('km_terakhir', 0) }}" required min="0" placeholder="Contoh: 12000" class="w-full rounded-lg border border-gray-200 bg-transparent py-2 px-4 outline-none focus:border-primary focus-visible:shadow-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-white @error('km_terakhir') border-error @enderror">
                     @error('km_terakhir') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
@@ -116,3 +137,46 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nopolInput = document.getElementById('no_polisi');
+        const feedback = document.getElementById('nopol-feedback');
+        let timeout = null;
+
+        nopolInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const nopol = this.value;
+
+            if (nopol.length < 3) {
+                feedback.classList.add('hidden');
+                return;
+            }
+
+            // Delay 500ms agar tidak request setiap ketikan huruf (debounce)
+            timeout = setTimeout(() => {
+                fetch(`{{ route('kendaraan.check-availability') }}?no_polisi=${nopol}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            feedback.textContent = 'Nomor Polisi ini sudah digunakan!';
+                            feedback.className = 'text-xs mt-1 block text-error font-bold animate-pulse';
+                            
+                            // Ubah border input jadi merah
+                            nopolInput.classList.add('border-error');
+                            nopolInput.classList.remove('focus:border-primary', 'border-gray-200', 'dark:border-gray-800');
+                        } else {
+                            feedback.textContent = 'Nomor Polisi tersedia.';
+                            feedback.className = 'text-xs mt-1 block text-success font-medium';
+                            
+                            // Kembalikan border normal
+                            nopolInput.classList.remove('border-error');
+                            nopolInput.classList.add('focus:border-primary', 'border-gray-200', 'dark:border-gray-800');
+                        }
+                    });
+            }, 500); 
+        });
+    });
+</script>
+@endpush

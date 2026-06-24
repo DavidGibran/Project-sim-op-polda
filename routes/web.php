@@ -11,6 +11,25 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\KendaraanImportController;
 use App\Http\Controllers\Auth\VehicleAuthController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanKerusakanController;
+
+
+/**
+ * Controller sisi pengemudi / kendaraan
+ * 
+ * Penempatan controller ini nanti ada di:
+ * app/Http/Controllers/Kendaraan/
+ */
+use App\Http\Controllers\Kendaraan\DashboardController as KendaraanDashboardController;
+use App\Http\Controllers\Kendaraan\PerjalananAktifController;
+use App\Http\Controllers\Kendaraan\RiwayatPemakaianController;
+use App\Http\Controllers\Kendaraan\VehicleLaporanController;
+
+
+// Library Export
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,12 +54,19 @@ Route::get('/', function () {
 Route::post('/auth/login', [VehicleAuthController::class, 'login'])->name('login.universal');
 Route::post('/auth/logout', [VehicleAuthController::class, 'logout'])->name('logout.universal');
 
-
 require __DIR__.'/auth.php';
 
 Route::get('/login', function () {
     return view('pages.auth.login');
 })->name('login');
+
+/*
+|--------------------------------------------------------------------------
+| Secure Odometer Photo Routing
+|--------------------------------------------------------------------------
+*/
+Route::get('/penugasan/odometer-foto/{penugasan}', [App\Http\Controllers\OdometerSecureController::class, 'viewFoto'])
+    ->name('penugasan.odometer-foto');
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +90,9 @@ Route::middleware(['auth', 'admin'])
         Route::get('kendaraan/import', [KendaraanImportController::class, 'index'])
             ->name('kendaraan.import');
 
+        Route::get('kendaraan/import/template', [KendaraanImportController::class, 'downloadTemplate'])
+            ->name('kendaraan.import.template');
+
         Route::post('kendaraan/import', [KendaraanImportController::class, 'import'])
             ->name('kendaraan.import.post');
 
@@ -71,6 +100,8 @@ Route::middleware(['auth', 'admin'])
         | Master Data
         */
         Route::resource('users', UserController::class);
+        Route::get('kendaraan/check-availability', [MasterKendController::class, 'checkAvailability'])
+            ->name('kendaraan.check-availability');
         Route::resource('kendaraan', MasterKendController::class);
 
         /*
@@ -84,6 +115,13 @@ Route::middleware(['auth', 'admin'])
         )->name('penugasan.batalkan');
 
         /*
+        | Laporan Kerusakan
+        */
+        Route::get('/laporan-kerusakan/riwayat', [LaporanKerusakanController::class, 'riwayat'])
+            ->name('admin.laporan-kerusakan.riwayat');
+        Route::resource('laporan-kerusakan', LaporanKerusakanController::class)->names('admin.laporan-kerusakan');
+
+        /*
         | Perbaikan Kendaraan
         */
         Route::get('perbaikan-aktif', [PerbaikanController::class, 'aktif'])->name('perbaikan.aktif');
@@ -93,22 +131,84 @@ Route::middleware(['auth', 'admin'])
         /*
         | Log Pemakaian
         */
-        Route::get('log', [LogController::class, 'index'])
-            ->name('log.index');
+        Route::get('log', [LogController::class, 'index'])->name('log.index');
+        
+        /*
+        | Laporan
+        */
+        Route::prefix('laporan')->name('laporan.')->group(function () {
+            Route::get('pemakaian',             [LaporanController::class, 'pemakaian'])->name('pemakaian');
+            Route::get('perbaikan',             [LaporanController::class, 'perbaikan'])->name('perbaikan');
+            Route::get('kerusakan',             [LaporanController::class, 'kerusakan'])->name('kerusakan');
+            Route::get('export/{type}/pdf',     [LaporanController::class, 'exportPdf'])->name('export.pdf');
+            Route::get('export/{type}/excel',   [LaporanController::class, 'exportExcel'])->name('export.excel');
+        });
+
+        /*
+        | Export
+        */
+        Route::get('/export-users', function () {
+            return Excel::download(new UsersExport, 'users.xlsx');
+        });
     });
 
 /*
 |--------------------------------------------------------------------------
 | USER / KENDARAAN ROUTES
 |--------------------------------------------------------------------------
+|
+| Area ini khusus untuk kendaraan / pengemudi.
+| Login tetap menggunakan VehicleAuthController,
+| lalu session kendaraan dicek oleh KendaraanMiddleware.
+|
 */
 
 Route::middleware(['kendaraan'])
     ->prefix('kendaraan')
+    ->name('kendaraan.')
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-            return view('dashboard-kendaraan');
-        })->name('kendaraan.dashboard');
+        /*
+        | Dashboard pengemudi
+        */
+        Route::get('/dashboard', [KendaraanDashboardController::class, 'index'])
+            ->name('dashboard');
 
+        /*
+        | Perjalanan aktif
+        */
+        Route::get('/perjalanan-aktif', [PerjalananAktifController::class, 'index'])
+            ->name('perjalanan-aktif');
+
+        /*
+        | Aksi penugasan oleh pengemudi
+        */
+        Route::post('/penugasan/{penugasan}/terima', [PerjalananAktifController::class, 'terimaTugas'])
+            ->name('penugasan.terima');
+
+        Route::post('/penugasan/{penugasan}/mulai', [PerjalananAktifController::class, 'mulaiPerjalanan'])
+            ->name('penugasan.mulai');
+
+        Route::post('/penugasan/{penugasan}/selesai', [PerjalananAktifController::class, 'selesaikanPerjalanan'])
+            ->name('penugasan.selesai');
+
+        /*
+        | Riwayat pemakaian saya
+        */
+        Route::get('/riwayat-pemakaian', [RiwayatPemakaianController::class, 'index'])
+            ->name('riwayat-pemakaian');
+
+        /*
+        | Laporan Kerusakan (Driver)
+        */
+        Route::get('/laporan-kerusakan/baru', [VehicleLaporanController::class, 'create'])
+            ->name('laporan-kerusakan.create');
+        Route::post('/laporan-kerusakan', [VehicleLaporanController::class, 'store'])
+            ->name('laporan-kerusakan.store');
+
+        /*
+        | Update Profile / Password
+        */
+        Route::post('/update-password', [KendaraanDashboardController::class, 'updatePassword'])
+            ->name('update-password');
     });

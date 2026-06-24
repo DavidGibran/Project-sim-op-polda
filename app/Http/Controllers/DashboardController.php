@@ -46,18 +46,85 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Data Riwayat Perbaikan Terbaru (3 Data)
+        // Data Riwayat Perbaikan Terbaru (Top 5) - Untuk Live Feed
         $perbaikanTerbaru = Perbaikan::with('kendaraan')
             ->latest('tanggal_lapor')
-            ->take(3)
+            ->take(5)
             ->get();
 
-        // Data Trend Operasional (Line Chart - 12 Bulan)
-        $trendData = [
-            'aktif' => [15, 18, 17, 20, 22, 21, 25, 24, 26, 28, 27, 30],
-            'penugasan' => [10, 12, 11, 14, 15, 13, 18, 17, 19, 21, 20, 22],
-            'perbaikan' => [2, 3, 2, 4, 3, 2, 5, 4, 3, 5, 4, 6]
+        // Data Perbaikan Aktif (Top 10) - Khusus untuk Modal Maintenance
+        $perbaikanAktif = Perbaikan::with('kendaraan')
+            ->where('status', 'diproses')
+            ->latest('tanggal_lapor')
+            ->take(10)
+            ->get();
+
+        // Data Komposisi Armada untuk Visualisasi
+        $komposisiKategori = [
+            'R2' => MasterKend::where('kategori_kendaraan', 'R2')->count(),
+            'R4' => MasterKend::where('kategori_kendaraan', 'R4')->count(),
+            'R6' => MasterKend::where('kategori_kendaraan', 'R6')->count(),
+            'Lainnya' => MasterKend::whereNotIn('kategori_kendaraan', ['R2', 'R4', 'R6'])->count(),
         ];
+
+        $komposisiJenis = [
+            'RANUM' => MasterKend::where('jenis_kendaraan', 'RANUM')->count(),
+            'RANSUS' => MasterKend::where('jenis_kendaraan', 'RANSUS')->count(),
+            'LAINNYA' => MasterKend::where('jenis_kendaraan', 'LAINNYA')->count(),
+        ];
+
+        $distribusiBBM = MasterKend::select('bbm', DB::raw('count(*) as total'))
+            ->whereNotNull('bbm')
+            ->where('bbm', '!=', '-')
+            ->groupBy('bbm')
+            ->orderBy('total', 'desc')
+            ->pluck('total', 'bbm')
+            ->toArray();
+
+        $statusArmada = [
+            'Tersedia' => $siapDipakai,
+            'Dipakai' => $kendaraanAktif,
+            'Perbaikan' => $kendaraanPerbaikan,
+        ];
+
+        // --- NEW METRICS FOR ENHANCED MODALS ---
+        
+        // 1. Total Kendaraan Extras
+        $avgOdometer = round(MasterKend::avg('km_terakhir') ?? 0, 0);
+        $assignmentsLast7Days = Penugasan::where('tgl_tugas', '>=', now()->subDays(7))->count();
+        $avgAssignmentsPerDay = round($assignmentsLast7Days / 7, 1);
+        $oldestVehicle = MasterKend::min('tahun');
+        $newestVehicle = MasterKend::max('tahun');
+        
+        // 2. Kendaraan Aktif Extras
+        $utilizationRate = $totalKendaraan > 0 ? round(($kendaraanAktif / $totalKendaraan) * 100, 1) : 0;
+        $topVehicles = MasterKend::withCount('penugasans')
+            ->orderBy('penugasans_count', 'desc')
+            ->take(3)
+            ->get();
+            
+        // 3. Kendaraan Perbaikan Extras
+        $avgRepairDuration = Perbaikan::whereNotNull('tgl_selesai')
+            ->whereNotNull('tgl_mulai')
+            ->select(DB::raw('AVG(DATEDIFF(tgl_selesai, tgl_mulai)) as avg_days'))
+            ->first()->avg_days ?? 0;
+        $avgRepairDuration = (int) round($avgRepairDuration, 0);
+        
+        $oldestRepair = Perbaikan::with('kendaraan')
+            ->whereNull('tgl_selesai')
+            ->orderBy('tanggal_lapor', 'asc')
+            ->first();
+            
+        // 4. Penugasan Aktif Extras
+        $assignmentsToday = Penugasan::whereDate('created_at', now()->toDateString())->count();
+        $assignmentsFinishedToday = Penugasan::whereDate('tgl_selesai', now()->toDateString())
+            ->where('status', 'selesai')
+            ->count();
+        
+        $oldestAssignment = Penugasan::with('kendaraan')
+            ->whereIn('status', ['berjalan', 'diterima'])
+            ->orderBy('tgl_tugas', 'asc')
+            ->first();
 
         return view('dashboard', compact(
             'totalKendaraan',
@@ -71,7 +138,23 @@ class DashboardController extends Controller
             'sedangTugas',
             'penugasanTerbaru',
             'perbaikanTerbaru',
-            'trendData'
+            'perbaikanAktif',
+            'komposisiKategori',
+            'komposisiJenis',
+            'distribusiBBM',
+            'statusArmada',
+            // New variables
+            'avgOdometer',
+            'avgAssignmentsPerDay',
+            'oldestVehicle',
+            'newestVehicle',
+            'utilizationRate',
+            'topVehicles',
+            'avgRepairDuration',
+            'oldestRepair',
+            'assignmentsToday',
+            'assignmentsFinishedToday',
+            'oldestAssignment'
         ))->with('title', 'Dashboard');
     }
 }

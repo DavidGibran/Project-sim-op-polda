@@ -17,7 +17,7 @@
             <ol class="flex items-center gap-2 text-sm">
                 <li><a class="font-medium text-gray-500 hover:text-primary transition-colors dark:text-gray-400" href="{{ route('admin.dashboard') }}">Dashboard /</a></li>
                 <li><a class="font-medium text-gray-500 hover:text-primary transition-colors dark:text-gray-400" href="{{ route('kendaraan.index') }}">Kendaraan /</a></li>
-                <li class="font-medium text-primary">Import</li>
+                <li class="font-medium text-black-500 hover:text-primary transition-colors dark:text-white">Import</li>
             </ol>
         </nav>
     </div>
@@ -38,6 +38,15 @@
                         </div>
                         Pilih Dokumen Excel
                     </h3>
+
+                    <a href="{{ route('kendaraan.import.template') }}" class="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Unduh Template Excel
+                    </a>
                 </div>
 
                 <div class="space-y-6">
@@ -81,7 +90,7 @@
                                     class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" />
                                 <div class="flex flex-col items-center justify-center text-center">
                                     <div class="mb-4 rounded-full bg-white p-3 shadow-sm dark:bg-gray-800">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary dark:text-white">
                                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                             <polyline points="14 2 14 8 20 8"></polyline>
                                             <line x1="12" y1="18" x2="12" y2="12"></line>
@@ -106,35 +115,73 @@
                                 </svg>
                                 Format Kolom Excel
                             </h4>
-                            <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-gray-100 dark:bg-gray-800">
                                         <tr>
-                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase">MERK</th>
-                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase">TIPE</th>
-                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase">NO.POL</th>
-                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase">TAHUN</th>
-                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase">JENIS</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">NO_POLISI</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">MERK</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">TIPE</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">NAMA_PADA_SIMAK</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">TAHUN</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">BBM</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">KATEGORI_KENDARAAN</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">JENIS_KENDARAAN</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">KM_TERAKHIR</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">STATUS_KENDARAAN</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">NAMA_PEMEGANG</th>
+                                            <th class="py-2.5 px-3 font-semibold text-gray-700 dark:text-gray-300 uppercase whitespace-nowrap">KETERANGAN_PENGGUNAAN</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                                         <tr class="text-gray-600 dark:text-gray-400">
+                                            <td class="py-2.5 px-3">B 1234 ABC</td>
                                             <td class="py-2.5 px-3">TOYOTA</td>
                                             <td class="py-2.5 px-3">AVANZA</td>
-                                            <td class="py-2.5 px-3">B 1234 ABC</td>
+                                            <td class="py-2.5 px-3">AVANZA 1.3 G M/T</td>
                                             <td class="py-2.5 px-3">2022</td>
-                                            <td class="py-2.5 px-3">MINIBUS</td>
+                                            <td class="py-2.5 px-3">PERTALITE</td>
+                                            <td class="py-2.5 px-3">R4</td>
+                                            <td class="py-2.5 px-3">RANUM</td>
+                                            <td class="py-2.5 px-3">15000</td>
+                                            <td class="py-2.5 px-3">Tersedia</td>
+                                            <td class="py-2.5 px-3">BRIPKA JOHN DOE</td>
+                                            <td class="py-2.5 px-3">OPS</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <p class="mt-3 text-xs italic text-gray-500 dark:text-gray-400">
-                                * Kolom <strong>NO.POL</strong> wajib diisi dan unik.
-                            </p>
+
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.02]">
+                                    <h5 class="mb-3 text-sm font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                        <div class="h-1.5 w-1.5 rounded-full bg-primary"></div>
+                                        Panduan Nilai Kolom
+                                    </h5>
+                                    <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                                        <li><span class="font-semibold text-gray-800 dark:text-gray-200">Kategori:</span> R2, R4, R6</li>
+                                        <li><span class="font-semibold text-gray-800 dark:text-gray-200">Jenis:</span> RANUM, RANSUS, LAINNYA</li>
+                                        <li><span class="font-semibold text-gray-800 dark:text-gray-200">BBM:</span> PERTALITE, PERTAMAX, SOLAR, dll.</li>
+                                        <li><span class="font-semibold text-gray-800 dark:text-gray-200">Status:</span> Tersedia, Perbaikan, Dipakai</li>
+                                        <li><span class="font-semibold text-gray-800 dark:text-gray-200">KM Terakhir:</span> Isi angka (Jika kosong otomatis 0)</li>
+                                    </ul>
+                                </div>
+                                <div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.02]">
+                                    <h5 class="mb-3 text-sm font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                        <div class="h-1.5 w-1.5 rounded-full bg-amber-500"></div>
+                                        Catatan Penting
+                                    </h5>
+                                    <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                                        <li>* Kolom <span class="font-bold">NO_POLISI</span> bersifat unik & wajib diisi.</li>
+                                        <li>* Jika <span class="font-bold">Nama Pemegang</span> atau <span class="font-bold">Keterangan</span> kosong, sistem otomatis mengisinya dengan "-".</li>
+                                        <li>* Status kendaraan default akan diatur ke <span class="text-emerald-500 font-semibold">Tersedia</span> jika tidak ditentukan.</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="flex flex-col gap-4 pt-4 sm:flex-row">
-                            <button type="submit" class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 font-semibold text-white transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 active:scale-[0.98]">
+                            <button type="submit" class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-500 px-10 py-3 text-sm font-medium text-white hover:bg-brand-600 shadow-theme-sm transition-all">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="17 8 12 3 7 8"></polyline>

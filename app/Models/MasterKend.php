@@ -12,9 +12,12 @@ class MasterKend extends Model
 
     protected $fillable = [
         'no_polisi',
+        'nama_pemegang',
         'merk',
         'tipe',
         'tahun',
+        'bbm',
+        'nama_pada_simak',
         'kategori_kendaraan',
         'jenis_kendaraan',
         'keterangan_penggunaan',
@@ -44,4 +47,10 @@ class MasterKend extends Model
     {
         return $this->hasMany(Perbaikan::class, 'id_kend');
     }
+
+    public function laporanKerusakans()
+    {
+        return $this->hasMany(LaporanKerusakan::class, 'id_kend');
+    }
 }
+

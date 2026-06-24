@@ -12,6 +12,7 @@ class Perbaikan extends Model
 
     protected $fillable = [
         'id_kend',
+        'id_laporan',
         'tanggal_lapor',
         'keluhan',
         'status',
@@ -21,6 +22,12 @@ class Perbaikan extends Model
         'biaya',
         'catatan',
     ];
+
+    public function laporan()
+    {
+        return $this->belongsTo(LaporanKerusakan::class, 'id_laporan');
+    }
+
 
     public function kendaraan()
     {

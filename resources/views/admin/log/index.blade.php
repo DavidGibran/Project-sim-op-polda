@@ -1,0 +1,442 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+
+    {{-- 
+        Header / Breadcrumb
+    --}}
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                Log Pemakaian
+            </h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Riwayat perjalanan kendaraan yang telah diselesaikan oleh pengemudi.
+            </p>
+        </div>
+
+        <nav>
+            <ol class="flex items-center gap-2 text-sm">
+                <li>
+                    <a
+                        class="font-medium text-gray-500 hover:text-primary transition-colors dark:text-gray-400"
+                        href="{{ route('admin.dashboard') }}"
+                    >
+                        Dashboard /
+                    </a>
+                </li>
+                <li class="font-medium text-primary dark:text-white">
+                    Log Pemakaian
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    {{-- Alert message --}}
+    @if(session('success'))
+        <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-500/10 dark:text-green-400">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-500/10 dark:text-red-400">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- 
+        Card utama log pemakaian
+    --}}
+    <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+
+        {{-- Header card + filter --}}
+        <div class="border-b border-gray-100 px-5 py-4 dark:border-gray-800 sm:px-6">
+            <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Data Log Pemakaian
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Menampilkan semua record perjalanan yang telah selesai.
+                    </p>
+                </div>
+
+                {{-- Form filter --}}
+                <form action="{{ route('log.index') }}" method="GET" class="flex flex-wrap items-center gap-3">
+
+                    {{-- Search --}}
+                    <div class="relative">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $search ?? '' }}"
+                            placeholder="Cari kode tugas, pengemudi, tujuan..."
+                            class="w-full sm:w-64 rounded-lg border border-gray-200 bg-transparent py-2 pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                        >
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </span>
+                    </div>
+
+                    {{-- Filter Periode --}}
+                    <div class="flex items-center gap-2">
+                        <select
+                            name="periode"
+                            id="filter_periode"
+                            class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                            onchange="toggleCustomDates(this.value)"
+                        >
+                            <option value="all" {{ ($periode ?? '') == 'all' ? 'selected' : '' }}>Semua Waktu</option>
+                            <option value="this_month" {{ ($periode ?? '') == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                            <option value="last_month" {{ ($periode ?? '') == 'last_month' ? 'selected' : '' }}>Bulan Lalu</option>
+                            <option value="this_year" {{ ($periode ?? '') == 'this_year' ? 'selected' : '' }}>Tahun Ini</option>
+                            <option value="custom" {{ ($periode ?? '') == 'custom' ? 'selected' : '' }}>Kustom Range</option>
+                        </select>
+
+                        <div id="custom_date_range" class="{{ ($periode ?? '') == 'custom' ? 'flex' : 'hidden' }} items-center gap-2">
+                            <input
+                                type="date"
+                                name="tanggal_dari"
+                                value="{{ $tanggalDari ?? '' }}"
+                                class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                                title="Tanggal Dari"
+                            >
+                            <span class="text-gray-400">-</span>
+                            <input
+                                type="date"
+                                name="tanggal_sampai"
+                                value="{{ $tanggalSampai ?? '' }}"
+                                class="rounded-lg border border-gray-200 bg-transparent py-2 px-3 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                                title="Tanggal Sampai"
+                            >
+                        </div>
+                    </div>
+
+                    {{-- Tombol filter --}}
+                    <button
+                        type="submit"
+                        class="inline-flex h-9 items-center justify-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all"
+                    >
+                        Terapkan
+                    </button>
+
+                    {{-- Per page --}}
+                    <select
+                        name="per_page"
+                        onchange="this.form.submit()"
+                        class="rounded-lg border border-gray-200 bg-transparent py-2 px-4 text-sm outline-none focus:border-primary dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                    >
+                        @foreach([10, 25, 50, 100] as $val)
+                            <option value="{{ $val }}" {{ (int)($perPage ?? 10) === $val ? 'selected' : '' }}>
+                                {{ $val }} data
+                            </option>
+                        @endforeach
+                    </select>
+
+                    {{-- Reset --}}
+                    @if(($search ?? null) || ($periode ?? 'all') !== 'all')
+                        <a
+                            href="{{ route('log.index') }}"
+                            class="text-sm text-gray-500 hover:text-primary dark:text-gray-400"
+                        >
+                            Reset
+                        </a>
+                    @endif
+                </form>
+            </div>
+        </div>
+
+        {{-- Table ringkas --}}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                <tr class="bg-gray-50 dark:bg-white/5">
+                    @php
+                        $sorts = [
+                            'id' => 'Kode Tugas',
+                            'pengemudi' => 'Pengemudi',
+                            'tipe_kendaraan' => 'Tipe Kendaraan',
+                            'tujuan' => 'Tujuan',
+                            'km_awal' => 'KM Awal',
+                            'km_akhir' => 'KM Akhir',
+                        ];
+                    @endphp
+
+                    @foreach($sorts as $key => $label)
+                        <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => $key, 'order' => ($sortBy == $key && $order == 'asc') ? 'desc' : 'asc']) }}" class="flex items-center gap-1 hover:text-primary">
+                                {{ $label }}
+                                @if($sortBy == $key)
+                                    <svg class="h-3 w-3 {{ $order == 'desc' ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                    </svg>
+                                @endif
+                            </a>
+                        </th>
+                    @endforeach
+                    <th class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
+                        Aksi
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @forelse($logs as $log)
+                        <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                            <td class="px-5 py-4">
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">
+                                    #{{ $log->id }}
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $log->kendaraan->no_polisi ?? '-' }}
+                                </p>
+                            </td>
+
+                            <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
+                                {{ $log->pengemudi ?? '-' }}
+                            </td>
+
+                            <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-[160px]">
+                                <span class="block truncate" title="{{ $log->kendaraan->tipe ?? '-' }}">{{ $log->kendaraan->tipe ?? '-' }}</span>
+                            </td>
+
+                            <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
+                                {{ $log->tujuan ?? '-' }}
+                            </td>
+
+                            <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
+                                {{ number_format((int) ($log->km_awal ?? 0), 0, ',', '.') }}
+                            </td>
+
+                            <td class="px-5 py-4 text-sm font-semibold text-gray-900 dark:text-white">
+                                {{ $log->km_akhir ? number_format((int) $log->km_akhir, 0, ',', '.') : '-' }}
+                            </td>
+
+                            <td class="px-5 py-4 text-center">
+                                @php
+                                    $detailData = [
+                                        'kode_tugas' => '#' . $log->id,
+                                        'tanggal_tugas' => $log->tgl_tugas
+                                            ? $log->tgl_tugas->translatedFormat('d F Y')
+                                            : '-',
+                                        'nama_pengemudi' => $log->pengemudi,
+                                        'nopol' => $log->kendaraan->no_polisi ?? '-',
+                                        'jenis_kendaraan' => $log->kendaraan->jenis_kendaraan ?? '-',
+
+                                        'tipe_kendaraan' => $log->kendaraan->tipe ?? '-',
+                                        'tujuan' => $log->tujuan,
+                                        'km_awal' => number_format((int) ($log->km_awal ?? 0), 0, ',', '.'),
+                                        'km_akhir' => $log->km_akhir ? number_format((int) $log->km_akhir, 0, ',', '.') : '-',
+                                        'foto_odometer' => (!empty($log->foto_odometer) && trim($log->foto_odometer) !== '') ? route('penugasan.odometer-foto', $log->id) : null,
+                                        'waktu_mulai' => $log->waktu_mulai
+                                            ? $log->waktu_mulai->format('d-m-Y H:i')
+                                            : '-',
+                                        'waktu_selesai' => $log->waktu_selesai
+                                            ? $log->waktu_selesai->format('d-m-Y H:i')
+                                            : '-',
+                                        'catatan' => $log->catatan ?: '-',
+                                    ];
+                                @endphp
+
+                                <button
+                                    type="button"
+                                    data-detail='@json($detailData)'
+                                    onclick="openDetailModal(this)"
+                                    class="flex h-8 w-8 mx-auto items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-success-500 hover:text-white transition-all dark:bg-gray-800 dark:text-gray-400"
+                                    title="Detail"
+                                >
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        <circle cx="12" cy="12" r="3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-5 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+                                Belum ada data log pemakaian.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
+        <div class="border-t border-gray-100 px-5 py-4 dark:border-gray-800">
+            {{ $logs->links() }}
+        </div>
+    </div>
+</div>
+
+{{-- Modal Detail --}}
+<div id="detailModal" class="fixed inset-0 z-[100001] hidden items-center justify-center bg-black/50 px-4">
+    <div class="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+        <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Detail Pemakaian
+            </h3>
+
+            <button
+                type="button"
+                onclick="closeDetailModal()"
+                class="text-gray-500 hover:text-black dark:hover:text-white"
+            >
+                ✕
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 text-sm">
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Kode Tugas</p>
+                <p id="detail_kode_tugas" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Tanggal Tugas</p>
+                <p id="detail_tanggal_tugas" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Pengemudi</p>
+                <p id="detail_nama_pengemudi" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Nopol</p>
+                <p id="detail_nopol" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Jenis Kendaraan</p>
+                <p id="detail_jenis_kendaraan" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Tipe Kendaraan</p>
+                <p id="detail_tipe_kendaraan" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Tujuan</p>
+                <p id="detail_tujuan" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">KM Awal</p>
+                <p id="detail_km_awal" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">KM Akhir</p>
+                <p id="detail_km_akhir" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Perjalanan Dimulai</p>
+                <p id="detail_waktu_mulai" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 dark:text-gray-400">Perjalanan Selesai</p>
+                <p id="detail_waktu_selesai" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div class="md:col-span-2">
+                <p class="text-gray-500 dark:text-gray-400">Catatan</p>
+                <p id="detail_catatan" class="font-medium text-gray-900 dark:text-white">-</p>
+            </div>
+
+            <div class="md:col-span-2">
+                <p class="text-gray-500 dark:text-gray-400 mb-2">Foto Odometer</p>
+                <a id="detail_foto_link" href="" target="_blank" class="hidden inline-flex items-center gap-2 text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 font-semibold underline transition-colors cursor-pointer group">
+                    <svg class="h-4 w-4 text-brand-500 dark:text-brand-400 shrink-0 group-hover:text-brand-600 dark:group-hover:text-brand-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    <span>Lihat Foto Odometer ↗</span>
+                </a>
+                <p id="detail_foto_placeholder" class="text-sm text-gray-500 dark:text-gray-400">Tidak ada foto.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * Buka modal detail
+     */
+    function openDetailModal(button) {
+        const data = JSON.parse(button.dataset.detail);
+
+        document.getElementById('detail_kode_tugas').textContent = data.kode_tugas ?? '-';
+        document.getElementById('detail_tanggal_tugas').textContent = data.tanggal_tugas ?? '-';
+        document.getElementById('detail_nama_pengemudi').textContent = data.nama_pengemudi ?? '-';
+        document.getElementById('detail_nopol').textContent = data.nopol ?? '-';
+        document.getElementById('detail_jenis_kendaraan').textContent = data.jenis_kendaraan ?? '-';
+        document.getElementById('detail_tipe_kendaraan').textContent = data.tipe_kendaraan ?? '-';
+        document.getElementById('detail_tujuan').textContent = data.tujuan ?? '-';
+        document.getElementById('detail_km_awal').textContent = data.km_awal ?? '-';
+        document.getElementById('detail_km_akhir').textContent = data.km_akhir ?? '-';
+        document.getElementById('detail_waktu_mulai').textContent = data.waktu_mulai ?? '-';
+        document.getElementById('detail_waktu_selesai').textContent = data.waktu_selesai ?? '-';
+        document.getElementById('detail_catatan').textContent = data.catatan ?? '-';
+
+        const link = document.getElementById('detail_foto_link');
+        const placeholder = document.getElementById('detail_foto_placeholder');
+
+        if (data.foto_odometer) {
+            link.href = data.foto_odometer;
+            link.classList.remove('hidden');
+            link.classList.add('inline-flex');
+            placeholder.classList.add('hidden');
+        } else {
+            link.href = '';
+            link.classList.add('hidden');
+            link.classList.remove('inline-flex');
+            placeholder.classList.remove('hidden');
+        }
+
+        const modal = document.getElementById('detailModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    /**
+     * Toggle custom date range inputs
+     */
+    function toggleCustomDates(value) {
+        const customRange = document.getElementById('custom_date_range');
+        if (value === 'custom') {
+            customRange.classList.remove('hidden');
+            customRange.classList.add('flex');
+        } else {
+            customRange.classList.add('hidden');
+            customRange.classList.remove('flex');
+        }
+    }
+
+    /**
+     * Tutup modal detail
+     */
+    function closeDetailModal() {
+        const modal = document.getElementById('detailModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    /**
+     * Tutup modal saat menekan tombol ESC
+     */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeDetailModal();
+        }
+    });
+</script>
+@endsection
